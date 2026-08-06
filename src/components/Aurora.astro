@@ -1,0 +1,84 @@
+---
+/**
+ * Aurora — aurora boreal ambiental sobre el cielo de Targon.
+ * Cortinas de luz difusas que ondulan y derivan lentamente. Puro CSS.
+ * Se congela con prefers-reduced-motion.
+ */
+---
+
+<div class="aurora" aria-hidden="true">
+  <span class="aurora__band aurora__band--1"></span>
+  <span class="aurora__band aurora__band--2"></span>
+  <span class="aurora__band aurora__band--3"></span>
+  <span class="aurora__band aurora__band--4"></span>
+</div>
+
+<style>
+  .aurora {
+    position: fixed;
+    inset: -15% -25% auto -25%;
+    height: 92vh;
+    z-index: -2;
+    pointer-events: none;
+    filter: blur(52px) saturate(1.35);
+    opacity: 0.8;
+    mix-blend-mode: screen;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 48%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 48%, transparent 100%);
+  }
+
+  .aurora__band {
+    position: absolute;
+    inset: 0;
+    border-radius: 45%;
+    transform-origin: center top;
+    will-change: transform, opacity;
+  }
+
+  /* Cortina celeste */
+  .aurora__band--1 {
+    background: radial-gradient(58% 100% at 28% 0%,
+      color-mix(in srgb, var(--celeste-400) 85%, transparent) 0%, transparent 62%);
+    animation: auroraDrift1 20s ease-in-out infinite;
+  }
+  /* Cortina lavanda */
+  .aurora__band--2 {
+    background: radial-gradient(52% 92% at 62% 3%,
+      color-mix(in srgb, var(--lavender-400) 88%, transparent) 0%, transparent 58%);
+    animation: auroraDrift2 26s ease-in-out infinite;
+  }
+  /* Cortina violeta profunda */
+  .aurora__band--3 {
+    background: radial-gradient(48% 88% at 46% 0%,
+      color-mix(in srgb, var(--violet-600) 78%, transparent) 0%, transparent 55%);
+    animation: auroraDrift3 32s ease-in-out infinite;
+  }
+  /* Matiz verde-esmeralda: el sello de la aurora boreal */
+  .aurora__band--4 {
+    background: radial-gradient(46% 80% at 78% 6%,
+      color-mix(in srgb, #57e0b0 70%, transparent) 0%, transparent 55%);
+    animation: auroraDrift4 24s ease-in-out infinite;
+    opacity: 0.7;
+  }
+
+  @keyframes auroraDrift1 {
+    0%, 100% { transform: translateX(-8%) skewX(-10deg) scaleY(1); opacity: 0.8; }
+    50%      { transform: translateX(12%) skewX(8deg) scaleY(1.22); opacity: 1; }
+  }
+  @keyframes auroraDrift2 {
+    0%, 100% { transform: translateX(10%) skewX(8deg) scaleY(1.12); opacity: 0.65; }
+    50%      { transform: translateX(-10%) skewX(-9deg) scaleY(0.92); opacity: 1; }
+  }
+  @keyframes auroraDrift3 {
+    0%, 100% { transform: translateX(-5%) scaleY(0.9); opacity: 0.55; }
+    50%      { transform: translateX(8%) scaleY(1.28); opacity: 0.9; }
+  }
+  @keyframes auroraDrift4 {
+    0%, 100% { transform: translateX(6%) skewX(6deg) scaleY(1); opacity: 0.5; }
+    50%      { transform: translateX(-12%) skewX(-8deg) scaleY(1.18); opacity: 0.85; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora__band { animation: none; }
+  }
+</style>

@@ -1,0 +1,224 @@
+---
+/**
+ * TargonModel — el Monte Targon en 3D (Three.js), como pieza central del hero.
+ * Bien iluminado, encuadrado sobre la cima; la cámara DESCIENDE la montaña
+ * conforme se hace scroll (momento focal). El plano inferior del modelo se
+ * oculta con niebla + máscara. Carga diferida, pausa fuera de vista,
+ * respeta prefers-reduced-motion.
+ */
+interface Props {
+  src?: string;
+  class?: string;
+}
+const { src = '/models/mount-targon.glb', class: cls = '' } = Astro.props;
+---
+
+<div class={`targon ${cls}`} data-targon-src={src}>
+  <canvas class="targon__canvas" aria-hidden="true"></canvas>
+  <div class="targon__loader" data-targon-loader>
+    <span class="targon__loader-ring"></span>
+    <span class="targon__loader-text">Ascendiendo a Targon</span>
+  </div>
+</div>
+
+<style>
+  .targon {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    /* Difumina la base del modelo hacia el fondo de la página */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 52%, transparent 84%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 52%, transparent 84%);
+  }
+  .targon__canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .targon__loader {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1.1rem;
+    transition: opacity 0.8s var(--ease-out);
+    pointer-events: none;
+  }
+  .targon__loader.is-hidden { opacity: 0; }
+  .targon__loader-ring {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--lavender-400) 25%, transparent);
+    border-top-color: var(--celeste-400);
+    animation: targonSpin 1s linear infinite;
+  }
+  .targon__loader-text {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  @keyframes targonSpin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .targon__loader-ring { animation: none; }
+  }
+</style>
+
+<script>
+  const mount = document.querySelector<HTMLElement>('.targon');
+  if (mount) {
+    const canvas = mount.querySelector<HTMLCanvasElement>('.targon__canvas')!;
+    const loader = mount.querySelector<HTMLElement>('[data-targon-loader]')!;
+    const src = mount.dataset.targonSrc || '/models/mount-targon.glb';
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let started = false;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting) && !started) {
+        started = true;
+        io.disconnect();
+        init();
+      }
+    }, { rootMargin: '300px' });
+    io.observe(mount);
+
+    async function init() {
+      const THREE = await import('three');
+      const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+      const { MeshoptDecoder } = await import('three/examples/jsm/libs/meshopt_decoder.module.js');
+
+      const NIGHT = 0x0a0b24;
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(NIGHT, 9, 17);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.75;
+
+      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+
+      // Iluminación nocturna y brillante
+      scene.add(new THREE.HemisphereLight(0xbcccff, 0x2f2a5c, 1.5));
+      scene.add(new THREE.AmbientLight(0xaebfff, 0.7));
+      const moonKey = new THREE.DirectionalLight(0xeaf0ff, 2.6);
+      moonKey.position.set(-4, 7, 5);
+      scene.add(moonKey);
+      const rimViolet = new THREE.DirectionalLight(0x9d8cf0, 1.5);
+      rimViolet.position.set(6, 3, -5);
+      scene.add(rimViolet);
+      const glowCeleste = new THREE.PointLight(0x5ba4e4, 2.2, 30, 2);
+      glowCeleste.position.set(3, 0, 6);
+      scene.add(glowCeleste);
+      const glowLav = new THREE.PointLight(0x8c7be8, 1.6, 26, 2);
+      glowLav.position.set(-5, -1, 4);
+      scene.add(glowLav);
+
+      const pivot = new THREE.Group();
+      scene.add(pivot);
+
+      // Recorrido de cámara: scroll 0 = zoom en la PUNTA, scroll 1 = falda (y se desvanece)
+      const CAM = { yTop: 1.7, yBottom: -1.4, zTop: 4.9, zBottom: 7.2, lookTop: 1.55, lookBottom: -0.6 };
+      let scrollP = 0;
+
+      const gltfLoader = new GLTFLoader();
+      gltfLoader.setMeshoptDecoder(MeshoptDecoder);
+      gltfLoader.load(
+        src,
+        (gltf) => {
+          const model = gltf.scene;
+          const box = new THREE.Box3().setFromObject(model);
+          const size = box.getSize(new THREE.Vector3());
+          const center = box.getCenter(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const scale = 5.4 / maxDim;               // más grande / zoomeado
+          model.scale.setScalar(scale);
+          // Centrar en X/Z; leve descenso para dar aire a la cima
+          model.position.x = -center.x * scale;
+          model.position.z = -center.z * scale;
+          model.position.y = -center.y * scale - size.y * scale * 0.05;
+          pivot.add(model);
+
+          loader.classList.add('is-hidden');
+          resize();
+          animate();
+        },
+        undefined,
+        (err) => {
+          console.error('[Targon] error cargando modelo', err);
+          loader.querySelector('.targon__loader-text')!.textContent = 'No se pudo invocar el monte';
+        }
+      );
+
+      // Descenso ligado al scroll: la montaña solo se mueve al scrollear
+      const sceneEl = mount!.closest('section') as HTMLElement | null;
+      function updateScroll() {
+        const vh = window.innerHeight || 1;
+        let np: number;
+        if (sceneEl) {
+          const range = sceneEl.offsetHeight - vh;
+          np = range > 50
+            ? Math.max(0, Math.min(1, (window.scrollY - sceneEl.offsetTop) / range))
+            : 0;
+        } else {
+          np = Math.max(0, Math.min(1, window.scrollY / (vh * 1.1)));
+        }
+        if (np !== scrollP) { scrollP = np; wake(); }
+      }
+
+      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+      const easeInOut = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+      let visible = true;
+      const visIO = new IntersectionObserver(
+        (entries) => { visible = entries[0].isIntersecting; if (visible) wake(); },
+        { threshold: 0 }
+      );
+      visIO.observe(mount!);
+
+      let raf = 0;
+      let curP = 0;
+      const lookAt = new THREE.Vector3();
+
+      // Renderiza sólo mientras la cámara alcanza el objetivo del scroll; luego duerme.
+      function wake() { if (!raf && visible) raf = requestAnimationFrame(frame); }
+      function frame() {
+        raf = 0;
+        curP += (scrollP - curP) * 0.09;
+        if (Math.abs(scrollP - curP) < 0.0004) curP = scrollP;
+
+        const e = easeInOut(curP);
+        camera.position.set(0, lerp(CAM.yTop, CAM.yBottom, e), lerp(CAM.zTop, CAM.zBottom, e));
+        lookAt.set(0, lerp(CAM.lookTop, CAM.lookBottom, e), 0);
+        camera.lookAt(lookAt);
+
+        // El monte se desvanece hacia el final del descenso, dejando la aurora.
+        const fade = Math.max(0, Math.min(1, (curP - 0.55) / 0.4));
+        mount!.style.opacity = String(1 - fade);
+        if (fade < 1) renderer.render(scene, camera);
+
+        if (curP !== scrollP && visible) raf = requestAnimationFrame(frame);
+      }
+      function animate() { wake(); }
+
+      updateScroll();
+      window.addEventListener('scroll', updateScroll, { passive: true });
+
+      function resize() {
+        const w = mount!.clientWidth || 1;
+        const h = mount!.clientHeight || 1;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      let rt: number;
+      window.addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(resize, 150); });
+    }
+  }
+</script>

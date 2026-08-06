@@ -1,0 +1,167 @@
+---
+/**
+ * LunariLogo3D — luna creciente de la Legion extruida en 3D (Three.js).
+ * Gira lentamente con un leve balanceo. Carga diferida vía IntersectionObserver,
+ * se pausa fuera de vista y respeta prefers-reduced-motion.
+ */
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+
+<div class={`logo3d ${cls}`}>
+  <div class="logo3d__halo" aria-hidden="true"></div>
+  <canvas class="logo3d__canvas" aria-label="Logo de Legion Lunari" role="img"></canvas>
+</div>
+
+<style>
+  .logo3d {
+    position: relative;
+    width: clamp(180px, 26vw, 300px);
+    aspect-ratio: 1;
+    margin-inline: auto;
+  }
+  .logo3d__canvas {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /* Resplandor lunar tras el modelo */
+  .logo3d__halo {
+    position: absolute;
+    inset: -18%;
+    z-index: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 40%,
+      color-mix(in srgb, var(--celeste-400) 55%, transparent) 0%,
+      color-mix(in srgb, var(--lavender-400) 30%, transparent) 42%,
+      transparent 70%);
+    filter: blur(24px);
+    animation: logo3dHalo 8s ease-in-out infinite;
+  }
+  @keyframes logo3dHalo {
+    0%, 100% { opacity: 0.75; transform: scale(1); }
+    50%      { opacity: 1;    transform: scale(1.06); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo3d__halo { animation: none; }
+  }
+</style>
+
+<script>
+  const mount = document.querySelector<HTMLElement>('.logo3d');
+  if (mount) {
+    const canvas = mount.querySelector<HTMLCanvasElement>('.logo3d__canvas')!;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let started = false;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting) && !started) {
+        started = true;
+        io.disconnect();
+        init();
+      }
+    }, { rootMargin: '200px' });
+    io.observe(mount);
+
+    async function init() {
+      const THREE = await import('three');
+      const { SVGLoader } = await import('three/examples/jsm/loaders/SVGLoader.js');
+
+      const scene = new THREE.Scene();
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.35;
+
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+      camera.position.set(0, 0, 5.2);
+
+      scene.add(new THREE.AmbientLight(0x8a9bff, 0.75));
+      const key = new THREE.DirectionalLight(0xeaf0ff, 2.6);
+      key.position.set(-3, 4, 5);
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(0x8c7be8, 1.8);
+      rim.position.set(4, -2, -3);
+      scene.add(rim);
+      const glow = new THREE.PointLight(0x5ba4e4, 2, 20, 2);
+      glow.position.set(2, 1, 4);
+      scene.add(glow);
+
+      const material = new THREE.MeshStandardMaterial({
+        color: 0xeef0ff,
+        metalness: 0.45,
+        roughness: 0.32,
+        emissive: 0x2a3a8c,
+        emissiveIntensity: 0.35,
+        side: THREE.DoubleSide,
+      });
+
+      const pivot = new THREE.Group();
+      scene.add(pivot);
+
+      // Logo real de la Legion: se extruye cada forma del SVG a 3D.
+      const svgGroup = new THREE.Group();
+      const svg = await new Promise<any>((res, rej) =>
+        new SVGLoader().load('/legion-lunari-logo.svg', res, undefined, rej)
+      );
+      for (const path of svg.paths) {
+        for (const shape of SVGLoader.createShapes(path)) {
+          const geo = new THREE.ExtrudeGeometry(shape, {
+            depth: 22,
+            bevelEnabled: true,
+            bevelThickness: 5,
+            bevelSize: 3,
+            bevelSegments: 2,
+          });
+          svgGroup.add(new THREE.Mesh(geo, material));
+        }
+      }
+      // Centrar y escalar; el eje Y del SVG apunta hacia abajo (se invierte).
+      const box = new THREE.Box3().setFromObject(svgGroup);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const scale = 2.3 / Math.max(size.x, size.y);
+      svgGroup.scale.set(scale, -scale, scale);
+      svgGroup.position.set(-center.x * scale, center.y * scale, -size.z * scale * 0.5);
+      pivot.add(svgGroup);
+
+      let raf = 0, visible = true, last = 0;
+      const visIO = new IntersectionObserver(
+        (entries) => { visible = entries[0].isIntersecting; if (visible) wake(); },
+        { threshold: 0 }
+      );
+      visIO.observe(mount!);
+
+      function wake() { if (!raf && visible) raf = requestAnimationFrame(frame); }
+      function frame(t: number) {
+        raf = 0;
+        const dt = last ? (t - last) / 1000 : 0;
+        last = t;
+        pivot.rotation.y += dt * 0.6;
+        pivot.rotation.x = Math.sin(t / 2600) * 0.18;
+        renderer.render(scene, camera);
+        if (visible && !reduced) raf = requestAnimationFrame(frame);
+      }
+
+      function resize() {
+        const w = mount!.clientWidth || 1;
+        const h = mount!.clientHeight || 1;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+
+      if (reduced) { pivot.rotation.set(0, 0.5, 0); renderer.render(scene, camera); }
+      else wake();
+
+      let rt: number;
+      window.addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(() => { resize(); wake(); }, 150); });
+    }
+  }
+</script>

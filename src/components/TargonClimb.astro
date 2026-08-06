@@ -1,0 +1,361 @@
+---
+/**
+ * TargonClimb — fondo 3D del quiz: un ASCENSO al Monte Targon.
+ * Cada pregunta sube un paso por la montaña (evento `targon:climb`).
+ * Al terminar, revela el Peak Guardian (evento `targon:summit`).
+ * Controlado por eventos de window; la cámara sólo se mueve al interactuar.
+ */
+interface Props {
+  mountSrc?: string;
+  guardianSrc?: string;
+}
+const {
+  mountSrc = '/models/mount-targon.glb',
+  guardianSrc = '/models/peak-guardian.glb',
+} = Astro.props;
+---
+
+<div class="climb" data-mount={mountSrc} data-guardian={guardianSrc} aria-hidden="true">
+  <canvas class="climb__canvas"></canvas>
+  <div class="climb__mist"><span></span><span></span><span></span></div>
+  <div class="climb__scrim"></div>
+  <div class="climb__loader" data-climb-loader>
+    <span class="climb__ring"></span>
+    <span class="climb__txt">Ascendiendo a Targon</span>
+  </div>
+</div>
+
+<style>
+  .climb {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .climb__canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+    z-index: 1;
+    opacity: 1;
+    transition: opacity 0.5s var(--ease-out);
+  }
+  .climb.is-swapping .climb__canvas { opacity: 0; }
+
+  .climb__scrim {
+    position: absolute; inset: 0;
+    z-index: 3;
+    background:
+      radial-gradient(120% 90% at 50% 42%, transparent 30%, color-mix(in srgb, var(--bg) 70%, transparent) 100%),
+      linear-gradient(to bottom, var(--bg) 0%, transparent 22%, transparent 72%, var(--bg) 100%);
+  }
+
+  /* Neblina que se acumula en la BASE del monte (oculta el plano plano)
+     y se desvanece un poco por encima de la base. */
+  .climb__mist {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 46%;
+    z-index: 2;
+    overflow: hidden;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 34%, transparent 100%);
+    mask-image: linear-gradient(to top, #000 0%, #000 34%, transparent 100%);
+  }
+  .climb__mist span {
+    position: absolute;
+    left: -30%; right: -30%;
+    bottom: -25%;
+    height: 150%;
+    filter: blur(46px);
+    mix-blend-mode: screen;
+    will-change: transform;
+  }
+  .climb__mist span:nth-child(1) {
+    background:
+      radial-gradient(50% 60% at 30% 78%, color-mix(in srgb, var(--celeste-400) 46%, transparent), transparent 68%),
+      radial-gradient(46% 55% at 72% 80%, color-mix(in srgb, var(--lavender-400) 40%, transparent), transparent 70%);
+    opacity: 0.95;
+    animation: climbMist1 30s ease-in-out infinite alternate;
+  }
+  .climb__mist span:nth-child(2) {
+    background: radial-gradient(64% 55% at 55% 82%, color-mix(in srgb, var(--moonlight) 26%, transparent), transparent 72%);
+    opacity: 0.7;
+    animation: climbMist2 44s ease-in-out infinite alternate;
+  }
+  .climb__mist span:nth-child(3) {
+    background: radial-gradient(58% 50% at 44% 85%, color-mix(in srgb, var(--azure-500) 34%, transparent), transparent 72%);
+    opacity: 0.55;
+    animation: climbMist3 38s ease-in-out infinite alternate;
+  }
+  @keyframes climbMist1 {
+    from { transform: translateX(-12%) scaleX(1); }
+    to   { transform: translateX(13%) scaleX(1.14); }
+  }
+  @keyframes climbMist2 {
+    from { transform: translateX(12%); }
+    to   { transform: translateX(-11%); }
+  }
+  @keyframes climbMist3 {
+    from { transform: translateX(9%) scaleX(1.1); }
+    to   { transform: translateX(-10%) scaleX(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .climb__mist span { animation: none; }
+  }
+  .climb__loader {
+    position: absolute; inset: 0;
+    z-index: 4;
+    display: grid; place-content: center; justify-items: center; gap: 1rem;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  .climb__loader.is-hidden { opacity: 0; }
+  .climb__ring {
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--lavender-400) 25%, transparent);
+    border-top-color: var(--celeste-400);
+    animation: climbSpin 1s linear infinite;
+  }
+  .climb__txt {
+    font-family: var(--font-body); font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-muted);
+  }
+  @keyframes climbSpin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .climb__ring { animation: none; } }
+</style>
+
+<script>
+  import { ascentPoses, introPose } from '../data/ascent';
+
+  const root = document.querySelector<HTMLElement>('.climb');
+  if (root) {
+    const canvas = root.querySelector<HTMLCanvasElement>('.climb__canvas')!;
+    const loader = root.querySelector<HTMLElement>('[data-climb-loader]')!;
+    const mountSrc = root.dataset.mount!;
+    const guardianSrc = root.dataset.guardian!;
+
+    (async () => {
+      const THREE = await import('three');
+      const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+      const { MeshoptDecoder } = await import('three/examples/jsm/libs/meshopt_decoder.module.js');
+
+      const NIGHT = 0x0a0b24;
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(NIGHT, 8, 18);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.7;
+
+      // FOV bajo = teleobjetivo: mucho zoom sin meter la cámara dentro del monte
+      const FOV_CLIMB = 24, FOV_SUMMIT = 44;
+      const camera = new THREE.PerspectiveCamera(FOV_CLIMB, 1, 0.1, 100);
+      const setFov = (f: number) => { camera.fov = f; camera.updateProjectionMatrix(); };
+
+      scene.add(new THREE.HemisphereLight(0xbcccff, 0x2f2a5c, 1.4));
+      scene.add(new THREE.AmbientLight(0xaebfff, 0.65));
+      const key = new THREE.DirectionalLight(0xeaf0ff, 2.5);
+      key.position.set(-4, 7, 5);
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(0x9d8cf0, 1.4);
+      rim.position.set(6, 2, -5);
+      scene.add(rim);
+      // Luz de acento que se tiñe con el color de la casa en el cierre.
+      const accent = new THREE.PointLight(0x5ba4e4, 1.8, 40, 2);
+      accent.position.set(3, 1, 6);
+      scene.add(accent);
+
+      const gltf = new GLTFLoader();
+      gltf.setMeshoptDecoder(MeshoptDecoder);
+
+      const load = (src: string) =>
+        new Promise<any>((res, rej) => gltf.load(src, res, undefined, rej));
+
+      function fit(model: any, target: number) {
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const scale = target / Math.max(size.x, size.y, size.z);
+        model.scale.setScalar(scale);
+        model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+        return { scale, size, sizeY: size.y * scale };
+      }
+
+      // Estado
+      let mode: 'climb' | 'summit' = 'climb';
+      let targetStep = 0, total = 6;
+      let curFrac = 0;
+      let mount: any = null, guardian: any = null;
+      let guardianPivot: any = null;
+      let raf = 0, visible = true;
+      // El intro arranca en la pose de intro; se suaviza hacia la pose objetivo.
+      let manualPose: any = { ...introPose };
+      const cur: any = { ...introPose }; // pose actual suavizada de la cámara
+
+      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+      // interpolación de ángulos por el camino más corto (evita giros de 300°)
+      const lerpAngle = (a: number, b: number, t: number) =>
+        a + (((b - a + 540) % 360) - 180) * t;
+      const DEG = Math.PI / 180;
+
+      // Aplica una pose (cámara + rotación del monte + fov) al vuelo.
+      function applyPose(p: any) {
+        if (camera.fov !== p.fov) setFov(p.fov);
+        camera.position.set(0, p.camY, p.camZ);
+        camera.lookAt(0, p.lookY, 0);
+        mountGroup.rotation.y = p.rotDeg * DEG;
+      }
+      // Pose interpolada a lo largo de los pasos según una fracción 0..1.
+      function poseAt(frac: number) {
+        const t = Math.min(1, Math.max(0, frac)) * (ascentPoses.length - 1);
+        const i = Math.floor(t), f = t - i;
+        const a = ascentPoses[i], b = ascentPoses[Math.min(ascentPoses.length - 1, i + 1)];
+        return {
+          camY: lerp(a.camY, b.camY, f), camZ: lerp(a.camZ, b.camZ, f),
+          lookY: lerp(a.lookY, b.lookY, f), rotDeg: lerpAngle(a.rotDeg, b.rotDeg, f),
+          fov: lerp(a.fov, b.fov, f),
+        };
+      }
+
+      const mountGroup = new THREE.Group();
+      scene.add(mountGroup);
+
+      // Carga el monte primero; el guardián se precarga en segundo plano.
+      const mg = await load(mountSrc);
+      mount = mg.scene;
+      fit(mount, 5.6);
+      mountGroup.add(mount);
+      loader.classList.add('is-hidden');
+      resize();
+      wake();
+
+      // Precarga del guardián (no bloquea el quiz).
+      load(guardianSrc).then((gg) => {
+        guardian = gg.scene;
+        guardianPivot = new THREE.Group();
+        fit(guardian, 4.6);
+        guardianPivot.add(guardian);
+        guardianPivot.visible = false;
+        scene.add(guardianPivot);
+      }).catch((e) => console.error('[Targon] guardián', e));
+
+      // Render con "wake": solo mientras algo cambia
+      function wake() { if (!raf && visible) raf = requestAnimationFrame(frame); }
+
+      function frame() {
+        raf = 0;
+        let moving = false;
+
+        if (mode === 'climb') {
+          // Pose objetivo: intro/tuning (manualPose) o el ascenso interpolado.
+          let target;
+          if (manualPose) {
+            target = manualPose;
+          } else {
+            const goal = total > 0 ? targetStep / total : 0;
+            curFrac += (goal - curFrac) * 0.07;
+            if (Math.abs(goal - curFrac) < 0.0004) curFrac = goal;
+            target = poseAt(curFrac);
+          }
+          // Suaviza la cámara hacia el objetivo (intro→ascenso fluido, y en tuning).
+          const k = 0.1;
+          const dRot = ((target.rotDeg - cur.rotDeg + 540) % 360) - 180;
+          cur.camY = lerp(cur.camY, target.camY, k);
+          cur.camZ = lerp(cur.camZ, target.camZ, k);
+          cur.lookY = lerp(cur.lookY, target.lookY, k);
+          cur.fov = lerp(cur.fov, target.fov, k);
+          cur.rotDeg += dRot * k;
+          applyPose(cur);
+          if (Math.abs(cur.camY - target.camY) > 0.002 || Math.abs(cur.camZ - target.camZ) > 0.002 ||
+              Math.abs(cur.lookY - target.lookY) > 0.002 || Math.abs(cur.fov - target.fov) > 0.05 ||
+              Math.abs(dRot) > 0.2) {
+            moving = true;
+          }
+        } else {
+          // Cierre: mostrar al guardián con un giro lento de presentación.
+          camera.position.set(0, 0.6, 6.9);
+          camera.lookAt(0, 0, 0);
+          if (guardianPivot) { guardianPivot.rotation.y += 0.0035; moving = true; }
+        }
+
+        renderer.render(scene, camera);
+        if (moving && visible) raf = requestAnimationFrame(frame);
+      }
+
+      const io = new IntersectionObserver((e) => {
+        visible = e[0].isIntersecting;
+        if (visible) wake();
+      }, { threshold: 0 });
+      io.observe(root);
+
+      // API por eventos
+      window.addEventListener('targon:climb', (ev: Event) => {
+        const d = (ev as CustomEvent).detail || {};
+        manualPose = null; // vuelve al ascenso interpolado
+        if (typeof d.total === 'number') total = d.total;
+        if (typeof d.step === 'number') targetStep = Math.max(0, Math.min(total, d.step));
+        if (mode !== 'climb') { mode = 'climb'; if (guardianPivot) guardianPivot.visible = false; mountGroup.visible = true; setFov(FOV_CLIMB); }
+        wake();
+      });
+
+      // Control directo de una pose (panel de tuning en vivo).
+      window.addEventListener('targon:pose', (ev: Event) => {
+        const d = (ev as CustomEvent).detail || {};
+        if (mode !== 'climb') { mode = 'climb'; if (guardianPivot) guardianPivot.visible = false; mountGroup.visible = true; }
+        manualPose = d;
+        wake();
+      });
+
+      window.addEventListener('targon:summit', (ev: Event) => {
+        const d = (ev as CustomEvent).detail || {};
+        if (d.color) {
+          const c = new THREE.Color(d.color);
+          accent.color = c;
+          key.color = new THREE.Color(0xffffff).lerp(c, 0.25);
+        }
+        renderer.toneMappingExposure = 1.25; // más tenue tras el texto del resultado
+        // Transición: fundir el canvas, cambiar de modelo, volver a fundir.
+        root.classList.add('is-swapping');
+        window.setTimeout(() => {
+          mode = 'summit';
+          setFov(FOV_SUMMIT);
+          mountGroup.visible = false;
+          if (guardianPivot) { guardianPivot.visible = true; guardianPivot.rotation.set(0, 0, 0); }
+          root.classList.remove('is-swapping');
+          wake();
+        }, 480);
+      });
+
+      window.addEventListener('targon:reset', () => {
+        root.classList.add('is-swapping');
+        window.setTimeout(() => {
+          mode = 'climb'; targetStep = 0; curFrac = 0;
+          setFov(FOV_CLIMB);
+          if (guardianPivot) guardianPivot.visible = false;
+          mountGroup.visible = true;
+          accent.color = new THREE.Color(0x5ba4e4);
+          key.color = new THREE.Color(0xeaf0ff);
+          renderer.toneMappingExposure = 1.7;
+          root.classList.remove('is-swapping');
+          wake();
+        }, 480);
+      });
+
+      function resize() {
+        const w = root!.clientWidth || 1, h = root!.clientHeight || 1;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        wake();
+      }
+      let rt: number;
+      window.addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(resize, 150); });
+    })().catch((e) => {
+      console.error('[TargonClimb] init', e);
+      loader.querySelector('.climb__txt')!.textContent = 'No se pudo invocar el monte';
+    });
+  }
+</script>

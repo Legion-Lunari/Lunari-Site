@@ -1,0 +1,127 @@
+---
+/**
+ * Starfield — cielo estrellado ambiental de bajo costo.
+ * Dibuja estrellas con parpadeo suave sobre un canvas fijo.
+ * Respeta prefers-reduced-motion (dibuja estático, sin animar).
+ */
+---
+
+<canvas id="starfield" aria-hidden="true"></canvas>
+
+<style>
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('starfield') as HTMLCanvasElement | null;
+  if (canvas) {
+    const ctx = canvas.getContext('2d')!;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let stars: { x: number; y: number; r: number; base: number; tw: number; ph: number; hue: string }[] = [];
+    let shooting: { x: number; y: number; vx: number; vy: number; life: number; max: number }[] = [];
+    let w = 0, h = 0, dpr = 1;
+    let nextShoot = 3500;
+
+    const hues = ['#eef0ff', '#a99de0', '#5ba4e4', '#8c7be8'];
+
+    function spawnShooting(t: number) {
+      // Estrella fugaz esporádica que cruza la parte alta del cielo.
+      const startX = Math.random() * w * 0.6;
+      const startY = Math.random() * h * 0.4;
+      const speed = 9 + Math.random() * 6;
+      shooting.push({ x: startX, y: startY, vx: speed, vy: speed * 0.45, life: 0, max: 60 + Math.random() * 30 });
+      nextShoot = t + 4500 + Math.random() * 7000;
+    }
+
+    function drawShooting() {
+      for (let i = shooting.length - 1; i >= 0; i--) {
+        const s = shooting[i];
+        s.x += s.vx; s.y += s.vy; s.life++;
+        const p = s.life / s.max;
+        const fade = Math.sin(p * Math.PI); // aparece y desaparece
+        const len = 90;
+        const grad = ctx.createLinearGradient(s.x, s.y, s.x - s.vx / speedNorm(s) * len, s.y - s.vy / speedNorm(s) * len);
+        grad.addColorStop(0, `rgba(238,240,255,${0.9 * fade})`);
+        grad.addColorStop(1, 'rgba(140,123,232,0)');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x - s.vx / speedNorm(s) * len, s.y - s.vy / speedNorm(s) * len);
+        ctx.stroke();
+        if (s.life >= s.max || s.x > w + 100 || s.y > h + 100) shooting.splice(i, 1);
+      }
+    }
+    function speedNorm(s: { vx: number; vy: number }) {
+      return Math.hypot(s.vx, s.vy) || 1;
+    }
+
+    function build() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas!.clientWidth;
+      h = canvas!.clientHeight;
+      canvas!.width = Math.floor(w * dpr);
+      canvas!.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.min(220, Math.floor((w * h) / 8000));
+      stars = Array.from({ length: count }, () => {
+        const r = Math.random();
+        return {
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: r < 0.85 ? Math.random() * 1.1 + 0.3 : Math.random() * 1.8 + 1.1,
+          base: Math.random() * 0.5 + 0.25,
+          tw: Math.random() * 0.5 + 0.2,
+          ph: Math.random() * Math.PI * 2,
+          hue: hues[Math.floor(Math.random() * hues.length)],
+        };
+      });
+    }
+
+    function draw(t: number) {
+      ctx.clearRect(0, 0, w, h);
+      for (const s of stars) {
+        const a = reduced ? s.base : s.base + Math.sin(t / 900 + s.ph) * s.tw * 0.5;
+        ctx.globalAlpha = Math.max(0, Math.min(1, a));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = s.hue;
+        if (s.r > 1.2) {
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = s.hue;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
+
+      // Estrellas fugaces (sólo con movimiento permitido)
+      if (!reduced) {
+        if (t > nextShoot) spawnShooting(t);
+        if (shooting.length) drawShooting();
+      }
+
+      if (!reduced) requestAnimationFrame(draw);
+    }
+
+    let resizeTimer: number;
+    function onResize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => { build(); draw(0); }, 150);
+    }
+
+    build();
+    if (reduced) draw(0);
+    else requestAnimationFrame(draw);
+    window.addEventListener('resize', onResize);
+  }
+</script>

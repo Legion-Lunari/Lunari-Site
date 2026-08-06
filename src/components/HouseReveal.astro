@@ -1,0 +1,328 @@
+---
+/**
+ * HouseReveal — escenario 3D del revelado de la casa (resultado del quiz).
+ * Modelo principal Targon Peak Inclined, guiado por scroll a través de
+ * revealPoses. En el paso final transiciona al Peak Targon con el logo
+ * de la casa flotando en el centro.
+ * Controlado por eventos: reveal:active, reveal:house, reveal:progress, reveal:pose.
+ */
+interface Props {
+  inclinedSrc?: string;
+  peakSrc?: string;
+}
+const {
+  inclinedSrc = '/models/targon-peak-inclined.glb',
+  peakSrc = '/models/peak-targon.glb',
+} = Astro.props;
+---
+
+<div class="reveal3d" data-incl={inclinedSrc} data-peak={peakSrc} aria-hidden="true">
+  <canvas class="reveal3d__canvas"></canvas>
+  <div class="reveal3d__logo" data-reveal-logo></div>
+  <div class="reveal3d__scrim"></div>
+  <div class="reveal3d__loader" data-reveal-loader>
+    <span class="reveal3d__ring"></span>
+    <span class="reveal3d__txt">Revelando tu casa</span>
+  </div>
+</div>
+
+<style>
+  .reveal3d {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s var(--ease-out), visibility 0.8s;
+  }
+  .reveal3d.is-active { opacity: 1; visibility: visible; }
+  .reveal3d__canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+    z-index: 1;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  .reveal3d.is-swapping .reveal3d__canvas { opacity: 0; }
+
+  .reveal3d__logo {
+    position: absolute;
+    left: 50%; top: 44%;
+    --lx: 0px; --ly: 0px;
+    transform: translate(calc(-50% + var(--lx)), calc(-50% + var(--ly)));
+    width: clamp(180px, 26vw, 340px);
+    aspect-ratio: 1;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 1s var(--ease-out);
+    pointer-events: none;
+  }
+  .reveal3d__logo.is-shown { opacity: 1; }
+  .reveal3d__logo :global(img) {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    filter: invert(1) drop-shadow(0 0 26px var(--house-color, var(--celeste-400)));
+    animation: revealLogoFloat 6s ease-in-out infinite;
+  }
+  @keyframes revealLogoFloat {
+    0%, 100% { transform: translateY(-2%) rotate(-1deg); }
+    50%      { transform: translateY(3%) rotate(1deg); }
+  }
+
+  .reveal3d__scrim {
+    position: absolute; inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(130% 90% at 50% 42%, transparent 34%, color-mix(in srgb, var(--bg) 66%, transparent) 100%),
+      linear-gradient(to bottom, var(--bg) 2%, transparent 24%, transparent 74%, var(--bg) 100%);
+  }
+  .reveal3d__loader {
+    position: absolute; inset: 0;
+    z-index: 3;
+    display: grid; place-content: center; justify-items: center; gap: 1rem;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  .reveal3d__loader.is-hidden { opacity: 0; }
+  .reveal3d__ring {
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--lavender-400) 25%, transparent);
+    border-top-color: var(--celeste-400);
+    animation: reveal3dSpin 1s linear infinite;
+  }
+  .reveal3d__txt {
+    font-family: var(--font-body); font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-muted);
+  }
+  @keyframes reveal3dSpin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal3d__ring { animation: none; }
+    .reveal3d__logo :global(img) { animation: none; }
+  }
+</style>
+
+<script>
+  import { revealPoses, peakPose } from '../data/reveal';
+
+  const root = document.querySelector<HTMLElement>('.reveal3d');
+  if (root) {
+    const canvas = root.querySelector<HTMLCanvasElement>('.reveal3d__canvas')!;
+    const loaderEl = root.querySelector<HTMLElement>('[data-reveal-loader]')!;
+    const logoEl = root.querySelector<HTMLElement>('[data-reveal-logo]')!;
+    const inclinedSrc = root.dataset.incl!;
+    const peakSrc = root.dataset.peak!;
+
+    // Estado (módulo) — los listeners son síncronos aunque el modelo cargue tarde.
+    let active = false, progress = 0, manualPose: any = null;
+    let houseColor: string | null = null;
+    const ref: {
+      wake: () => void; applyHouse: () => void; updateFinal: () => void;
+      setPeak: (on: boolean) => void;
+    } = { wake: () => {}, applyHouse: () => {}, updateFinal: () => {}, setPeak: () => {} };
+
+    function setLogoOffset(x: number, y: number) {
+      logoEl.style.setProperty('--lx', (x || 0) + 'px');
+      logoEl.style.setProperty('--ly', (y || 0) + 'px');
+    }
+
+    window.addEventListener('reveal:active', (ev: Event) => {
+      active = (ev as CustomEvent).detail?.on !== false;
+      root!.classList.toggle('is-active', active);
+      if (active) ref.wake();
+    });
+    window.addEventListener('reveal:house', (ev: Event) => {
+      const d = (ev as CustomEvent).detail || {};
+      if (d.color) houseColor = d.color;
+      if (d.logo) logoEl.innerHTML = `<img src="${d.logo}" alt="" />`;
+      ref.applyHouse();
+    });
+    window.addEventListener('reveal:progress', (ev: Event) => {
+      progress = Math.min(1, Math.max(0, (ev as CustomEvent).detail?.p ?? 0));
+      manualPose = null;
+      ref.updateFinal();
+      ref.wake();
+    });
+    window.addEventListener('reveal:pose', (ev: Event) => {
+      const d = (ev as CustomEvent).detail || {};
+      manualPose = d;
+      if (d.tx !== undefined || d.ty !== undefined) setLogoOffset(d.tx || 0, d.ty || 0);
+      ref.wake();
+    });
+    // Fuerza el modelo final (Peak Targon) + logo (para el editor).
+    window.addEventListener('reveal:peak', (ev: Event) => {
+      ref.setPeak((ev as CustomEvent).detail?.on !== false);
+    });
+    window.addEventListener('reveal:init', init, { once: true });
+
+    let inited = false;
+    async function init() {
+      if (inited) return; inited = true;
+      const THREE = await import('three');
+      const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+      const { MeshoptDecoder } = await import('three/examples/jsm/libs/meshopt_decoder.module.js');
+
+      const NIGHT = 0x0a0b24;
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(NIGHT, 10, 24);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.5;
+      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+      const setFov = (f: number) => { camera.fov = f; camera.updateProjectionMatrix(); };
+
+      scene.add(new THREE.HemisphereLight(0xbcccff, 0x2f2a5c, 1.35));
+      scene.add(new THREE.AmbientLight(0xaebfff, 0.6));
+      const key = new THREE.DirectionalLight(0xeaf0ff, 2.4);
+      key.position.set(-4, 7, 5); scene.add(key);
+      const rim = new THREE.DirectionalLight(0x9d8cf0, 1.4);
+      rim.position.set(6, 2, -5); scene.add(rim);
+      const accent = new THREE.PointLight(0x5ba4e4, 1.8, 44, 2);
+      accent.position.set(3, 1, 6); scene.add(accent);
+
+      const gltf = new GLTFLoader();
+      gltf.setMeshoptDecoder(MeshoptDecoder);
+      const load = (src: string) => new Promise<any>((res, rej) => gltf.load(src, res, undefined, rej));
+      function fit(model: any, target: number) {
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const scale = target / Math.max(size.x, size.y, size.z);
+        model.scale.setScalar(scale);
+        model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+      }
+
+      const inclinedGroup = new THREE.Group();
+      const peakGroup = new THREE.Group();
+      peakGroup.visible = false;
+      scene.add(inclinedGroup); scene.add(peakGroup);
+
+      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+      const lerpAngle = (a: number, b: number, t: number) => a + (((b - a + 540) % 360) - 180) * t;
+      const DEG = Math.PI / 180;
+
+      function poseAt(frac: number) {
+        const t = Math.min(1, Math.max(0, frac)) * (revealPoses.length - 1);
+        const i = Math.floor(t), f = t - i;
+        const a = revealPoses[i], b = revealPoses[Math.min(revealPoses.length - 1, i + 1)];
+        return {
+          camY: lerp(a.camY, b.camY, f), camZ: lerp(a.camZ, b.camZ, f),
+          lookY: lerp(a.lookY, b.lookY, f), rotDeg: lerpAngle(a.rotDeg, b.rotDeg, f),
+          fov: lerp(a.fov, b.fov, f),
+        };
+      }
+
+      // estado local del render (progress/manualPose/active son de módulo)
+      let activeModel: 'inclined' | 'peak' = 'inclined';
+      const cur: any = { ...poseAt(0) };
+      let raf = 0;
+
+      const load1 = await load(inclinedSrc);
+      fit(load1.scene, 4.6); inclinedGroup.add(load1.scene);
+      loaderEl.classList.add('is-hidden');
+      // precarga el peak final
+      load(peakSrc).then((g) => { fit(g.scene, 4.6); peakGroup.add(g.scene); }).catch((e) => console.error('[Reveal] peak', e));
+
+      function applyPose(p: any) {
+        if (camera.fov !== p.fov) setFov(p.fov);
+        camera.position.set(0, p.camY, p.camZ);
+        camera.lookAt(0, p.lookY, 0);
+        const g = activeModel === 'inclined' ? inclinedGroup : peakGroup;
+        g.rotation.y = p.rotDeg * DEG;
+      }
+
+      function wake() { if (!raf && active) raf = requestAnimationFrame(frame); }
+      function frame() {
+        raf = 0;
+        let target = manualPose || (activeModel === 'peak' ? peakPose : poseAt(progress));
+        const k = 0.1;
+        const dRot = ((target.rotDeg - cur.rotDeg + 540) % 360) - 180;
+        cur.camY = lerp(cur.camY, target.camY, k);
+        cur.camZ = lerp(cur.camZ, target.camZ, k);
+        cur.lookY = lerp(cur.lookY, target.lookY, k);
+        cur.fov = lerp(cur.fov, target.fov, k);
+        cur.rotDeg += dRot * k;
+        // giro lento continuo del peak final para lucirlo
+        if (activeModel === 'peak') { peakGroup.rotation.y += 0.0025; }
+        applyPose(cur);
+        renderer.render(scene, camera);
+        const settled = Math.abs(cur.camY - target.camY) < 0.002 && Math.abs(cur.camZ - target.camZ) < 0.002 &&
+          Math.abs(cur.lookY - target.lookY) < 0.002 && Math.abs(cur.fov - target.fov) < 0.05 && Math.abs(dRot) < 0.2;
+        if ((!settled || activeModel === 'peak') && active) raf = requestAnimationFrame(frame);
+      }
+
+      // ¿el paso final? (último tramo del scroll) → mostrar Peak Targon + logo
+      function updateFinal() {
+        const finalStart = 1 - 1 / (revealPoses.length - 1); // último tramo
+        const inFinal = progress >= finalStart + (1 - finalStart) * 0.5;
+        if (inFinal && activeModel === 'inclined' && peakGroup.children.length) {
+          activeModel = 'peak';
+          root!.classList.add('is-swapping');
+          window.setTimeout(() => {
+            inclinedGroup.visible = false; peakGroup.visible = true;
+            peakGroup.rotation.set(0, 0, 0);
+            root!.classList.remove('is-swapping');
+            logoEl.classList.add('is-shown');
+            wake();
+          }, 460);
+        } else if (!inFinal && activeModel === 'peak') {
+          activeModel = 'inclined';
+          inclinedGroup.visible = true; peakGroup.visible = false;
+          logoEl.classList.remove('is-shown');
+        }
+      }
+
+      // Fuerza el modelo final (Peak Targon) + logo, o vuelve al inclinado.
+      function setPeak(on: boolean) {
+        if (on && activeModel !== 'peak' && peakGroup.children.length) {
+          activeModel = 'peak';
+          inclinedGroup.visible = false; peakGroup.visible = true;
+          peakGroup.rotation.set(0, 0, 0);
+          logoEl.classList.add('is-shown');
+        } else if (!on && activeModel !== 'inclined') {
+          activeModel = 'inclined';
+          inclinedGroup.visible = true; peakGroup.visible = false;
+          logoEl.classList.remove('is-shown');
+        }
+        wake();
+      }
+
+      // Aplica el color/logo de la casa y reinicia el estado del modelo.
+      function applyHouse() {
+        if (houseColor) {
+          const c = new THREE.Color(houseColor);
+          accent.color = c;
+          key.color = new THREE.Color(0xffffff).lerp(c, 0.2);
+        }
+        activeModel = 'inclined';
+        inclinedGroup.visible = true;
+        peakGroup.visible = false;
+        logoEl.classList.remove('is-shown');
+        Object.assign(cur, poseAt(progress));
+        wake();
+      }
+
+      function resize() {
+        const w = root!.clientWidth || 1, h = root!.clientHeight || 1;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h; camera.updateProjectionMatrix();
+        wake();
+      }
+
+      // Conecta el estado del módulo con el render y aplica lo pendiente.
+      ref.wake = wake;
+      ref.applyHouse = applyHouse;
+      ref.updateFinal = updateFinal;
+      ref.setPeak = setPeak;
+      setLogoOffset(peakPose.tx, peakPose.ty);
+      resize();
+      if (houseColor) applyHouse();
+      updateFinal();
+      wake();
+
+      let rt: number;
+      window.addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(resize, 150); });
+    }
+  }
+</script>
