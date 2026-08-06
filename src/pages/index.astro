@@ -330,6 +330,25 @@ const vibes = [
     .hero__title { font-size: clamp(2.6rem, 1.6rem + 6vw, 4rem); }
   }
 
+  /* Puente entre el hero (fondo --bg sólido) y las secciones (fondo fijo visible):
+     desvanece el --bg del hero hacia la textura de estrellas para evitar el corte
+     duro en la costura. Va tras el fondo fijo (z<0) y bajo el texto de la sección. */
+  #nosotras::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 60vh;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      var(--bg) 0%,
+      color-mix(in srgb, var(--bg) 65%, transparent) 30%,
+      color-mix(in srgb, var(--bg) 28%, transparent) 62%,
+      transparent 100%
+    );
+  }
+
   .intro__title { font-size: var(--step-2); }
 
   /* Pilares */

@@ -649,6 +649,8 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   @media (max-width: 760px) {
     .quiz-question, .quiz-question.is-left, .quiz-question.is-right {
       max-width: 100%; margin-inline: auto; text-align: center;
+      /* En móvil se ignora el desfase de pose: la pregunta va siempre centrada */
+      transform: none;
     }
     .quiz-question__text { text-align: center; }
   }
@@ -979,6 +981,8 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   @media (max-width: 760px) {
     .reveal__cap, .reveal__cap.is-left, .reveal__cap.is-right {
       left: 50%; width: min(100% - var(--gutter) * 2, 520px); text-align: center;
+      /* En móvil se ignora el desfase de pose: cada texto va centrado en pantalla */
+      transform: translate(-50%, -50%);
     }
   }
 

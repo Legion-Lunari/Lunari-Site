@@ -110,7 +110,7 @@ const DISCORD_URL = 'https://discord.com/invite/j2mEbRg9jc';
     display: none;
     flex-direction: column;
     gap: 5px;
-    width: 42px; height: 42px;
+    width: 44px; height: 44px;
     align-items: center; justify-content: center;
     background: transparent;
     border: 1px solid var(--border);
@@ -130,14 +130,19 @@ const DISCORD_URL = 'https://discord.com/invite/j2mEbRg9jc';
     flex-direction: column;
     gap: 0.4rem;
     padding: 1rem var(--gutter) 1.6rem;
-    background: color-mix(in srgb, var(--night-900) 92%, transparent);
-    backdrop-filter: blur(16px);
+    /* Mismo vidrio que la barra de navegación normal (.nav.is-scrolled) */
+    background: color-mix(in srgb, var(--night-900) 50%, transparent);
+    backdrop-filter: blur(14px) saturate(0.5);
     border-bottom: 1px solid var(--border-soft);
   }
   .nav__mobile-link {
     padding: 0.8em 0.4em;
-    font-family: var(--font-display);
-    font-size: var(--step-1);
+    /* Misma tipografía que .nav__link (barra normal) */
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border-soft);
   }
@@ -145,7 +150,7 @@ const DISCORD_URL = 'https://discord.com/invite/j2mEbRg9jc';
   .nav__mobile-cta { margin-top: 0.8rem; justify-content: center; }
 
   @media (max-width: 820px) {
-    .nav__links, .nav__cta { display: nonenav__brand; }
+    .nav__links, .nav__cta { display: none; }
     .nav__toggle { display: flex; }
   }
 </style>
