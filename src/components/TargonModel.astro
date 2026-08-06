@@ -1,6 +1,6 @@
 ---
 /**
- * TargonModel — el Monte Targon en 3D (Three.js), como pieza central del hero.
+ * TargonModel: el Monte Targon en 3D (Three.js), como pieza central del hero.
  * Bien iluminado, encuadrado sobre la cima; la cámara DESCIENDE la montaña
  * conforme se hace scroll (momento focal). El plano inferior del modelo se
  * oculta con niebla + máscara. Carga diferida, pausa fuera de vista,
@@ -77,15 +77,12 @@ const { src = '/models/mount-targon.glb', class: cls = '' } = Astro.props;
     const src = mount.dataset.targonSrc || '/models/mount-targon.glb';
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // El hero está siempre en el primer viewport: arranca en cuanto el navegador
+    // queda libre (sin depender de IntersectionObserver, que puede tardar).
     let started = false;
-    const io = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting) && !started) {
-        started = true;
-        io.disconnect();
-        init();
-      }
-    }, { rootMargin: '300px' });
-    io.observe(mount);
+    const kick = () => { if (!started) { started = true; init(); } };
+    if ('requestIdleCallback' in window) requestIdleCallback(kick, { timeout: 700 });
+    else setTimeout(kick, 120);
 
     async function init() {
       const THREE = await import('three');
@@ -137,12 +134,12 @@ const { src = '/models/mount-targon.glb', class: cls = '' } = Astro.props;
           const size = box.getSize(new THREE.Vector3());
           const center = box.getCenter(new THREE.Vector3());
           const maxDim = Math.max(size.x, size.y, size.z);
-          const scale = 5.4 / maxDim;               // más grande / zoomeado
+          const scale = 6.0 / maxDim;               // más grande / zoomeado
           model.scale.setScalar(scale);
-          // Centrar en X/Z; leve descenso para dar aire a la cima
+          // Centrar en X/Z; se baja un poco para dar aire a la cima
           model.position.x = -center.x * scale;
           model.position.z = -center.z * scale;
-          model.position.y = -center.y * scale - size.y * scale * 0.05;
+          model.position.y = -center.y * scale - size.y * scale * 0.14;
           pivot.add(model);
 
           loader.classList.add('is-hidden');
@@ -198,10 +195,12 @@ const { src = '/models/mount-targon.glb', class: cls = '' } = Astro.props;
         lookAt.set(0, lerp(CAM.lookTop, CAM.lookBottom, e), 0);
         camera.lookAt(lookAt);
 
-        // El monte se desvanece hacia el final del descenso, dejando la aurora.
-        const fade = Math.max(0, Math.min(1, (curP - 0.55) / 0.4));
-        mount!.style.opacity = String(1 - fade);
-        if (fade < 1) renderer.render(scene, camera);
+        // El monte se atenúa hacia el final del descenso pero no desaparece del
+        // todo dentro del hero (queda de fondo tras "Honesta, amigable y mágica").
+        const FADE_FLOOR = 0.4;
+        const fade = Math.max(0, Math.min(1, (curP - 0.6) / 0.35));
+        mount!.style.opacity = String(1 - fade * (1 - FADE_FLOOR));
+        renderer.render(scene, camera);
 
         if (curP !== scrollP && visible) raf = requestAnimationFrame(frame);
       }

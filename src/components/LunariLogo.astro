@@ -1,0 +1,38 @@
+---
+/**
+ * LunariLogo: el logo de la Legion flotando con brillo lunar.
+ * Mismo tratamiento que los logos de casa en el revelado del quiz.
+ */
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+
+<div class={`lunari-logo ${cls}`} aria-hidden="true">
+  <img src="/legion-lunari-logo.svg" alt="" width="300" height="300" />
+</div>
+
+<style>
+  .lunari-logo {
+    width: clamp(150px, 22vw, 240px);
+    aspect-ratio: 1;
+    margin-inline: auto;
+  }
+  .lunari-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter:
+      drop-shadow(0 0 26px color-mix(in srgb, var(--celeste-400) 60%, transparent))
+      drop-shadow(0 0 60px color-mix(in srgb, var(--lavender-400) 38%, transparent));
+    animation: lunariLogoFloat 6s ease-in-out infinite;
+  }
+  @keyframes lunariLogoFloat {
+    0%, 100% { transform: translateY(-3%) rotate(-1.5deg); }
+    50%      { transform: translateY(3%) rotate(1.5deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lunari-logo img { animation: none; }
+  }
+</style>

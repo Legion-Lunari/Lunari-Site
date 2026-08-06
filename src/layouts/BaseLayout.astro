@@ -4,13 +4,14 @@ import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import Starfield from '../components/Starfield.astro';
 import NorthernLights from '../components/NorthernLights.astro';
+import SocialBubble from '../components/SocialBubble.astro';
 
 interface Props {
   title?: string;
   description?: string;
 }
 const {
-  title = 'Legion Lunari — Comunidad LoL/LAN para invocadoras',
+  title = 'Legion Lunari - Comunidad LoL para invocadoras',
   description = 'Legion Lunari es una comunidad de Discord exclusiva para mujeres de League of Legends (LAN): honesta, amigable y mágica. Encuentra tu casa entre las estrellas.',
 } = Astro.props;
 ---
@@ -46,6 +47,7 @@ const {
       <slot />
     </main>
     <SiteFooter />
+    <SocialBubble />
 
     <script>
       // Reveal al scroll
@@ -63,6 +65,12 @@ const {
           { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
         );
         reveals.forEach((el) => io.observe(el));
+        // Seguro: si el IntersectionObserver no reacciona (p. ej. bajo carga),
+        // muéstralos todos para no dejar contenido invisible.
+        setTimeout(() => {
+          if (![...reveals].some((el) => el.classList.contains('is-visible')))
+            reveals.forEach((el) => el.classList.add('is-visible'));
+        }, 3000);
       }
 
       // Parallax de la luna con el puntero

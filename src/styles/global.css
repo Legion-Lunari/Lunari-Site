@@ -1,4 +1,12 @@
-/* Legion Lunari — sistema de diseño: el cielo nocturno de la Legion */
+/* Legion Lunar sistema de diseño */
+
+/* Fuente de marca para el nombre "Legion Lunari" */
+@font-face {
+  font-family: 'Lunari Display';
+  src: url('/fonts/Mostlatest.ttf') format('truetype');
+  font-weight: 400 700;
+  font-display: swap;
+}
 
 /* Tokens */
 :root {
@@ -32,6 +40,7 @@
   /* Tipografía */
   --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
   --font-body: 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-brand: 'Lunari Display', var(--font-display);
 
   /* Escala de tipo (fluida) */
   --step--1: clamp(0.83rem, 0.79rem + 0.2vw, 0.94rem);

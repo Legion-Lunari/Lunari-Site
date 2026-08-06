@@ -1,12 +1,13 @@
 ---
 /**
- * Starfield — cielo estrellado ambiental de bajo costo.
- * Dibuja estrellas con parpadeo suave sobre un canvas fijo.
- * Respeta prefers-reduced-motion (dibuja estático, sin animar).
+ * Starfield: cielo estrellado animado en WebGL (estrellas + nebulosa horneada).
+ * Fondo fijo a baja opacidad; se congela con prefers-reduced-motion.
+ * Textura del dome en /detail.webp; la paleta va embebida como data URI.
  */
 ---
 
 <canvas id="starfield" aria-hidden="true"></canvas>
+<div class="starfield-veil" aria-hidden="true"></div>
 
 <style>
   #starfield {
@@ -15,113 +16,527 @@
     z-index: -1;
     width: 100%;
     height: 100%;
+    display: block;
     pointer-events: none;
+    /* Baja opacidad: es sólo el fondo, deja ver la aurora y el degradado */
+    opacity: 0.55;
+  }
+  /* Velo que oscurece el fondo al pasar el hero (opacidad ligada al scroll) */
+  .starfield-veil {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--bg-deep);
+    opacity: 0;
   }
 </style>
 
 <script>
+  // Velo: oscurece el fondo conforme se deja atrás el hero (independiente del WebGL).
+  const veil = document.querySelector<HTMLElement>('.starfield-veil');
+  if (veil) {
+    const hero = document.querySelector<HTMLElement>('.hero');
+    const VEIL_MAX = 0.6;
+    let vtick = false;
+    const updateVeil = () => {
+      vtick = false;
+      const vh = innerHeight || 1;
+      const start = hero ? Math.max(vh * 0.4, hero.offsetHeight - vh) : vh * 0.4;
+      const p = Math.min(1, Math.max(0, (scrollY - start) / vh));
+      veil.style.opacity = String(p * VEIL_MAX);
+    };
+    addEventListener('scroll', () => { if (!vtick) { vtick = true; requestAnimationFrame(updateVeil); } }, { passive: true });
+    addEventListener('resize', updateVeil, { passive: true });
+    updateVeil();
+  }
+
+  const CFG = {
+    count: 14000,
+    radius: 25,
+    fov: 65,
+
+    main: { pointSizeMin: 0.0022, pointSizeMax: 0.0080, opacity: 1.5, speed: 1.0 },
+    bg:   { pointSizeMin: 0.0012, pointSizeMax: 0.0026, opacity: 0.42, speed: 0.55 },
+
+    yawSpeed: 0.012,
+    pitchAmp: 0.06,
+    pitchSpeed: 0.05,
+    twinkle: 1.0,
+
+    nebula: {
+      bakeW: 512, bakeH: 256,
+      octaves: 10,
+      spatialFrequency: 2.1,
+      brightness: 2.0,
+      contrast: 0.06,
+      pow: 3.0,
+      falloff: 0.618,
+      disc: 0.0,
+      intensity: 0.42,
+    },
+    grain: 0.03,
+    vignette: 0.55,
+    paletteFlipY: true,
+
+    detail: { src: '/detail.webp', amount: 1.0, yaw: 0.0, pitch: -0.25 },
+  };
+
+  // Paleta del sitio (32x32) embebida; el horneado de la nebulosa depende de ella.
+  const PALETTE_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFumlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDYgNzkuMTY0NzUzLCAyMDIxLzAyLzE1LTExOjUyOjEzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMyAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIyLTA1LTAzVDA5OjMyOjI5KzAyOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIyLTA1LTAzVDEwOjA2OjM1KzAyOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMi0wNS0wM1QxMDowNjozNSswMjowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6YmVhMDU2NjktNGYwMi00MjQ0LWE0ZjctM2ZiNWQ2ZDc2YjZkIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjgwZjhlNjQ5LTJmODAtMzA0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';
+
+  const QUAD_VS = `
+attribute vec2 aPos;
+varying vec2 vUV;
+void main(){ vUV = aPos * .5 + .5; gl_Position = vec4(aPos, 0., 1.); }
+`;
+
+  const BAKE_FS = `
+precision highp float;
+varying vec2 vUV;
+uniform float _Falloff;
+uniform float _SpatialFrequency;
+uniform float _Brightness;
+uniform float _Contrast;
+uniform float _Pow;
+uniform float _Disc;
+uniform float _Intensity;
+uniform vec3  _ColorBase;
+uniform sampler2D uPalette;
+vec2 hash21(float p) {
+  p *= 1234.1234;
+  vec3 p3 = fract(vec3(p) * vec3(.1031, .1030, .0973));
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.xx + p3.yz) * p3.zy);
+}
+vec3 color2(in float x) {
+  return texture2D(uPalette, hash21(x)).rgb * sqrt(x + .4);
+}
+vec3 mod289(vec3 x){ return x - floor(x / 289.0) * 289.0; }
+vec4 mod289(vec4 x){ return x - floor(x / 289.0) * 289.0; }
+vec4 permute(vec4 x){ return mod289((x * 34.0 + 1.0) * x); }
+vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - r * 0.85373472095314; }
+vec4 snoise(vec3 v) {
+  const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+  vec3 i  = floor(v + dot(v, vec3(C.y)));
+  vec3 x0 = v - i + dot(i, vec3(C.x));
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.x;
+  vec3 x2 = x0 - i2 + C.y;
+  vec3 x3 = x0 - 0.5;
+  i = mod289(i);
+  vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                                 + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                                 + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  vec4 j = p - 49.0 * floor(p / 49.0);
+  vec4 x_ = floor(j / 7.0);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = (x_ * 2.0 + 0.5) / 7.0 - 1.0;
+  vec4 y = (y_ * 2.0 + 0.5) / 7.0 - 1.0;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0) * 2.0 + 1.0;
+  vec4 s1 = floor(b1) * 2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+  vec3 g0 = vec3(a0.xy, h.x);
+  vec3 g1 = vec3(a0.zw, h.y);
+  vec3 g2 = vec3(a1.xy, h.z);
+  vec3 g3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(g0,g0), dot(g1,g1), dot(g2,g2), dot(g3,g3)));
+  g0 *= norm.x; g1 *= norm.y; g2 *= norm.z; g3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  vec4 m2 = m*m, m3 = m2*m, m4 = m2*m2;
+  vec3 grad = -6.0*m3.x*x0*dot(x0,g0) + m4.x*g0
+            + -6.0*m3.y*x1*dot(x1,g1) + m4.y*g1
+            + -6.0*m3.z*x2*dot(x2,g2) + m4.z*g2
+            + -6.0*m3.w*x3*dot(x3,g3) + m4.w*g3;
+  vec4 px = vec4(dot(x0,g0), dot(x1,g1), dot(x2,g2), dot(x3,g3));
+  return 42.0 * vec4(grad, dot(m4, px));
+}
+#define m33 mat3(-0.7373, 0.4562, 0.4980, 0, -0.7373, 0.6754, 0.6754, 0.4980, 0.5437)
+float fbm31(vec3 q) {
+  float a = 1.0, sum = 0.0;
+  for (int i = 0; i < ${'${OCTAVES}'}; i++) {
+    q = m33 * q.zxy;
+    sum += snoise(q / a).x * a;
+    a *= _Falloff;
+  }
+  return sum;
+}
+float nebulaNoise(vec3 p, vec3 n) {
+  float f = fbm31(p * _SpatialFrequency);
+  f += _Brightness;
+  f *= _Contrast;
+  f -= abs(n.y) * _Disc;
+  f = max(f, 0.0);
+  return pow(f, _Pow);
+}
+void main(void) {
+  float lon = (vUV.x * 2.0 - 1.0) * 3.14159265;
+  float lat = (vUV.y - 0.5) * 3.14159265;
+  vec3 n = vec3(cos(lat) * sin(lon), sin(lat), cos(lat) * cos(lon));
+  vec3 c  = nebulaNoise(n,        n) * color2(0.50);
+       c += nebulaNoise(n + 1.0,  n) * color2(1.25);
+       c += nebulaNoise(n + 2.0,  n) * color2(0.85);
+  c = max(c, vec3(0.0)) * _Intensity + _ColorBase;
+  gl_FragColor = vec4(sqrt(c), 1.0);
+}
+`;
+
+  const BG_FS = `
+precision mediump float;
+varying vec2 vUV;
+uniform sampler2D uNebula;
+uniform sampler2D uDetail;
+uniform mat3  uRotation;
+uniform mat3  uDetailOrient;
+uniform float uTanHalfFov;
+uniform float uAspect;
+uniform float uGrain;
+uniform float uVignette;
+uniform float uDetailAmount;
+uniform highp float uTime;
+float hash13(vec3 p3) {
+  p3 = fract(p3 * .1031);
+  p3 += dot(p3, p3.zyx + 31.32);
+  return fract((p3.x + p3.y) * p3.z);
+}
+float hash12(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * .1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
+}
+void main(void) {
+  vec2 ndc = vUV * 2.0 - 1.0;
+  vec3 ray = normalize(vec3(ndc.x * uAspect * uTanHalfFov, ndc.y * uTanHalfFov, -1.0));
+  vec3 d = ray * uRotation;
+  float u = atan(d.x, d.z) / 6.28318530 + 0.5;
+  float v = asin(clamp(d.y, -1.0, 1.0)) / 3.14159265 + 0.5;
+  vec3 c = texture2D(uNebula, vec2(u, v)).rgb;
+  vec3 dd = d * uDetailOrient;
+  if (dd.z > 0.001) {
+    vec2 pd = dd.xy / dd.z;
+    float edge = max(abs(pd.x), abs(pd.y));
+    if (edge < 1.0) {
+      vec3 dc = texture2D(uDetail, pd * 0.5 + 0.5).rgb;
+      dc = max(vec3(0.0), dc * (1.0 - hash12(gl_FragCoord.xy + uTime) / 32.0));
+      c += dc * 0.15 * uDetailAmount * smoothstep(1.0, 0.92, edge);
+    }
+  }
+  vec2 q = vUV - 0.5;
+  c *= 1.0 - dot(q, q) * uVignette;
+  c += (hash13(vec3(gl_FragCoord.xy, uTime)) - 0.33) * uGrain;
+  gl_FragColor = vec4(max(c, vec3(0.0)), 1.0);
+}
+`;
+
+  const STARS_VS = `
+attribute vec4 aData0;
+attribute vec4 aData1;
+#define aPos     aData0.xyz
+#define aRandom  aData0.w
+#define aRandom1 aData1.x
+#define aRandom2 aData1.y
+#define aRandom3 aData1.z
+#define aRandom4 aData1.w
+uniform mat4  uProjection;
+uniform mat3  uRotation;
+uniform float uRadius, uScreenHeight, uPointSizeMin, uPointSizeMax, uOpacity, uTwinkle;
+uniform highp float uTime;
+uniform sampler2D uPalette;
+varying vec4 vColor;
+vec2 hash21(float p) {
+  p *= 1234.1234;
+  vec3 p3 = fract(vec3(p) * vec3(.1031, .1030, .0973));
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.xx + p3.yz) * p3.zy);
+}
+vec3 color2(in float x) {
+  return texture2D(uPalette, hash21(x)).rgb * sqrt(x + .4);
+}
+float light(float r, vec3 p) {
+  return smoothstep(-1., 1., sin(r * uTime * .7 + r * 7.))
+       + 2. * smoothstep(.7, 1., sin(p.z + p.x * 0.5 + uTime * .8));
+}
+void main(void) {
+  vec3 p = uRotation * aPos * uRadius;
+  gl_Position = uProjection * vec4(p, 1.);
+  float size = mix(uPointSizeMin, uPointSizeMax, aRandom);
+  gl_PointSize = size * uScreenHeight;
+  float alpha = uOpacity * min(gl_PointSize, 1.) * aRandom4;
+  float brightness = aRandom2 * (1. + uTwinkle * light(aRandom3, p));
+  vColor = vec4(color2(aRandom1) * brightness, alpha);
+}
+`;
+
+  const STARS_FS = `
+precision mediump float;
+varying vec4 vColor;
+void main(void) {
+  vec2 uv = gl_PointCoord.xy * 2. - 1.;
+  float d = max(1. - length(uv), 0.);
+  float a = d * d;
+  a *= vColor.w;
+  gl_FragColor = vec4(vColor.xyz * a, a);
+}
+`;
+
   const canvas = document.getElementById('starfield') as HTMLCanvasElement | null;
-  if (canvas) {
-    const ctx = canvas.getContext('2d')!;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let stars: { x: number; y: number; r: number; base: number; tw: number; ph: number; hue: string }[] = [];
-    let shooting: { x: number; y: number; vx: number; vy: number; life: number; max: number }[] = [];
-    let w = 0, h = 0, dpr = 1;
-    let nextShoot = 3500;
+  const gl = canvas?.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: true }) || null;
 
-    const hues = ['#eef0ff', '#a99de0', '#5ba4e4', '#8c7be8'];
+  if (canvas && gl) {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function spawnShooting(t: number) {
-      // Estrella fugaz esporádica que cruza la parte alta del cielo.
-      const startX = Math.random() * w * 0.6;
-      const startY = Math.random() * h * 0.4;
-      const speed = 9 + Math.random() * 6;
-      shooting.push({ x: startX, y: startY, vx: speed, vy: speed * 0.45, life: 0, max: 60 + Math.random() * 30 });
-      nextShoot = t + 4500 + Math.random() * 7000;
-    }
+    const compile = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) || 'shader');
+      return s;
+    };
+    const link = (vs: string, fs: string, uniforms: string[], attribs: string[]) => {
+      const p = gl.createProgram()!;
+      gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+      gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+      gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p) || 'link');
+      const u: Record<string, WebGLUniformLocation | null> = {}, a: Record<string, number> = {};
+      uniforms.forEach((n) => (u[n] = gl.getUniformLocation(p, n)));
+      attribs.forEach((n) => (a[n] = gl.getAttribLocation(p, n)));
+      return { p, u, a };
+    };
 
-    function drawShooting() {
-      for (let i = shooting.length - 1; i >= 0; i--) {
-        const s = shooting[i];
-        s.x += s.vx; s.y += s.vy; s.life++;
-        const p = s.life / s.max;
-        const fade = Math.sin(p * Math.PI); // aparece y desaparece
-        const len = 90;
-        const grad = ctx.createLinearGradient(s.x, s.y, s.x - s.vx / speedNorm(s) * len, s.y - s.vy / speedNorm(s) * len);
-        grad.addColorStop(0, `rgba(238,240,255,${0.9 * fade})`);
-        grad.addColorStop(1, 'rgba(140,123,232,0)');
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(s.x, s.y);
-        ctx.lineTo(s.x - s.vx / speedNorm(s) * len, s.y - s.vy / speedNorm(s) * len);
-        ctx.stroke();
-        if (s.life >= s.max || s.x > w + 100 || s.y > h + 100) shooting.splice(i, 1);
+    const bakeProg = link(QUAD_VS, BAKE_FS.replace('${OCTAVES}', String(CFG.nebula.octaves)),
+      ['_Falloff', '_SpatialFrequency', '_Brightness', '_Contrast', '_Pow', '_Disc', '_Intensity',
+        '_ColorBase', 'uPalette'], ['aPos']);
+    const bgProg = link(QUAD_VS, BG_FS,
+      ['uNebula', 'uDetail', 'uRotation', 'uDetailOrient', 'uTanHalfFov', 'uAspect',
+        'uGrain', 'uVignette', 'uDetailAmount', 'uTime'], ['aPos']);
+    const starProg = link(STARS_VS, STARS_FS,
+      ['uProjection', 'uRotation', 'uRadius', 'uScreenHeight', 'uPointSizeMin', 'uPointSizeMax',
+        'uOpacity', 'uTime', 'uTwinkle', 'uPalette'], ['aData0', 'aData1']);
+
+    const quadBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+
+    const makeLayer = (count: number) => {
+      const d0 = new Float32Array(count * 4), d1 = new Float32Array(count * 4);
+      for (let i = 0; i < count; i++) {
+        const z = Math.random() * 2 - 1;
+        const t = Math.random() * Math.PI * 2;
+        const r = Math.sqrt(1 - z * z);
+        const c = Math.random();
+        d0.set([r * Math.cos(t), r * Math.sin(t), z, c * c * c], i * 4);
+        d1.set([Math.random(), Math.random(), Math.random(), Math.random()], i * 4);
       }
-    }
-    function speedNorm(s: { vx: number; vy: number }) {
-      return Math.hypot(s.vx, s.vy) || 1;
+      const mk = (arr: Float32Array) => {
+        const b = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW); return b;
+      };
+      return { b0: mk(d0), b1: mk(d1), count };
+    };
+    const layerMain = makeLayer(CFG.count);
+    const layerBG = makeLayer(CFG.count);
+
+    const paletteTex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, paletteTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+      new Uint8Array([255, 255, 255, 255]));
+
+    let nebulaTex: WebGLTexture | null = null;
+    {
+      const img = new Image();
+      img.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, paletteTex);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, CFG.paletteFlipY);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        nebulaTex = bakeNebula();
+        if (reduced) requestAnimationFrame(loop);
+      };
+      img.src = PALETTE_URI;
     }
 
-    function build() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas!.clientWidth;
-      h = canvas!.clientHeight;
-      canvas!.width = Math.floor(w * dpr);
-      canvas!.height = Math.floor(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.min(220, Math.floor((w * h) / 8000));
-      stars = Array.from({ length: count }, () => {
-        const r = Math.random();
-        return {
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: r < 0.85 ? Math.random() * 1.1 + 0.3 : Math.random() * 1.8 + 1.1,
-          base: Math.random() * 0.5 + 0.25,
-          tw: Math.random() * 0.5 + 0.2,
-          ph: Math.random() * Math.PI * 2,
-          hue: hues[Math.floor(Math.random() * hues.length)],
-        };
-      });
+    const loadDetail = (src: string) => {
+      const tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+        new Uint8Array([0, 0, 0, 255]));
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      const img = new Image();
+      img.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        if (reduced) requestAnimationFrame(loop);
+      };
+      img.onerror = () => console.warn('[Starfield] detail no cargó:', src);
+      img.src = src;
+      return tex;
+    };
+    const detailTex = loadDetail(CFG.detail.src);
+
+    function bakeNebula() {
+      const N = CFG.nebula;
+      const tex = gl!.createTexture();
+      gl!.bindTexture(gl!.TEXTURE_2D, tex);
+      gl!.texImage2D(gl!.TEXTURE_2D, 0, gl!.RGBA, N.bakeW, N.bakeH, 0, gl!.RGBA, gl!.UNSIGNED_BYTE, null);
+      gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MIN_FILTER, gl!.LINEAR);
+      gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MAG_FILTER, gl!.LINEAR);
+      gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_S, gl!.REPEAT);
+      gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_T, gl!.CLAMP_TO_EDGE);
+      const fbo = gl!.createFramebuffer();
+      gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
+      gl!.framebufferTexture2D(gl!.FRAMEBUFFER, gl!.COLOR_ATTACHMENT0, gl!.TEXTURE_2D, tex, 0);
+      gl!.viewport(0, 0, N.bakeW, N.bakeH);
+      gl!.useProgram(bakeProg.p);
+      gl!.disable(gl!.BLEND);
+      gl!.uniform1f(bakeProg.u._Falloff, N.falloff);
+      gl!.uniform1f(bakeProg.u._SpatialFrequency, N.spatialFrequency);
+      gl!.uniform1f(bakeProg.u._Brightness, N.brightness);
+      gl!.uniform1f(bakeProg.u._Contrast, N.contrast);
+      gl!.uniform1f(bakeProg.u._Pow, N.pow);
+      gl!.uniform1f(bakeProg.u._Disc, N.disc);
+      gl!.uniform1f(bakeProg.u._Intensity, N.intensity);
+      gl!.uniform3fv(bakeProg.u._ColorBase, [18 / 255, 24 / 255, 40 / 255]);
+      gl!.activeTexture(gl!.TEXTURE0);
+      gl!.bindTexture(gl!.TEXTURE_2D, paletteTex);
+      gl!.uniform1i(bakeProg.u.uPalette, 0);
+      gl!.bindBuffer(gl!.ARRAY_BUFFER, quadBuf);
+      gl!.enableVertexAttribArray(bakeProg.a.aPos);
+      gl!.vertexAttribPointer(bakeProg.a.aPos, 2, gl!.FLOAT, false, 0, 0);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+      gl!.bindFramebuffer(gl!.FRAMEBUFFER, null);
+      gl!.deleteFramebuffer(fbo);
+      return tex;
     }
 
-    function draw(t: number) {
-      ctx.clearRect(0, 0, w, h);
-      for (const s of stars) {
-        const a = reduced ? s.base : s.base + Math.sin(t / 900 + s.ph) * s.tw * 0.5;
-        ctx.globalAlpha = Math.max(0, Math.min(1, a));
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = s.hue;
-        if (s.r > 1.2) {
-          ctx.shadowBlur = 6;
-          ctx.shadowColor = s.hue;
-        } else {
-          ctx.shadowBlur = 0;
-        }
-        ctx.fill();
+    const proj = new Float32Array(16);
+    const perspective = (fovyDeg: number, aspect: number, near: number, far: number) => {
+      const f = 1 / Math.tan(fovyDeg * Math.PI / 360), nf = 1 / (near - far);
+      proj.fill(0);
+      proj[0] = f / aspect; proj[5] = f;
+      proj[10] = (far + near) * nf; proj[11] = -1; proj[14] = 2 * far * near * nf;
+    };
+    const rot = new Float32Array(9);
+    const rotation = (yaw: number, pitch: number) => {
+      const cy = Math.cos(yaw), sy = Math.sin(yaw);
+      const cx = Math.cos(pitch), sx = Math.sin(pitch);
+      rot[0] = cy; rot[1] = sx * sy; rot[2] = -cx * sy;
+      rot[3] = 0; rot[4] = cx; rot[5] = sx;
+      rot[6] = sy; rot[7] = -sx * cy; rot[8] = cx * cy;
+    };
+
+    const detailOrient = new Float32Array(9);
+    {
+      const yaw = CFG.detail.yaw, pitch = CFG.detail.pitch;
+      const cy = Math.cos(yaw), sy = Math.sin(yaw);
+      const cx = Math.cos(pitch), sx = Math.sin(pitch);
+      detailOrient[0] = cy; detailOrient[1] = sx * sy; detailOrient[2] = -cx * sy;
+      detailOrient[3] = 0; detailOrient[4] = cx; detailOrient[5] = sx;
+      detailOrient[6] = sy; detailOrient[7] = -sx * cy; detailOrient[8] = cx * cy;
+    }
+
+    let vw = 0, vh = 0, aspect = 1;
+    const resize = () => {
+      const dpr = 1; // fondo: 1x basta y evita saturar el compositor
+      const w = Math.round(innerWidth * dpr), h = Math.round(innerHeight * dpr);
+      if (canvas.width === w && canvas.height === h) return;
+      canvas.width = w; canvas.height = h;
+      vw = w; vh = h; aspect = w / h;
+      perspective(CFG.fov, aspect, 0.1, 100);
+      if (reduced) requestAnimationFrame(loop);
+    };
+    addEventListener('resize', resize);
+    resize();
+
+    gl.disable(gl.DEPTH_TEST);
+    const tanHalfFov = Math.tan(CFG.fov * Math.PI / 360);
+
+    const drawStarLayer = (layer: { b0: WebGLBuffer | null; b1: WebGLBuffer | null; count: number },
+      opts: { pointSizeMin: number; pointSizeMax: number; opacity: number; speed: number }, t: number) => {
+      rotation(t * CFG.yawSpeed * opts.speed, Math.sin(t * CFG.pitchSpeed) * CFG.pitchAmp * opts.speed);
+      gl.uniformMatrix3fv(starProg.u.uRotation, false, rot);
+      gl.uniform1f(starProg.u.uPointSizeMin, opts.pointSizeMin);
+      gl.uniform1f(starProg.u.uPointSizeMax, opts.pointSizeMax);
+      gl.uniform1f(starProg.u.uOpacity, opts.opacity);
+      gl.bindBuffer(gl.ARRAY_BUFFER, layer.b0);
+      gl.enableVertexAttribArray(starProg.a.aData0);
+      gl.vertexAttribPointer(starProg.a.aData0, 4, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, layer.b1);
+      gl.enableVertexAttribArray(starProg.a.aData1);
+      gl.vertexAttribPointer(starProg.a.aData1, 4, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.POINTS, 0, layer.count);
+    };
+
+    const start = performance.now();
+    const frame = (now: number) => {
+      const t = reduced ? 0 : (now - start) / 1000;
+      gl.viewport(0, 0, vw, vh);
+
+      gl.disable(gl.BLEND);
+      if (!nebulaTex) { gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); }
+      else {
+        gl.useProgram(bgProg.p);
+        rotation(t * CFG.yawSpeed * CFG.main.speed, Math.sin(t * CFG.pitchSpeed) * CFG.pitchAmp * CFG.main.speed);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, nebulaTex);
+        gl.uniform1i(bgProg.u.uNebula, 0);
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, detailTex);
+        gl.uniform1i(bgProg.u.uDetail, 1);
+        gl.uniformMatrix3fv(bgProg.u.uRotation, false, rot);
+        gl.uniformMatrix3fv(bgProg.u.uDetailOrient, false, detailOrient);
+        gl.uniform1f(bgProg.u.uTanHalfFov, tanHalfFov);
+        gl.uniform1f(bgProg.u.uAspect, aspect);
+        gl.uniform1f(bgProg.u.uGrain, CFG.grain);
+        gl.uniform1f(bgProg.u.uVignette, CFG.vignette);
+        gl.uniform1f(bgProg.u.uDetailAmount, CFG.detail.amount);
+        gl.uniform1f(bgProg.u.uTime, 10.0 * t % 1000.0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+        gl.enableVertexAttribArray(bgProg.a.aPos);
+        gl.vertexAttribPointer(bgProg.a.aPos, 2, gl.FLOAT, false, 0, 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
       }
-      ctx.globalAlpha = 1;
-      ctx.shadowBlur = 0;
 
-      // Estrellas fugaces (sólo con movimiento permitido)
-      if (!reduced) {
-        if (t > nextShoot) spawnShooting(t);
-        if (shooting.length) drawShooting();
-      }
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      gl.useProgram(starProg.p);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, paletteTex);
+      gl.uniform1i(starProg.u.uPalette, 0);
+      gl.uniformMatrix4fv(starProg.u.uProjection, false, proj);
+      gl.uniform1f(starProg.u.uRadius, CFG.radius);
+      gl.uniform1f(starProg.u.uScreenHeight, vh);
+      gl.uniform1f(starProg.u.uTime, t);
+      gl.uniform1f(starProg.u.uTwinkle, reduced ? 0 : CFG.twinkle);
+      drawStarLayer(layerBG, CFG.bg, t);
+      drawStarLayer(layerMain, CFG.main, t);
+    };
 
-      if (!reduced) requestAnimationFrame(draw);
+    // Cap a ~30fps: es un fondo, y deja aire al hilo principal (reveal, scroll…).
+    const FRAME_MS = 1000 / 30;
+    let lastDraw = 0;
+    function loop(now: number) {
+      if (now - lastDraw >= FRAME_MS) { lastDraw = now; frame(now); }
+      if (!reduced) requestAnimationFrame(loop);
     }
-
-    let resizeTimer: number;
-    function onResize() {
-      clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(() => { build(); draw(0); }, 150);
-    }
-
-    build();
-    if (reduced) draw(0);
-    else requestAnimationFrame(draw);
-    window.addEventListener('resize', onResize);
+    requestAnimationFrame(loop);
   }
 </script>

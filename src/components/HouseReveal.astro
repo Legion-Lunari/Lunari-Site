@@ -1,6 +1,6 @@
 ---
 /**
- * HouseReveal — escenario 3D del revelado de la casa (resultado del quiz).
+ * HouseReveal: escenario 3D del revelado de la casa (resultado del quiz).
  * Modelo principal Targon Peak Inclined, guiado por scroll a través de
  * revealPoses. En el paso final transiciona al Peak Targon con el logo
  * de la casa flotando en el centro.
@@ -112,7 +112,7 @@ const {
     const inclinedSrc = root.dataset.incl!;
     const peakSrc = root.dataset.peak!;
 
-    // Estado (módulo) — los listeners son síncronos aunque el modelo cargue tarde.
+    // Estado (módulo): los listeners son síncronos aunque el modelo cargue tarde.
     let active = false, progress = 0, manualPose: any = null;
     let houseColor: string | null = null;
     const ref: {

@@ -17,7 +17,7 @@ export interface AscentPose {
   ty: number;
 }
 
-// Pose del intro (antes de empezar el quiz) — no cuenta como pregunta.
+// Pose del intro (antes de empezar el quiz): no cuenta como pregunta.
 export const introPose: AscentPose = {
   camY: -1.45, camZ: 5, lookY: 0.9, rotDeg: 0, fov: 52, side: 'right', tx: 0, ty: 0,
 };
