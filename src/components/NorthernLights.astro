@@ -15,7 +15,12 @@
     pointer-events: none;
     opacity: 0.5; /* velo de luces; más marcado en las secciones bajo el hero */
     overflow: hidden;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 55%,
+      transparent 100%
+    );
     mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
   }
   .nl :global(canvas) {
@@ -26,16 +31,24 @@
     transform: skewX(-16deg);
     animation: nlFade 6s 1;
   }
-  @keyframes nlFade { 0% { opacity: 0; } }
+  @keyframes nlFade {
+    0% {
+      opacity: 0;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .nl :global(canvas) { animation: none; }
+    .nl :global(canvas) {
+      animation: none;
+    }
   }
 </style>
 
 <script>
-  const NL_ROOT = document.querySelector<HTMLElement>('.nl');
+  const NL_ROOT = document.querySelector<HTMLElement>(".nl");
   if (NL_ROOT) {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     // Ajustes de la aurora
     const CURVE_POINTS = 10;
@@ -63,23 +76,43 @@
     let mouseYPercentage = 0.5;
 
     function deCasteljau(p0x, p0y, cp0x, cp0y, cp1x, cp1y, p1x, p1y, t) {
-      const Ax = p0x + t * (cp0x - p0x), Ay = p0y + t * (cp0y - p0y),
-        Bx = cp0x + t * (cp1x - cp0x), By = cp0y + t * (cp1y - cp0y),
-        Cx = cp1x + t * (p1x - cp1x), Cy = cp1y + t * (p1y - cp1y);
-      const Dx = Ax + t * (Bx - Ax), Dy = Ay + t * (By - Ay),
-        Ex = Bx + t * (Cx - Bx), Ey = By + t * (Cy - By);
+      const Ax = p0x + t * (cp0x - p0x),
+        Ay = p0y + t * (cp0y - p0y),
+        Bx = cp0x + t * (cp1x - cp0x),
+        By = cp0y + t * (cp1y - cp0y),
+        Cx = cp1x + t * (p1x - cp1x),
+        Cy = cp1y + t * (p1y - cp1y);
+      const Dx = Ax + t * (Bx - Ax),
+        Dy = Ay + t * (By - Ay),
+        Ex = Bx + t * (Cx - Bx),
+        Ey = By + t * (Cy - By);
       return { x: Dx + t * (Ex - Dx), y: Dy + t * (Ey - Dy) };
     }
 
     function CurvePoint(x, y, z, cpLength) {
-      this.x = x; this.y = y; this.z = z; this.cpLength = cpLength;
+      this.x = x;
+      this.y = y;
+      this.z = z;
+      this.cpLength = cpLength;
       this.cpYOffset = Math.random() * cpLength - cpLength;
-      this.xAnimTime = Math.random() * (CURVE_POINT_MAX_FLOAT_TIME - CURVE_POINT_MIN_FLOAT_TIME) + CURVE_POINT_MIN_FLOAT_TIME;
-      this.xVariance = Math.max(Math.random() * this.z * CURVE_POINT_MAX_FLOAT_X_DIST, CURVE_POINT_MIN_FLOAT_DIST);
+      this.xAnimTime =
+        Math.random() *
+          (CURVE_POINT_MAX_FLOAT_TIME - CURVE_POINT_MIN_FLOAT_TIME) +
+        CURVE_POINT_MIN_FLOAT_TIME;
+      this.xVariance = Math.max(
+        Math.random() * this.z * CURVE_POINT_MAX_FLOAT_X_DIST,
+        CURVE_POINT_MIN_FLOAT_DIST,
+      );
       this.xMin = this.x - this.xVariance / 2;
       this.xAnimOffset = Math.random() * Math.PI;
-      this.yAnimTime = Math.random() * (CURVE_POINT_MAX_FLOAT_TIME - CURVE_POINT_MIN_FLOAT_TIME) + CURVE_POINT_MIN_FLOAT_TIME;
-      this.yVariance = Math.max(Math.random() * this.z * CURVE_POINT_MAX_FLOAT_Y_DIST, CURVE_POINT_MIN_FLOAT_DIST);
+      this.yAnimTime =
+        Math.random() *
+          (CURVE_POINT_MAX_FLOAT_TIME - CURVE_POINT_MIN_FLOAT_TIME) +
+        CURVE_POINT_MIN_FLOAT_TIME;
+      this.yVariance = Math.max(
+        Math.random() * this.z * CURVE_POINT_MAX_FLOAT_Y_DIST,
+        CURVE_POINT_MIN_FLOAT_DIST,
+      );
       this.yMin = this.y - this.yVariance / 2;
       this.yAnimOffset = Math.random() * Math.PI;
     }
@@ -92,144 +125,338 @@
     CurvePoint.prototype.updatePosition = function () {
       if (!this.startTime) this.startTime = Date.now();
       const dt = Date.now() - this.startTime;
-      this.x = this.xMin + (Math.sin((dt / this.xAnimTime) * Math.PI + this.xAnimOffset) * 0.5 + 0.5) * this.xVariance;
+      this.x =
+        this.xMin +
+        (Math.sin((dt / this.xAnimTime) * Math.PI + this.xAnimOffset) * 0.5 +
+          0.5) *
+          this.xVariance;
       this.x += this.z * (1 - mouseXPercentage * 2) * MOUSE_X_OFFSET;
-      this.y = this.yMin + (Math.sin((dt / this.yAnimTime) * Math.PI + this.yAnimOffset) * 0.5 + 0.5) * this.yVariance;
+      this.y =
+        this.yMin +
+        (Math.sin((dt / this.yAnimTime) * Math.PI + this.yAnimOffset) * 0.5 +
+          0.5) *
+          this.yVariance;
       this.y += this.z * (1 - mouseYPercentage * 2) * MOUSE_Y_OFFSET;
     };
 
     function Brush(curve, z, color, noScale) {
-      this.curve = curve; this.z = z;
+      this.curve = curve;
+      this.z = z;
       this.alpha = z * Math.random() * 0.55 + 0.15;
       this.scaleYMod = (1 - BRUSH_MIN_SCALE_Y) * Math.random();
       this.scaleXMod = 0.5 * Math.random() * (2 - this.scaleYMod * 2);
       this.noScale = !!noScale;
-      this.color1 = color || 'rgb(50, 170, 82)';
-      this.alphaAnimTime = Math.random() * (BRUSH_MAX_ANIM_TIME - BRUSH_MIN_ANIM_TIME) + BRUSH_MIN_ANIM_TIME;
-      this.alphaVariance = Math.max(Math.random() * BRUSH_MAX_ALPHA_VARIANCE, this.alpha);
+      this.color1 = color || "rgb(50, 170, 82)";
+      this.alphaAnimTime =
+        Math.random() * (BRUSH_MAX_ANIM_TIME - BRUSH_MIN_ANIM_TIME) +
+        BRUSH_MIN_ANIM_TIME;
+      this.alphaVariance = Math.max(
+        Math.random() * BRUSH_MAX_ALPHA_VARIANCE,
+        this.alpha,
+      );
       this.alphaMin = Math.max(this.alpha - this.alphaVariance / 2, 0);
       this.alphaAnimOffset = Math.random() * Math.PI;
-      this.scaleYAnimTime = Math.random() * (BRUSH_MAX_ANIM_TIME - BRUSH_MIN_ANIM_TIME) + BRUSH_MIN_ANIM_TIME;
+      this.scaleYAnimTime =
+        Math.random() * (BRUSH_MAX_ANIM_TIME - BRUSH_MIN_ANIM_TIME) +
+        BRUSH_MIN_ANIM_TIME;
       this.scaleYVariance = Math.random() * BRUSH_MAX_SCALE_Y_VARIANCE;
       this.scaleYMin = this.scaleY - this.scaleYVariance / 2;
       this.scaleYAnimOffset = Math.random() * Math.PI;
-      this.zAnimOffset = this.curve.vanishingPoint.z - (z - this.curve.vanishingPoint.z);
-      this.zAnimTime = Math.random() * (BRUSH_MAX_Z_ANIM_TIME - BRUSH_MIN_Z_ANIM_TIME) + BRUSH_MIN_Z_ANIM_TIME;
-      if (this.noScale) { this.alphaMin = 0; this.alphaVariance = 1; }
+      this.zAnimOffset =
+        this.curve.vanishingPoint.z - (z - this.curve.vanishingPoint.z);
+      this.zAnimTime =
+        Math.random() * (BRUSH_MAX_Z_ANIM_TIME - BRUSH_MIN_Z_ANIM_TIME) +
+        BRUSH_MIN_Z_ANIM_TIME;
+      if (this.noScale) {
+        this.alphaMin = 0;
+        this.alphaVariance = 1;
+      }
     }
     Brush.prototype.draw = function (ctx) {
-      if (this.z < this.curve.vanishingPoint.z || this.z > this.curve.endPoint.z) return false;
+      if (
+        this.z < this.curve.vanishingPoint.z ||
+        this.z > this.curve.endPoint.z
+      )
+        return false;
       const point = this.curve.getPointAtZ(this.z);
-      let alpha = (0.5 + 0.5 * Math.min(this.z, 1)) * this.alpha * this.curve.maxBrushAlpha;
-      if (this.z - this.curve.vanishingPoint.z < BRUSH_ALPHA_DROPOFF) alpha *= (this.z - this.curve.vanishingPoint.z) / BRUSH_ALPHA_DROPOFF;
-      else if (this.curve.endPoint.z - this.z < BRUSH_ALPHA_DROPOFF) alpha *= (this.curve.endPoint.z - this.z) / BRUSH_ALPHA_DROPOFF;
+      let alpha =
+        (0.5 + 0.5 * Math.min(this.z, 1)) *
+        this.alpha *
+        this.curve.maxBrushAlpha;
+      if (this.z - this.curve.vanishingPoint.z < BRUSH_ALPHA_DROPOFF)
+        alpha *= (this.z - this.curve.vanishingPoint.z) / BRUSH_ALPHA_DROPOFF;
+      else if (this.curve.endPoint.z - this.z < BRUSH_ALPHA_DROPOFF)
+        alpha *= (this.curve.endPoint.z - this.z) / BRUSH_ALPHA_DROPOFF;
       let scaleY, scaleX;
-      if (!this.noScale) { scaleY = this.z * this.scaleYMod + BRUSH_MIN_SCALE_Y; scaleX = this.z * this.scaleXMod + 0.5; }
-      else { scaleY = this.scaleYMod + BRUSH_MIN_SCALE_Y; scaleX = this.scaleXMod + 0.5; }
+      if (!this.noScale) {
+        scaleY = this.z * this.scaleYMod + BRUSH_MIN_SCALE_Y;
+        scaleX = this.z * this.scaleXMod + 0.5;
+      } else {
+        scaleY = this.scaleYMod + BRUSH_MIN_SCALE_Y;
+        scaleX = this.scaleXMod + 0.5;
+      }
       ctx.fillStyle = this.color1;
       ctx.globalAlpha = alpha;
       ctx.beginPath();
       ctx.moveTo(point.x, point.y - scaleY * BRUSH_HEIGHT);
-      ctx.quadraticCurveTo(point.x + scaleX * BRUSH_WIDTH / 2, point.y - scaleY * BRUSH_HEIGHT, point.x + scaleX * BRUSH_WIDTH / 2, point.y);
-      ctx.quadraticCurveTo(point.x + scaleX * BRUSH_WIDTH / 2, point.y + scaleY * BRUSH_WIDTH, point.x, point.y + scaleX * BRUSH_WIDTH / 2);
-      ctx.quadraticCurveTo(point.x - scaleX * BRUSH_WIDTH / 2, point.y + scaleY * BRUSH_WIDTH, point.x - scaleX * BRUSH_WIDTH / 2, point.y);
-      ctx.quadraticCurveTo(point.x - scaleX * BRUSH_WIDTH / 2, point.y - scaleY * BRUSH_HEIGHT, point.x, point.y - scaleY * BRUSH_HEIGHT);
+      ctx.quadraticCurveTo(
+        point.x + (scaleX * BRUSH_WIDTH) / 2,
+        point.y - scaleY * BRUSH_HEIGHT,
+        point.x + (scaleX * BRUSH_WIDTH) / 2,
+        point.y,
+      );
+      ctx.quadraticCurveTo(
+        point.x + (scaleX * BRUSH_WIDTH) / 2,
+        point.y + scaleY * BRUSH_WIDTH,
+        point.x,
+        point.y + (scaleX * BRUSH_WIDTH) / 2,
+      );
+      ctx.quadraticCurveTo(
+        point.x - (scaleX * BRUSH_WIDTH) / 2,
+        point.y + scaleY * BRUSH_WIDTH,
+        point.x - (scaleX * BRUSH_WIDTH) / 2,
+        point.y,
+      );
+      ctx.quadraticCurveTo(
+        point.x - (scaleX * BRUSH_WIDTH) / 2,
+        point.y - scaleY * BRUSH_HEIGHT,
+        point.x,
+        point.y - scaleY * BRUSH_HEIGHT,
+      );
       ctx.fill();
     };
     Brush.prototype.updatePosition = function () {
       if (!this.startTime) this.startTime = Date.now() - 20000;
       const dt = Date.now() - this.startTime;
-      this.alpha = Math.min(this.alphaMin + (Math.sin((dt / this.alphaAnimTime) * Math.PI + this.alphaAnimOffset) * 0.5 + 0.5) * this.alphaVariance, 1);
-      this.scaleY = this.scaleYMin + (Math.sin((dt / this.scaleYAnimTime) * Math.PI + this.scaleYAnimOffset) * 0.5 + 0.5) * this.scaleYVariance;
-      this.z = ((dt / this.zAnimTime) + this.zAnimOffset) * this.curve.endPoint.z;
+      this.alpha = Math.min(
+        this.alphaMin +
+          (Math.sin(
+            (dt / this.alphaAnimTime) * Math.PI + this.alphaAnimOffset,
+          ) *
+            0.5 +
+            0.5) *
+            this.alphaVariance,
+        1,
+      );
+      this.scaleY =
+        this.scaleYMin +
+        (Math.sin(
+          (dt / this.scaleYAnimTime) * Math.PI + this.scaleYAnimOffset,
+        ) *
+          0.5 +
+          0.5) *
+          this.scaleYVariance;
+      this.z = (dt / this.zAnimTime + this.zAnimOffset) * this.curve.endPoint.z;
       if (this.z > this.curve.vanishingPoint.z) this.z *= this.z;
-      if (this.z > this.curve.endPoint.z) { this.z = this.z - this.curve.endPoint.z + this.curve.vanishingPoint.z; this.startTime = Date.now(); }
+      if (this.z > this.curve.endPoint.z) {
+        this.z = this.z - this.curve.endPoint.z + this.curve.vanishingPoint.z;
+        this.startTime = Date.now();
+      }
     };
 
-    function Curve(vpX, vpY, vpZ, epX, epY, epZ, brushCount, maxBrushAlpha, fill) {
+    function Curve(
+      vpX,
+      vpY,
+      vpZ,
+      epX,
+      epY,
+      epZ,
+      brushCount,
+      maxBrushAlpha,
+      fill,
+    ) {
       this.vanishingPoint = { x: vpX, y: vpY, z: vpZ };
       this.endPoint = { x: epX, y: epY, z: epZ };
       this.brushCount = brushCount || BRUSH_COUNT;
       this.maxBrushAlpha = maxBrushAlpha || 1;
-      this.points = [new CurvePoint(this.vanishingPoint.x, this.vanishingPoint.y, this.vanishingPoint.z, 0)];
+      this.points = [
+        new CurvePoint(
+          this.vanishingPoint.x,
+          this.vanishingPoint.y,
+          this.vanishingPoint.z,
+          0,
+        ),
+      ];
       for (let i = 0; i < CURVE_POINTS - 1; i++) {
-        let mod = (i + 1) / CURVE_POINTS; mod *= mod;
-        const xJitter = Math.random() * CURVE_POINT_X_JITTER - CURVE_POINT_X_JITTER / 2;
-        let x = this.vanishingPoint.x + mod * (this.endPoint.x - this.vanishingPoint.x);
+        let mod = (i + 1) / CURVE_POINTS;
+        mod *= mod;
+        const xJitter =
+          Math.random() * CURVE_POINT_X_JITTER - CURVE_POINT_X_JITTER / 2;
+        let x =
+          this.vanishingPoint.x +
+          mod * (this.endPoint.x - this.vanishingPoint.x);
         x += xJitter * (x - this.points[i].x);
-        const yJitter = (1.2 - mod) * (Math.random() * CURVE_POINT_Y_JITTER - CURVE_POINT_Y_JITTER / 2);
-        let y = this.vanishingPoint.y + mod * (this.endPoint.y - this.vanishingPoint.y);
+        const yJitter =
+          (1.2 - mod) *
+          (Math.random() * CURVE_POINT_Y_JITTER - CURVE_POINT_Y_JITTER / 2);
+        let y =
+          this.vanishingPoint.y +
+          mod * (this.endPoint.y - this.vanishingPoint.y);
         y += yJitter * (y - this.points[i].y);
-        const z = mod * (this.endPoint.z - this.vanishingPoint.z) + this.vanishingPoint.z;
-        this.points.push(new CurvePoint(x, y, z, (Math.random() * 0.33 + 0.33) * (x - this.points[i].x)));
+        const z =
+          mod * (this.endPoint.z - this.vanishingPoint.z) +
+          this.vanishingPoint.z;
+        this.points.push(
+          new CurvePoint(
+            x,
+            y,
+            z,
+            (Math.random() * 0.33 + 0.33) * (x - this.points[i].x),
+          ),
+        );
       }
-      this.points.push(new CurvePoint(this.endPoint.x, this.endPoint.y, this.endPoint.z, 0));
+      this.points.push(
+        new CurvePoint(this.endPoint.x, this.endPoint.y, this.endPoint.z, 0),
+      );
       this.brushes = [];
       for (let i = 0; i < this.brushCount; i++) {
         const noScale = Math.random() < 0.01;
-        this.brushes.push(new Brush(this, (i / this.brushCount) * (this.endPoint.z - this.vanishingPoint.z) + this.vanishingPoint.z, noScale ? 'rgb(200, 200, 220)' : fill || null, noScale));
+        this.brushes.push(
+          new Brush(
+            this,
+            (i / this.brushCount) * (this.endPoint.z - this.vanishingPoint.z) +
+              this.vanishingPoint.z,
+            noScale ? "rgb(200, 200, 220)" : fill || null,
+            noScale,
+          ),
+        );
       }
     }
-    Curve.prototype.draw = function (ctx) { for (let i = 0; i < this.brushes.length; i++) this.brushes[i].draw(ctx); };
+    Curve.prototype.draw = function (ctx) {
+      for (let i = 0; i < this.brushes.length; i++) this.brushes[i].draw(ctx);
+    };
     Curve.prototype.getPointAtZ = function (p) {
       if (p <= this.points[0].z) return this.points[0];
-      if (p >= this.points[this.points.length - 1].z) return this.points[this.points.length - 1];
+      if (p >= this.points[this.points.length - 1].z)
+        return this.points[this.points.length - 1];
       let i = 0;
       for (; i < this.points.length; i++) if (p <= this.points[i].z) break;
-      const lp = this.points[i - 1], lc = lp.getCps(), np = this.points[i], nc = np.getCps();
+      const lp = this.points[i - 1],
+        lc = lp.getCps(),
+        np = this.points[i],
+        nc = np.getCps();
       const t = (p - lp.z) / (np.z - lp.z);
-      return deCasteljau(lp.x, lp.y, lc[1].x, lc[1].y, nc[0].x, nc[0].y, np.x, np.y, t);
+      return deCasteljau(
+        lp.x,
+        lp.y,
+        lc[1].x,
+        lc[1].y,
+        nc[0].x,
+        nc[0].y,
+        np.x,
+        np.y,
+        t,
+      );
     };
     Curve.prototype.update = function () {
-      for (let i = 0; i < this.points.length; i++) this.points[i].updatePosition();
-      for (let i = 0; i < this.brushes.length; i++) this.brushes[i].updatePosition();
+      for (let i = 0; i < this.points.length; i++)
+        this.points[i].updatePosition();
+      for (let i = 0; i < this.brushes.length; i++)
+        this.brushes[i].updatePosition();
     };
 
     // Canvas y bucle de render
-    let canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, curves: any[], raf = 0, W = 0, H = 0;
+    let canvas: HTMLCanvasElement,
+      ctx: CanvasRenderingContext2D,
+      curves: any[],
+      raf = 0,
+      W = 0,
+      H = 0;
 
     function makeCurves(w: number, h: number) {
-      const gradCanvas = document.createElement('canvas');
-      const gradCtx = gradCanvas.getContext('2d')!;
+      const gradCanvas = document.createElement("canvas");
+      const gradCtx = gradCanvas.getContext("2d")!;
       const grad = gradCtx.createLinearGradient(w * 0.5, h, w * 0.35, 0);
-      grad.addColorStop(0.4, 'rgb(50, 130, 80)');
-      grad.addColorStop(0.6, 'rgba(100, 100, 120, .5)');
+      grad.addColorStop(0.4, "rgb(50, 130, 80)");
+      grad.addColorStop(0.6, "rgba(100, 100, 120, .5)");
       const grad2 = gradCtx.createLinearGradient(w * 0.5, h * 0.5, w * 0.3, 0);
-      grad2.addColorStop(0.35, 'rgb(50, 130, 140)');
-      grad2.addColorStop(0.7, 'rgba(50, 70, 100,.7)');
+      grad2.addColorStop(0.35, "rgb(50, 130, 140)");
+      grad2.addColorStop(0.7, "rgba(50, 70, 100,.7)");
       return [
-        new (Curve as any)(w * 0.17, h * 0.94, 0.01, w * 0.8, h * 0.8, 0.8, BRUSH_COUNT * 0.3, 0.4, 'rgb(60, 150, 120)'),
-        new (Curve as any)(w * 0.1, h * 0.9, 0.05, w * 0.8, h * 0.4, 1, null, 0.8, grad),
-        new (Curve as any)(w * 0.25, h * 0.65, 0.33, w * 0.55, 0, 1.1, BRUSH_COUNT * 0.6, 1, grad2),
+        new (Curve as any)(
+          w * 0.17,
+          h * 0.94,
+          0.01,
+          w * 0.8,
+          h * 0.8,
+          0.8,
+          BRUSH_COUNT * 0.3,
+          0.4,
+          "rgb(60, 150, 120)",
+        ),
+        new (Curve as any)(
+          w * 0.1,
+          h * 0.9,
+          0.05,
+          w * 0.8,
+          h * 0.4,
+          1,
+          null,
+          0.8,
+          grad,
+        ),
+        new (Curve as any)(
+          w * 0.25,
+          h * 0.65,
+          0.33,
+          w * 0.55,
+          0,
+          1.1,
+          BRUSH_COUNT * 0.6,
+          1,
+          grad2,
+        ),
       ];
     }
 
     function build() {
-      W = window.innerWidth; H = window.innerHeight;
-      if (!canvas) { canvas = document.createElement('canvas'); NL_ROOT!.appendChild(canvas); ctx = canvas.getContext('2d')!; }
-      canvas.width = W; canvas.height = H;
-      ctx.globalCompositeOperation = 'color-dodge';
+      W = window.innerWidth;
+      H = window.innerHeight;
+      if (!canvas) {
+        canvas = document.createElement("canvas");
+        NL_ROOT!.appendChild(canvas);
+        ctx = canvas.getContext("2d")!;
+      }
+      canvas.width = W;
+      canvas.height = H;
+      ctx.globalCompositeOperation = "color-dodge";
       curves = makeCurves(W, H);
     }
 
     function anim() {
       ctx.clearRect(0, 0, W, H);
-      for (let i = 0; i < curves.length; i++) { curves[i].update(); curves[i].draw(ctx); }
+      for (let i = 0; i < curves.length; i++) {
+        curves[i].update();
+        curves[i].draw(ctx);
+      }
       if (!reduced) raf = requestAnimationFrame(anim);
     }
 
     build();
-    if (reduced) { curves.forEach((c) => c.update()); ctx.clearRect(0, 0, W, H); curves.forEach((c) => c.draw(ctx)); }
-    else anim();
+    if (reduced) {
+      curves.forEach((c) => c.update());
+      ctx.clearRect(0, 0, W, H);
+      curves.forEach((c) => c.draw(ctx));
+    } else anim();
 
     let rt: number;
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       clearTimeout(rt);
-      rt = window.setTimeout(() => { build(); if (reduced) { curves.forEach((c) => c.update()); curves.forEach((c) => c.draw(ctx)); } }, 200);
+      rt = window.setTimeout(() => {
+        build();
+        if (reduced) {
+          curves.forEach((c) => c.update());
+          curves.forEach((c) => c.draw(ctx));
+        }
+      }, 200);
     });
-    document.body.addEventListener('mousemove', (e) => {
-      mouseXPercentage = e.clientX / window.innerWidth;
-      mouseYPercentage = e.clientY / window.innerHeight;
-    }, { passive: true });
+    document.body.addEventListener(
+      "mousemove",
+      (e) => {
+        mouseXPercentage = e.clientX / window.innerWidth;
+        mouseYPercentage = e.clientY / window.innerHeight;
+      },
+      { passive: true },
+    );
   }
 </script>

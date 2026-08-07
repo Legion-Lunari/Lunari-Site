@@ -1,5 +1,5 @@
 ---
-const DISCORD_URL = 'https://discord.com/invite/j2mEbRg9jc';
+const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 const year = new Date().getFullYear();
 ---
 
@@ -32,7 +32,11 @@ const year = new Date().getFullYear();
     border-top: 1px solid var(--border-soft);
     padding-block: clamp(3rem, 2rem + 4vw, 5rem) 2rem;
     margin-top: var(--space-section);
-    background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--ink) 60%, transparent));
+    background: linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--ink) 60%, transparent)
+    );
   }
   .footer__inner {
     display: flex;
@@ -41,9 +45,22 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     align-items: flex-start;
   }
-  .footer__brand { display: flex; gap: 1rem; align-items: center; max-width: 360px; }
-  .footer__brand img { filter: drop-shadow(0 0 14px color-mix(in srgb, var(--celeste-400) 45%, transparent)); }
-  .footer__tag { color: var(--text-muted); font-size: var(--step--1); line-height: 1.5; }
+  .footer__brand {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    max-width: 360px;
+  }
+  .footer__brand img {
+    filter: drop-shadow(
+      0 0 14px color-mix(in srgb, var(--celeste-400) 45%, transparent)
+    );
+  }
+  .footer__tag {
+    color: var(--text-muted);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
 
   .footer__nav {
     display: flex;
@@ -52,8 +69,14 @@ const year = new Date().getFullYear();
     font-size: var(--step--1);
     letter-spacing: 0.04em;
   }
-  .footer__nav a { color: var(--text-muted); transition: color 0.25s var(--ease-out); width: fit-content; }
-  .footer__nav a:hover { color: var(--celeste-400); }
+  .footer__nav a {
+    color: var(--text-muted);
+    transition: color 0.25s var(--ease-out);
+    width: fit-content;
+  }
+  .footer__nav a:hover {
+    color: var(--celeste-400);
+  }
 
   .footer__bottom {
     display: flex;

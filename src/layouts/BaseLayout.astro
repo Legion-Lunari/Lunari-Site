@@ -1,18 +1,18 @@
 ---
-import '../styles/global.css';
-import SiteNav from '../components/SiteNav.astro';
-import SiteFooter from '../components/SiteFooter.astro';
-import Starfield from '../components/Starfield.astro';
-import NorthernLights from '../components/NorthernLights.astro';
-import SocialBubble from '../components/SocialBubble.astro';
+import "../styles/global.css";
+import SiteNav from "../components/SiteNav.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import Starfield from "../components/Starfield.astro";
+import NorthernLights from "../components/NorthernLights.astro";
+import SocialBubble from "../components/SocialBubble.astro";
 
 interface Props {
   title?: string;
   description?: string;
 }
 const {
-  title = 'Legion Lunari - Comunidad LoL para invocadoras',
-  description = 'Legion Lunari es una comunidad de Discord exclusiva para mujeres de League of Legends (LAN): honesta, amigable y mágica. Encuentra tu casa entre las estrellas.',
+  title = "Legion Lunari - Comunidad LoL para invocadoras",
+  description = "Legion Lunari es una comunidad de Discord exclusiva para mujeres de League of Legends (LAN): honesta, amigable y mágica. Encuentra tu casa entre las estrellas.",
 } = Astro.props;
 ---
 
@@ -51,48 +51,66 @@ const {
 
     <script>
       // Reveal al scroll
-      const reveals = document.querySelectorAll('[data-reveal]');
+      const reveals = document.querySelectorAll("[data-reveal]");
       if (reveals.length) {
         const io = new IntersectionObserver(
           (entries) => {
             for (const e of entries) {
               if (e.isIntersecting) {
-                e.target.classList.add('is-visible');
+                e.target.classList.add("is-visible");
                 io.unobserve(e.target);
               }
             }
           },
-          { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+          { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
         );
         reveals.forEach((el) => io.observe(el));
         // Seguro: si el IntersectionObserver no reacciona (p. ej. bajo carga),
         // muéstralos todos para no dejar contenido invisible.
         setTimeout(() => {
-          if (![...reveals].some((el) => el.classList.contains('is-visible')))
-            reveals.forEach((el) => el.classList.add('is-visible'));
+          if (![...reveals].some((el) => el.classList.contains("is-visible")))
+            reveals.forEach((el) => el.classList.add("is-visible"));
         }, 3000);
       }
 
       // Parallax de la luna con el puntero
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const parallaxEls = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
-      if (!reduced && parallaxEls.length && window.matchMedia('(pointer:fine)').matches) {
-        let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      const parallaxEls = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-parallax]"),
+      );
+      if (
+        !reduced &&
+        parallaxEls.length &&
+        window.matchMedia("(pointer:fine)").matches
+      ) {
+        let tx = 0,
+          ty = 0,
+          cx = 0,
+          cy = 0,
+          raf = 0;
         const loop = () => {
           cx += (tx - cx) * 0.06;
           cy += (ty - cy) * 0.06;
           for (const el of parallaxEls) {
-            const k = parseFloat(el.dataset.parallax || '0.4');
+            const k = parseFloat(el.dataset.parallax || "0.4");
             el.style.transform = `translate3d(${cx * k}px, ${cy * k}px, 0)`;
           }
-          raf = Math.abs(tx - cx) > 0.1 || Math.abs(ty - cy) > 0.1
-            ? requestAnimationFrame(loop) : 0;
+          raf =
+            Math.abs(tx - cx) > 0.1 || Math.abs(ty - cy) > 0.1
+              ? requestAnimationFrame(loop)
+              : 0;
         };
-        window.addEventListener('pointermove', (e) => {
-          tx = (e.clientX / window.innerWidth - 0.5) * 40;
-          ty = (e.clientY / window.innerHeight - 0.5) * 40;
-          if (!raf) raf = requestAnimationFrame(loop);
-        }, { passive: true });
+        window.addEventListener(
+          "pointermove",
+          (e) => {
+            tx = (e.clientX / window.innerWidth - 0.5) * 40;
+            ty = (e.clientY / window.innerHeight - 0.5) * 40;
+            if (!raf) raf = requestAnimationFrame(loop);
+          },
+          { passive: true },
+        );
       }
     </script>
   </body>

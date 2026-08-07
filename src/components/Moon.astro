@@ -5,14 +5,23 @@
  * data-parallax lo hace reaccionar al puntero (gestionado en BaseLayout).
  */
 interface Props {
-  size?: string;      // ej. "clamp(220px, 40vw, 460px)"
-  parallax?: number;  // intensidad 0–1
+  size?: string; // ej. "clamp(220px, 40vw, 460px)"
+  parallax?: number; // intensidad 0–1
   class?: string;
 }
-const { size = 'clamp(220px, 38vw, 460px)', parallax = 0.4, class: cls = '' } = Astro.props;
+const {
+  size = "clamp(220px, 38vw, 460px)",
+  parallax = 0.4,
+  class: cls = "",
+} = Astro.props;
 ---
 
-<div class={`moon ${cls}`} style={`--moon-size:${size}`} data-parallax={parallax} aria-hidden="true">
+<div
+  class={`moon ${cls}`}
+  style={`--moon-size:${size}`}
+  data-parallax={parallax}
+  aria-hidden="true"
+>
   <div class="moon__halo"></div>
   <div class="moon__orb">
     <span class="moon__crater moon__crater--1"></span>
@@ -52,16 +61,18 @@ const { size = 'clamp(220px, 38vw, 460px)', parallax = 0.4, class: cls = '' } = 
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background:
-      radial-gradient(circle at 34% 30%,
-        #f4f6ff 0%,
-        var(--celeste-400) 26%,
-        var(--lavender-400) 52%,
-        var(--grape-800) 82%,
-        var(--night-900) 100%);
+    background: radial-gradient(
+      circle at 34% 30%,
+      #f4f6ff 0%,
+      var(--celeste-400) 26%,
+      var(--lavender-400) 52%,
+      var(--grape-800) 82%,
+      var(--night-900) 100%
+    );
     box-shadow:
-      inset -28px -22px 60px -20px rgba(6,7,26,0.95),
-      inset 14px 12px 40px -10px color-mix(in srgb, var(--celeste-400) 55%, transparent),
+      inset -28px -22px 60px -20px rgba(6, 7, 26, 0.95),
+      inset 14px 12px 40px -10px
+        color-mix(in srgb, var(--celeste-400) 55%, transparent),
       0 0 70px -8px color-mix(in srgb, var(--lavender-400) 45%, transparent);
     overflow: hidden;
   }
@@ -69,23 +80,56 @@ const { size = 'clamp(220px, 38vw, 460px)', parallax = 0.4, class: cls = '' } = 
   .moon__crater {
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%,
+    background: radial-gradient(
+      circle at 40% 35%,
       color-mix(in srgb, var(--grape-800) 65%, transparent),
-      color-mix(in srgb, var(--night-900) 45%, transparent));
-    box-shadow: inset 2px 3px 5px -1px rgba(0,0,0,0.5);
+      color-mix(in srgb, var(--night-900) 45%, transparent)
+    );
+    box-shadow: inset 2px 3px 5px -1px rgba(0, 0, 0, 0.5);
     opacity: 0.5;
   }
-  .moon__crater--1 { width: 16%; height: 16%; top: 22%; left: 30%; }
-  .moon__crater--2 { width: 10%; height: 10%; top: 44%; left: 52%; }
-  .moon__crater--3 { width: 22%; height: 22%; top: 58%; left: 24%; opacity: 0.4; }
-  .moon__crater--4 { width: 8%;  height: 8%;  top: 34%; left: 60%; opacity: 0.35; }
+  .moon__crater--1 {
+    width: 16%;
+    height: 16%;
+    top: 22%;
+    left: 30%;
+  }
+  .moon__crater--2 {
+    width: 10%;
+    height: 10%;
+    top: 44%;
+    left: 52%;
+  }
+  .moon__crater--3 {
+    width: 22%;
+    height: 22%;
+    top: 58%;
+    left: 24%;
+    opacity: 0.4;
+  }
+  .moon__crater--4 {
+    width: 8%;
+    height: 8%;
+    top: 34%;
+    left: 60%;
+    opacity: 0.35;
+  }
 
   @keyframes haloPulse {
-    0%, 100% { opacity: 0.85; transform: scale(1); }
-    50%      { opacity: 1;    transform: scale(1.05); }
+    0%,
+    100% {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .moon__halo { animation: none; }
+    .moon__halo {
+      animation: none;
+    }
   }
 </style>
