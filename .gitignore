@@ -1,3 +1,9 @@
+# IDE files
+.idea/
+
+# Bun specific files
+bun.lock
+
 node_modules/
 dist/
 .astro/
