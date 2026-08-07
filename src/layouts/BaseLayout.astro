@@ -9,10 +9,12 @@ import SocialBubble from '../components/SocialBubble.astro';
 interface Props {
   title?: string;
   description?: string;
+  hideFooter?: boolean;
 }
 const {
   title = 'Legion Lunari - Comunidad LoL para invocadoras',
   description = 'Legion Lunari es una comunidad de Discord exclusiva para mujeres de League of Legends (LAN): honesta, amigable y mágica. Encuentra tu casa entre las estrellas.',
+  hideFooter = false,
 } = Astro.props;
 ---
 
@@ -46,7 +48,7 @@ const {
     <main id="main">
       <slot />
     </main>
-    <SiteFooter />
+    {!hideFooter && <SiteFooter />}
     <SocialBubble />
 
     <script>

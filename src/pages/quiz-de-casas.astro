@@ -20,6 +20,7 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
 <BaseLayout
   title="Quiz de Casas - Legion Lunari"
   description="Descubre a qué casa de la Legion Lunari perteneces. Un ritual lunar de 6 preguntas para invocadoras."
+  hideFooter
 >
   <TargonClimb />
   <HouseReveal />
@@ -174,10 +175,12 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   // Posición del texto de la pregunta según la pose del paso.
   function applyText(s: number) {
     const p = poses[s] || ({ side: 'left', tx: 0, ty: 0 } as Pose);
+    // tx/ty afinados a 1600px; se escalan por el ancho para seguir al modelo.
+    const k = window.innerWidth / 1600;
     els.qBlock.classList.toggle('is-left', p.side !== 'right');
     els.qBlock.classList.toggle('is-right', p.side === 'right');
-    els.qBlock.style.setProperty('--tx', (p.tx || 0) + 'px');
-    els.qBlock.style.setProperty('--ty', (p.ty || 0) + 'px');
+    els.qBlock.style.setProperty('--tx', (p.tx || 0) * k + 'px');
+    els.qBlock.style.setProperty('--ty', (p.ty || 0) * k + 'px');
   }
   // Control directo del modelo (tuning): fija la pose del paso.
   function emitPose(s: number) {
@@ -311,14 +314,22 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     h.rasgos.forEach((t) => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
   }
 
+  // Los tx/ty de las poses se afinaron a 1600px de ancho; se escalan por la
+  // proporción del viewport para que el texto siga al modelo en cualquier
+  // resolución (el modelo y los left% también escalan con el ancho).
+  const REVEAL_BASE_W = 1600;
   function positionRevealCap(cap: HTMLElement, i: number) {
     const pose = revealPoses[i];
     if (!pose) return;
+    const k = window.innerWidth / REVEAL_BASE_W;
     cap.classList.toggle('is-left', pose.side !== 'right');
     cap.classList.toggle('is-right', pose.side === 'right');
-    cap.style.setProperty('--tx', (pose.tx || 0) + 'px');
-    cap.style.setProperty('--ty', (pose.ty || 0) + 'px');
+    cap.style.setProperty('--tx', (pose.tx || 0) * k + 'px');
+    cap.style.setProperty('--ty', (pose.ty || 0) * k + 'px');
   }
+  window.addEventListener('resize', () => {
+    if (revealActive) revealCaps.forEach((cap, i) => positionRevealCap(cap, i));
+  }, { passive: true });
   function updateRevealCaps(p: number) {
     const N = revealPoses.length;
     const seg = 1 / (N - 1);
@@ -326,7 +337,8 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
       const center = i / (N - 1);
       let vis = 1 - Math.min(1, Math.abs(p - center) / (seg * 0.62));
       vis = Math.max(0, vis);
-      if (i === N - 1 && p >= center - seg * 0.3) vis = Math.min(1, (p - (center - seg * 0.5)) / (seg * 0.5));
+      // El paso final llega a full antes del tope y se queda fijo (sin arrastre).
+      if (i === N - 1 && p >= center - seg) vis = Math.min(1, (p - (center - seg)) / (seg * 0.5));
       cap.style.opacity = String(vis);
       cap.style.pointerEvents = vis > 0.6 ? 'auto' : 'none';
     });
@@ -563,9 +575,9 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     min-height: 100svh;
     display: flex;
     align-items: center;
-    padding-top: calc(72px + 3rem);
+    padding-top: calc(var(--nav-h) + 3rem);
   }
-  .quiz__wrap { width: min(100% - var(--gutter) * 2, 1160px); margin-inline: auto; }
+  .quiz__wrap { width: min(100% - var(--gutter) * 2, 72.5rem); margin-inline: auto; }
 
   /* Bruma en movimiento del intro (Vanta FOG), opacidad reducida */
   .quiz-fog {
@@ -600,7 +612,7 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     display: flex;
     align-items: center;
     gap: 1rem;
-    max-width: 520px;
+    max-width: 32.5rem;
     margin: 0 auto 3rem;
   }
   .quiz-progress__bar {
@@ -631,8 +643,34 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
 
   /* Pregunta: el bloque se posiciona a la izquierda o derecha del monte */
   .quiz-question {
-    max-width: 470px;
+    position: relative;
+    max-width: 29.375rem;
     transform: translate(var(--tx, 0px), var(--ty, 0px));
+  }
+  /* Velo de legibilidad: oscurece lo que haya detrás (incluido el pico brillante
+     del monte) y se difumina en los bordes, sin verse como una tarjeta. */
+  .quiz-question::before {
+    content: "";
+    position: absolute;
+    inset: -3rem -3.8rem;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(104% 74% at 50% 47%,
+      color-mix(in srgb, var(--ink) 78%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 70%, transparent) 34%,
+      color-mix(in srgb, var(--ink) 30%, transparent) 62%,
+      transparent 82%);
+    filter: blur(20px);
+    /* Máscara: radial suave desplazado por ruido de baja frecuencia → borde de
+       neblina orgánico; el blur alto lo funde para que se sienta difuminado. */
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='460' height='320'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='47%25' r='56%25'%3E%3Cstop offset='28%25' stop-color='%23000' stop-opacity='1'/%3E%3Cstop offset='100%25' stop-color='%23000' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cfilter id='f' x='-45%25' y='-45%25' width='190%25' height='190%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008' numOctaves='3' seed='6' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='34' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)' filter='url(%23f)'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='460' height='320'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='47%25' r='56%25'%3E%3Cstop offset='28%25' stop-color='%23000' stop-opacity='1'/%3E%3Cstop offset='100%25' stop-color='%23000' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cfilter id='f' x='-45%25' y='-45%25' width='190%25' height='190%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008' numOctaves='3' seed='6' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='34' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)' filter='url(%23f)'/%3E%3C/svg%3E");
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-mode: alpha;
+    mask-mode: alpha;
   }
   .quiz-question.is-left { margin-right: auto; margin-left: 0; text-align: left; }
   .quiz-question.is-right { margin-left: auto; margin-right: 0; text-align: left; }
@@ -717,7 +755,7 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
 
   /* Resultado: panel legible sobre el Peak Guardian */
   .quiz-result {
-    max-width: 600px;
+    max-width: 37.5rem;
     margin-inline: auto;
     padding: clamp(1.6rem, 4vw, 2.6rem) clamp(1.4rem, 4vw, 2.4rem) clamp(1.8rem, 4vw, 2.6rem);
     background: color-mix(in srgb, var(--ink) 56%, transparent);
@@ -866,7 +904,7 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   .reveal {
     position: relative;
     z-index: 1;
-    min-height: 600svh; /* 6 pasos */
+    min-height: 520svh; /* 6 pasos; el último queda fijo al llegar al tope */
   }
   .reveal[hidden] { display: none; }
   .reveal__pin {
@@ -882,7 +920,7 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   .reveal__cap {
     position: absolute;
     top: 50%; left: 50%;
-    width: min(100% - var(--gutter) * 2, 460px);
+    width: min(100% - var(--gutter) * 2, 28.75rem);
     transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, 0px)));
     opacity: 0;
     pointer-events: none;
@@ -898,7 +936,7 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   .reveal__cap[data-rslot="desc2"] {
     left: 50% !important;
     --tx: 0px !important;
-    width: min(100% - var(--gutter) * 2, 640px);
+    width: min(100% - var(--gutter) * 2, 40rem);
     text-align: center;
   }
 
@@ -952,7 +990,15 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     background: color-mix(in srgb, var(--house-color, var(--lavender-400)) 14%, transparent);
   }
   .reveal__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
-  .reveal__cap--final { text-align: center; }
+  /* CTA final: centrado y en la franja baja, para no encimarse con el logo */
+  .reveal__cap--final {
+    text-align: center;
+    top: 72% !important;
+    left: 50% !important;
+    --tx: 0px !important;
+    --ty: 0px !important;
+    width: min(100% - var(--gutter) * 2, 40rem);
+  }
   .reveal__cap--final .reveal__rasgos { justify-content: center; }
   .reveal__cap--final .reveal__actions { justify-content: center; }
 
@@ -960,27 +1006,27 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     position: absolute;
     bottom: 2rem; left: 50%;
     transform: translateX(-50%);
-    width: 26px; height: 42px;
+    width: 1.625rem; height: 2.625rem;
     border: 1.5px solid var(--border);
     border-radius: 999px;
-    display: grid; justify-items: center; padding-top: 8px;
+    display: grid; justify-items: center; padding-top: 0.5rem;
     z-index: 3;
   }
   .reveal__hint span {
-    width: 4px; height: 8px; border-radius: 999px;
+    width: 0.25rem; height: 0.5rem; border-radius: 999px;
     background: var(--celeste-400); box-shadow: 0 0 10px var(--celeste-400);
     animation: scrollDot 1.8s var(--ease-out) infinite;
   }
   @keyframes scrollDot {
     0% { opacity: 0; transform: translateY(0); }
     30% { opacity: 1; }
-    100% { opacity: 0; transform: translateY(14px); }
+    100% { opacity: 0; transform: translateY(0.875rem); }
   }
   @media (prefers-reduced-motion: reduce) { .reveal__hint span { animation: none; } }
 
   @media (max-width: 760px) {
     .reveal__cap, .reveal__cap.is-left, .reveal__cap.is-right {
-      left: 50%; width: min(100% - var(--gutter) * 2, 520px); text-align: center;
+      left: 50%; width: min(100% - var(--gutter) * 2, 32.5rem); text-align: center;
       /* En móvil se ignora el desfase de pose: cada texto va centrado en pantalla */
       transform: translate(-50%, -50%);
     }

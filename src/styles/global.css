@@ -53,10 +53,12 @@
 
   /* Espaciado y ritmo */
   --space-section: clamp(3.5rem, 2.5rem + 5vw, 6.5rem);
-  --radius: 18px;
-  --radius-lg: 28px;
-  --maxw: 1200px;
+  --radius: 1.125rem;
+  --radius-lg: 1.75rem;
+  --maxw: 75rem;
   --gutter: clamp(1.25rem, 0.5rem + 3vw, 3rem);
+  /* Altura de la barra de navegación (fluida para escalar con la pantalla) */
+  --nav-h: clamp(3.5rem, 3rem + 1.5vw, 4.5rem);
 
   /* Sombras / brillos lunares */
   --glow-soft: 0 0 60px -10px color-mix(in srgb, var(--celeste-400) 40%, transparent);
@@ -74,6 +76,10 @@
 [hidden] { display: none !important; }
 
 html {
+  /* Raíz proporcional al ancho: el texto (y todo lo que está en rem) ocupa la
+     misma fracción de pantalla en cualquier resolución. Piso de 16px para
+     pantallas chicas y tope de 24px para monitores muy grandes. */
+  font-size: clamp(16px, 0.92vw, 24px);
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
