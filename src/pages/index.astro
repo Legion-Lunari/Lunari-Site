@@ -8,28 +8,28 @@ const DISCORD_URL = 'https://discord.com/invite/j2mEbRg9jc';
 const pilares = [
   {
     phase: '🌒',
-    title: 'Lorem ipsum dolor',
-    body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam.',
+    title: 'Torneos y concursos',
+    body: 'Competencias y eventos pensados para que el talento de nuestras jugadoras brille en un entorno seguro y competitivo.',
   },
   {
     phase: '🌓',
-    title: 'Consectetur elit',
-    body: 'Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo nemo enim.',
+    title: 'Mentorías',
+    body: 'Espacios de aprendizaje donde crecer dentro del juego acompañada por otras integrantes de la comunidad.',
   },
   {
     phase: '🌔',
-    title: 'Tempor incididunt',
-    body: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni.',
+    title: 'Experiencias',
+    body: 'Encuentros digitales y presenciales que conectan a miles de jugadoras de toda Latinoamérica.',
   },
 ];
 
 const vibes = [
-  'Lorem ipsum dolor sit amet',
-  'Consectetur adipiscing elit',
-  'Sed do eiusmod tempor',
-  'Incididunt ut labore et dolore',
-  'Ut enim ad minim veniam',
-  'Quis nostrud exercitation ullamco',
+  'Espacios seguros e inclusivos',
+  'Competencia y aprendizaje',
+  'Libertad de ser tú misma',
+  'Talento y visibilidad femenina',
+  'Vínculos dentro de la comunidad',
+  'Jugadoras de toda Latinoamérica',
 ];
 ---
 
@@ -77,33 +77,116 @@ const vibes = [
   </section>
 
   <section class="section" id="nosotras">
-    <div class="wrap-narrow intro stack" data-reveal>
-      <p class="eyebrow">Quiénes somos</p>
-      <h2 class="intro__title">
-        Lorem ipsum dolor sit amet,
-        <span class="accent-text">consectetur adipiscing elit.</span>
-      </h2>
-      <p class="lede">
-        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        Ut enim ad <span class="accent-text">minim veniam</span>, quis nostrud
-        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p>
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+    <div class="wrap-narrow intro" data-reveal>
+      <div class="intro__rail" aria-hidden="true">
+        <span class="intro__rail-star intro__rail-star--top">✦</span>
+        <span class="intro__rail-line"></span>
+        <span class="intro__rail-node"></span>
+        <span class="intro__rail-star intro__rail-star--bottom">✦</span>
+      </div>
+      <div class="intro__moon" aria-hidden="true">
+        <svg class="intro__moon-crescent" viewBox="0 0 220 220" fill="none">
+          <defs>
+            <linearGradient id="moon-grad" x1="0.2" y1="0" x2="0.6" y2="1">
+              <stop offset="0%" stop-color="#f5ead9" />
+              <stop offset="45%" stop-color="#dccbe4" />
+              <stop offset="100%" stop-color="#9c86c8" />
+            </linearGradient>
+            <radialGradient id="moon-haze" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#5b2ed6" stop-opacity="0.22" />
+              <stop offset="60%" stop-color="#5b2ed6" stop-opacity="0.10" />
+              <stop offset="100%" stop-color="#5b2ed6" stop-opacity="0" />
+            </radialGradient>
+            <radialGradient id="moon-star-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+              <stop offset="35%" stop-color="#b9a3f0" stop-opacity="0.35" />
+              <stop offset="100%" stop-color="#8c7be8" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="moon-ring" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#d9c6b6" stop-opacity="0.45" />
+              <stop offset="55%" stop-color="#d9c6b6" stop-opacity="0.3" />
+              <stop offset="100%" stop-color="#d9c6b6" stop-opacity="0" />
+            </linearGradient>
+            <mask id="moon-cut">
+              <rect width="220" height="220" fill="#fff" />
+              <!-- círculo desplazado a la derecha: creciente fina que abre → -->
+              <circle cx="124" cy="108" r="66" fill="#000" />
+            </mask>
+          </defs>
+
+          <!-- bruma violeta detrás de todo el emblema -->
+          <circle cx="108" cy="110" r="106" fill="url(#moon-haze)" />
+
+          <!-- anillos que encierran la luna (se desvanecen hacia la derecha) -->
+          <circle cx="106" cy="110" r="88" stroke="url(#moon-ring)" stroke-width="1.2" />
+          <circle cx="106" cy="110" r="95" stroke="url(#moon-ring)" stroke-opacity="0.35" stroke-width="1" />
+
+          <!-- creciente -->
+          <circle cx="98" cy="110" r="70" fill="url(#moon-grad)" mask="url(#moon-cut)" />
+
+          <!-- estrella de 4 puntas alargada, centro-derecha -->
+          <g class="intro__moon-flare">
+            <circle cx="131" cy="108" r="36" fill="url(#moon-star-glow)" />
+            <path
+              d="M131 74 Q134.5 102 152 108 Q134.5 114 131 142 Q127.5 114 110 108 Q127.5 102 131 74 Z"
+              fill="#ffffff"
+            />
+          </g>
+
+          <!-- polvo violeta a la izquierda y abajo de la creciente -->
+          <circle cx="34" cy="96" r="1.4" fill="#b9a3f0" opacity="0.7" />
+          <circle cx="26" cy="126" r="1" fill="#8c7be8" opacity="0.6" />
+          <circle cx="40" cy="150" r="1.8" fill="#b9a3f0" opacity="0.5" />
+          <circle cx="56" cy="172" r="1.2" fill="#eef0ff" opacity="0.65" />
+          <circle cx="78" cy="188" r="1.5" fill="#8c7be8" opacity="0.55" />
+          <circle cx="48" cy="66" r="1.1" fill="#8c7be8" opacity="0.5" />
+          <circle cx="64" cy="44" r="1.3" fill="#b9a3f0" opacity="0.6" />
+          <circle cx="30" cy="74" r="0.8" fill="#eef0ff" opacity="0.45" />
+          <circle cx="22" cy="108" r="0.9" fill="#eef0ff" opacity="0.4" />
+          <circle cx="52" cy="132" r="0.8" fill="#b9a3f0" opacity="0.45" />
+          <circle cx="68" cy="184" r="0.9" fill="#b9a3f0" opacity="0.4" />
+          <circle cx="90" cy="200" r="1.1" fill="#8c7be8" opacity="0.5" />
+          <circle cx="104" cy="26" r="1" fill="#b9a3f0" opacity="0.5" />
+          <circle cx="84" cy="18" r="0.8" fill="#eef0ff" opacity="0.4" />
+        </svg>
+      </div>
+      <div class="intro__content stack">
+        <p class="eyebrow" data-phase="✦">¿Quiénes somos?</p>
+        <h2 class="intro__title">
+          Espacios seguros y competitivos
+          <span class="accent-text">para mujeres en League of Legends.</span>
+        </h2>
+        <div class="intro__divider" aria-hidden="true"><span>✦</span></div>
+        <p class="lede intro__p">
+          Legión Lunari es una comunidad dedicada a crear espacios
+          <span class="accent-text">seguros y competitivos</span> para mujeres
+          dentro de League of Legends.
+        </p>
+        <p class="intro__p">
+          Organizamos eventos, torneos, concursos, mentorías y experiencias,
+          tanto digitales como presenciales, conectando a miles de jugadoras de
+          toda Latinoamérica.
+        </p>
+      </div>
     </div>
   </section>
 
   <section class="section pilares-section">
     <div class="wrap">
-      <p class="eyebrow" data-reveal>Lorem ipsum dolor</p>
+      <div class="pilares-head" data-reveal>
+        <p class="eyebrow" data-phase="✦">Juntas somos luz</p>
+        <h2 class="pilares-title">Lo que hacemos</h2>
+        <span class="pilares-divider" aria-hidden="true">✦</span>
+      </div>
       <div class="pilares">
         {pilares.map((p, i) => (
-          <article class="card pilar" data-reveal style={`--reveal-delay:${i * 120}ms`}>
-            <h3 class="pilar__title">{p.title}</h3>
-            <p class="pilar__body">{p.body}</p>
+          <article class="pilar" data-reveal style={`--reveal-delay:${i * 120}ms`}>
+            <div class="pilar__frame">
+              <h3 class="pilar__title">{p.title}</h3>
+              <span class="pilar__divider" aria-hidden="true">✦</span>
+              <p class="pilar__body">{p.body}</p>
+            </div>
+            <span class="pilar__gem" aria-hidden="true">✦</span>
           </article>
         ))}
       </div>
@@ -113,13 +196,19 @@ const vibes = [
   <section class="section comunidad">
     <div class="wrap comunidad__grid">
       <div class="comunidad__text stack" data-reveal>
-        <p class="eyebrow">Lorem ipsum</p>
-        <h2>Lorem ipsum dolor sit<br />amet consectetur adipiscing.</h2>
+        <p class="eyebrow">Nuestra misión</p>
+        <h2>Una comunidad activa,<br />segura e inclusiva.</h2>
         <p class="lede">
-          Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
-          consectetur, adipisci velit, sed quia non numquam eius modi tempora.
+          Fortalecer y hacer crecer una comunidad gamer femenina donde cada
+          mujer pueda ser ella misma, expresarse y disfrutar de League of
+          Legends <span class="accent-text">sin miedo a ser juzgada</span>.
         </p>
-        <a href="/about" class="btn btn--ghost">Lorem ipsum</a>
+        <p>
+          Creamos espacios de encuentro, competencia y aprendizaje que impulsen
+          el talento de nuestras integrantes y fortalezcan los vínculos dentro
+          de la comunidad.
+        </p>
+        <a href="/about" class="btn btn--ghost">Conoce más sobre nosotras</a>
       </div>
       <ul class="vibes" data-reveal style="--reveal-delay:120ms">
         {vibes.map((v) => (
@@ -132,13 +221,15 @@ const vibes = [
   <section class="section cta-final">
     <div class="wrap cta-final__inner card" data-reveal>
       <LunariLogo class="cta-final__logo" />
-      <p class="eyebrow">Lorem ipsum</p>
+      <p class="eyebrow">Nuestra visión</p>
       <h2 class="cta-final__title">
-        Lorem ipsum dolor sit amet.<br />
-        <span class="glow-text">Consectetur adipiscing elit?</span>
+        La comunidad gamer femenina<br />
+        <span class="glow-text">referente en Latinoamérica.</span>
       </h2>
       <p class="lede">
-        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim.
+        Expandiendo nuestra presencia hacia espacios presenciales y creando
+        nuevos proyectos, torneos e iniciativas que den mayor visibilidad a las
+        mujeres dentro de League of Legends y los esports.
       </p>
       <div class="hero__actions">
         <a href={DISCORD_URL} class="btn" target="_blank" rel="noopener">
@@ -349,20 +440,230 @@ const vibes = [
     );
   }
 
+  /* Quiénes somos: texto acompañado por un riel vertical ornamental y una
+     luna creciente con destello (ambos decorativos, se ocultan si no caben).
+     --node-y ancla a la misma altura el nodo del riel y el centro de la luna. */
+  .intro { position: relative; --node-y: 50%; }
   .intro__title { font-size: var(--step-2); }
 
-  /* Pilares */
+  .intro__rail {
+    position: absolute;
+    left: -3.5rem;
+    top: -0.5rem;
+    bottom: -0.5rem;
+    width: 1rem;
+    color: var(--lavender-400);
+  }
+  .intro__rail-star {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    line-height: 1;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--lavender-400) 60%, transparent);
+  }
+  .intro__rail-star--top { top: 0; }
+  .intro__rail-star--bottom { bottom: 0; }
+  .intro__rail-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 1.2rem;
+    bottom: 1.2rem;
+    width: 1px;
+    background: linear-gradient(to bottom,
+      transparent,
+      color-mix(in srgb, var(--lavender-400) 45%, transparent) 22%,
+      color-mix(in srgb, var(--lavender-400) 45%, transparent) 78%,
+      transparent);
+  }
+  /* El nodo va sobre la línea, a la altura de la luna */
+  .intro__rail-node {
+    position: absolute;
+    left: 50%;
+    top: var(--node-y);
+    transform: translate(-50%, -50%);
+    width: 0.55rem;
+    height: 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--lavender-400) 65%, transparent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--lavender-400) 45%, transparent);
+  }
+
+  .intro__moon {
+    position: absolute;
+    left: -11.5rem;
+    top: var(--node-y);
+    width: 10.5rem;
+    height: 10.5rem;
+    /* Centra verticalmente la luna (y su estrella, al 49% del viewBox) en --node-y */
+    transform: translateY(-49%);
+    pointer-events: none;
+  }
+  .intro__moon-crescent {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 0 20px rgba(156, 134, 200, 0.35));
+  }
+  /* La estrella central respira lentamente */
+  .intro__moon-flare {
+    transform-origin: 131px 108px;
+    animation: moonStarTwinkle 3.8s ease-in-out infinite;
+  }
+  @keyframes moonStarTwinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.88); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .intro__moon-flare { animation: none; }
+  }
+
+  /* Cola ornamental tras el eyebrow */
+  .intro__content .eyebrow::after {
+    content: "";
+    width: 4.5rem;
+    height: 1px;
+    background: linear-gradient(to right,
+      color-mix(in srgb, var(--lavender-400) 55%, transparent), transparent);
+  }
+
+  .intro__divider {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    max-width: 30rem;
+    color: var(--lavender-400);
+  }
+  .intro__divider span {
+    font-size: 1rem;
+    line-height: 1;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--lavender-400) 70%, transparent);
+  }
+  .intro__divider::before,
+  .intro__divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent, color-mix(in srgb, var(--lavender-400) 50%, transparent));
+  }
+  .intro__divider::after {
+    background: linear-gradient(to left,
+      transparent, color-mix(in srgb, var(--lavender-400) 50%, transparent));
+  }
+
+  /* Párrafos con marcador estelar */
+  .intro__p {
+    position: relative;
+    padding-left: 1.9rem;
+  }
+  .intro__p::before {
+    content: "✦";
+    position: absolute;
+    left: 0;
+    top: 0.3em;
+    font-size: 0.8em;
+    line-height: 1;
+    color: var(--lavender-400);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--lavender-400) 60%, transparent);
+  }
+
+  @media (max-width: 66rem) {
+    .intro__moon { display: none; }
+  }
+  @media (max-width: 58rem) {
+    .intro__rail { display: none; }
+  }
+
+  /* Pilares: marcos ornamentales estilo carta astral (borde champán con
+     esquinas escalonadas y gema en el borde inferior) */
+  .pilares-section {
+    --orn: #e6c69b;
+    --orn-soft: color-mix(in srgb, var(--orn) 45%, transparent);
+  }
+  .pilares-title {
+    margin-top: 0.6rem;
+    color: var(--moonlight);
+  }
+  .pilares-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1.1rem;
+    color: var(--orn);
+    font-size: 0.9rem;
+    line-height: 1;
+    text-shadow: 0 0 8px var(--orn-soft);
+  }
+  .pilares-divider::before,
+  .pilares-divider::after {
+    content: "";
+    height: 1px;
+    width: 6rem;
+    background: linear-gradient(to right, transparent, var(--orn-soft));
+  }
+  .pilares-divider::after {
+    background: linear-gradient(to left, transparent, var(--orn-soft));
+  }
   .pilares {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(16.25rem, 1fr));
-    gap: 1.4rem;
-    margin-top: 2.5rem;
+    gap: 2.2rem 1.6rem;
+    margin-top: 3.2rem;
   }
-  .pilar { padding: 2rem 1.8rem; transition: transform 0.4s var(--ease-out), border-color 0.4s var(--ease-out); }
-  .pilar:hover { transform: translateY(-6px); border-color: var(--border); }
-  .pilar__phase { font-size: 2rem; display: block; filter: saturate(0.2) brightness(1.5); }
-  .pilar__title { font-size: var(--step-1); margin-top: 0.8rem; }
-  .pilar__body { color: var(--text-muted); margin-top: 0.6rem; font-size: var(--step-0); }
+  .pilar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .pilar:hover { transform: translateY(-6px); }
+  .pilar__frame {
+    flex: 1;
+    padding: 2.4rem 1.2rem 2.2rem;
+    border: 26px solid transparent;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M44 4H20V10H12V18H4V100H12V108H20V116H100V108H108V100H116V18H108V10H100V4Z' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='3'/%3E%3Crect x='17' y='17' width='86' height='86' fill='none' stroke='%23e6c69b' stroke-opacity='.14'/%3E%3C/svg%3E") 44 / 26px;
+    background: linear-gradient(172deg,
+      color-mix(in srgb, var(--grape-800) 30%, transparent),
+      color-mix(in srgb, var(--ink) 45%, transparent));
+    box-shadow: 0 30px 70px -50px rgba(0, 0, 0, 0.9);
+  }
+  .pilar__title { font-size: var(--step-1); color: var(--moonlight); }
+  .pilar__divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+    color: var(--orn);
+    font-size: 0.75rem;
+    line-height: 1;
+    text-shadow: 0 0 8px var(--orn-soft);
+  }
+  .pilar__divider::before,
+  .pilar__divider::after {
+    content: "";
+    height: 1px;
+    width: 3rem;
+    background: linear-gradient(to right, transparent, var(--orn-soft));
+  }
+  .pilar__divider::after {
+    background: linear-gradient(to left, transparent, var(--orn-soft));
+  }
+  .pilar__body { color: var(--text-muted); margin-top: 1rem; font-size: var(--step-0); }
+  .pilar__gem {
+    position: absolute;
+    left: 50%;
+    bottom: -0.35rem;
+    transform: translateX(-50%);
+    color: var(--orn);
+    font-size: 1.05rem;
+    line-height: 1;
+    text-shadow: 0 0 10px var(--orn-soft);
+  }
 
   /* Comunidad */
   .comunidad__grid {

@@ -1,0 +1,205 @@
+---
+/**
+ * StarTrail: estela de cometa que sigue al puntero.
+ * Cinta continua dibujada como polígono afilado (cabeza redonda → punta) con
+ * la línea central suavizada, más algún destello suelto. Canvas 2D superpuesto
+ * sin eventos; solo con puntero fino y sin prefers-reduced-motion. El bucle
+ * rAF corre únicamente mientras la estela sea visible.
+ */
+---
+
+<canvas id="star-trail" aria-hidden="true"></canvas>
+
+<style>
+  #star-trail {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('star-trail') as HTMLCanvasElement | null;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = matchMedia('(pointer: fine)').matches;
+
+  if (canvas && !reduced && finePointer) {
+    const ctx = canvas.getContext('2d')!;
+
+    // Un solo color claro (moonlight, apenas más frío que el blanco puro).
+    const COLOR = '238,240,255';
+
+    const LIFE = 480;          // ms que tarda un punto de la cola en apagarse
+    const HEAD_W = 3.2;        // radio de la cabeza en px
+    const STEP = 4;            // px entre muestras del trayecto (se interpola)
+    const MAX_POINTS = 160;
+    const TAIL_SPARKLE = 0.22; // probabilidad de brillito cuando un punto se apaga
+
+    interface TrailPoint { x: number; y: number; born: number }
+    interface Sparkle {
+      x: number; y: number; vx: number; vy: number;
+      born: number; life: number; size: number; phase: number;
+    }
+
+    let dpr = 1;
+    const resize = () => {
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = Math.round(innerWidth * dpr);
+      canvas.height = Math.round(innerHeight * dpr);
+    };
+    addEventListener('resize', resize, { passive: true });
+    resize();
+
+    const points: TrailPoint[] = [];
+    const sparkles: Sparkle[] = [];
+    let raf = 0;
+
+    // Destello de 4 puntas (✦): rombo con lados curvados hacia el centro.
+    const drawSparkle = (x: number, y: number, r: number) => {
+      const k = r * 0.22;
+      ctx.beginPath();
+      ctx.moveTo(x, y - r);
+      ctx.quadraticCurveTo(x + k, y - k, x + r, y);
+      ctx.quadraticCurveTo(x + k, y + k, x, y + r);
+      ctx.quadraticCurveTo(x - k, y + k, x - r, y);
+      ctx.quadraticCurveTo(x - k, y - k, x, y - r);
+      ctx.closePath();
+      ctx.fill();
+    };
+
+    // Construye el contorno de la cinta: línea central suavizada (Chaikin ×2,
+    // redondea de verdad las esquinas del muestreo del mouse) y desplazada por
+    // su normal un semiancho que se afila con la edad.
+    const buildRibbon = (now: number) => {
+      let line: TrailPoint[] = points;
+      for (let pass = 0; pass < 2; pass++) {
+        const out: TrailPoint[] = [line[0]];
+        for (let i = 0; i < line.length - 1; i++) {
+          const a = line[i], b = line[i + 1];
+          out.push(
+            { x: a.x * 0.75 + b.x * 0.25, y: a.y * 0.75 + b.y * 0.25, born: a.born * 0.75 + b.born * 0.25 },
+            { x: a.x * 0.25 + b.x * 0.75, y: a.y * 0.25 + b.y * 0.75, born: a.born * 0.25 + b.born * 0.75 },
+          );
+        }
+        out.push(line[line.length - 1]);
+        line = out;
+      }
+      const n = line.length;
+      const w: number[] = [];
+      for (let i = 0; i < n; i++) {
+        const age = (now - line[i].born) / LIFE;
+        w.push(Math.max(HEAD_W * Math.pow(Math.max(1 - age, 0), 1.3), 0.1));
+      }
+      const left: number[] = [], right: number[] = [];
+      for (let i = 0; i < n; i++) {
+        const a = line[Math.max(i - 1, 0)];
+        const b = line[Math.min(i + 1, n - 1)];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        const len = Math.hypot(dx, dy) || 1;
+        dx /= len; dy /= len;
+        left.push(line[i].x - dy * w[i], line[i].y + dx * w[i]);
+        right.push(line[i].x + dy * w[i], line[i].y - dx * w[i]);
+      }
+      ctx.beginPath();
+      ctx.moveTo(left[0], left[1]);
+      for (let i = 1; i < n; i++) ctx.lineTo(left[i * 2], left[i * 2 + 1]);
+      for (let i = n - 1; i >= 0; i--) ctx.lineTo(right[i * 2], right[i * 2 + 1]);
+      ctx.closePath();
+      // Cabeza redonda en el punto más nuevo.
+      const head = line[n - 1];
+      ctx.moveTo(head.x + w[n - 1], head.y);
+      ctx.arc(head.x, head.y, w[n - 1], 0, Math.PI * 2);
+    };
+
+    let prevFrame = 0;
+    const frame = (now: number) => {
+      const dt = Math.min((now - prevFrame) / 1000, 0.05);
+      prevFrame = now;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+      // Purga los puntos apagados (siempre por el extremo viejo); la cola se
+      // deshace en brillitos justo donde se apaga.
+      while (points.length && now - points[0].born > LIFE) {
+        const dead = points.shift()!;
+        if (Math.random() < TAIL_SPARKLE) {
+          const a = Math.random() * Math.PI * 2;
+          const drift = 2 + Math.random() * 7;
+          sparkles.push({
+            x: dead.x + (Math.random() - 0.5) * 6,
+            y: dead.y + (Math.random() - 0.5) * 6,
+            vx: Math.cos(a) * drift,
+            vy: Math.sin(a) * drift - 3,
+            born: now,
+            life: 420 + Math.random() * 520,
+            size: 1.1 + Math.random() * 1.4,
+            phase: Math.random() * Math.PI * 2,
+          });
+        }
+      }
+
+      if (points.length > 1) {
+        buildRibbon(now);
+        // Brillo difuso y relleno nítido de la misma forma.
+        ctx.filter = 'blur(6px)';
+        ctx.fillStyle = `rgba(${COLOR},0.28)`;
+        ctx.fill();
+        ctx.filter = 'none';
+        ctx.fillStyle = `rgba(${COLOR},0.5)`;
+        ctx.fill();
+      }
+
+      for (let i = sparkles.length - 1; i >= 0; i--) {
+        const s = sparkles[i];
+        const t = (now - s.born) / s.life;
+        if (t >= 1) { sparkles.splice(i, 1); continue; }
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
+        const fade = (1 - t) * (1 - t);
+        const twinkle = 0.7 + 0.3 * Math.sin(s.phase + now * 0.012);
+        ctx.fillStyle = `rgba(${COLOR},${0.55 * fade * twinkle})`;
+        drawSparkle(s.x, s.y, s.size * (0.5 + 0.5 * fade));
+      }
+
+      raf = points.length || sparkles.length ? requestAnimationFrame(frame) : 0;
+    };
+
+    addEventListener('pointermove', (e) => {
+      const now = performance.now();
+      const last = points[points.length - 1];
+      if (!last) {
+        points.push({ x: e.clientX, y: e.clientY, born: now });
+      } else {
+        const dx = e.clientX - last.x;
+        const dy = e.clientY - last.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist >= 250) {
+          // Salto brusco (p. ej. el cursor reentra por otro lado): reinicia.
+          points.length = 0;
+          points.push({ x: e.clientX, y: e.clientY, born: now });
+        } else if (dist >= STEP) {
+          // Interpola muestras densas en el trayecto: sin esto los movimientos
+          // rápidos dejan segmentos rectos y esquinas duras.
+          const steps = Math.ceil(dist / STEP);
+          for (let i = 1; i <= steps; i++) {
+            const f = i / steps;
+            if (points.length >= MAX_POINTS) points.shift();
+            points.push({
+              x: last.x + dx * f,
+              y: last.y + dy * f,
+              born: last.born + (now - last.born) * f,
+            });
+          }
+        }
+      }
+      if (!raf && (points.length || sparkles.length)) {
+        prevFrame = now;
+        raf = requestAnimationFrame(frame);
+      }
+    }, { passive: true });
+  }
+</script>
