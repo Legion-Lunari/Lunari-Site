@@ -219,13 +219,23 @@ const vibes = [
   </section>
 
   <section class="section cta-final">
-    <div class="wrap cta-final__inner card" data-reveal>
-      <LunariLogo class="cta-final__logo" />
+    <div class="wrap cta-final__inner" data-reveal>
+      <span class="cta-final__corner cta-final__corner--tl" aria-hidden="true"></span>
+      <span class="cta-final__corner cta-final__corner--tr" aria-hidden="true"></span>
+      <span class="cta-final__corner cta-final__corner--bl" aria-hidden="true"></span>
+      <span class="cta-final__corner cta-final__corner--br" aria-hidden="true"></span>
+      <div class="cta-final__emblem">
+        <span class="cta-final__emblem-star cta-final__emblem-star--t" aria-hidden="true">✦</span>
+        <span class="cta-final__emblem-star cta-final__emblem-star--l" aria-hidden="true">✦</span>
+        <LunariLogo class="cta-final__logo" />
+        <span class="cta-final__emblem-star cta-final__emblem-star--r" aria-hidden="true">✦</span>
+      </div>
       <p class="eyebrow">Nuestra visión</p>
       <h2 class="cta-final__title">
         La comunidad gamer femenina<br />
-        <span class="glow-text">referente en Latinoamérica.</span>
+        <span class="accent-text">referente en Latinoamérica.</span>
       </h2>
+      <span class="cta-final__orn" aria-hidden="true">✦</span>
       <p class="lede">
         Expandiendo nuestra presencia hacia espacios presenciales y creando
         nuevos proyectos, torneos e iniciativas que den mayor visibilidad a las
@@ -235,7 +245,14 @@ const vibes = [
         <a href={DISCORD_URL} class="btn" target="_blank" rel="noopener">
           Unirse al Discord <span aria-hidden="true">→</span>
         </a>
-        <a href="/quiz-de-casas" class="btn btn--ghost">Hacer el quiz de casas</a>
+        <a href="/quiz-de-casas" class="btn btn--ghost">
+          Hacer el quiz de casas <span aria-hidden="true">✦</span>
+        </a>
+      </div>
+      <div class="cta-final__moonrow" aria-hidden="true">
+        <span>· · ·</span>
+        <span class="cta-final__moonrow-moon">☾</span>
+        <span>· · ·</span>
       </div>
     </div>
   </section>
@@ -694,17 +711,205 @@ const vibes = [
   .vibe:hover { border-color: var(--border); transform: translateX(4px); }
   .vibe__star { color: var(--celeste-400); text-shadow: 0 0 12px var(--celeste-400); }
 
-  /* CTA final */
+  /* CTA final: gran marco celestial — borde champán redondeado con esquinas
+     ornamentadas, nubes violeta en la base y botones tipo talismán */
   .cta-final__inner {
     position: relative;
     text-align: center;
-    padding: clamp(2.5rem, 4vw, 4.5rem) clamp(1.5rem, 4vw, 4rem);
-    overflow: hidden;
+    padding: clamp(1.4rem, 2vw, 2rem) clamp(1.2rem, 3vw, 3rem);
+    /* Sin overflow hidden: el halo del logo debe difuminarse más allá del
+       marco en vez de cortarse en seco contra el borde superior */
+    /* Mismo marco escalonado que los pilares */
+    border: 26px solid transparent;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M44 4H20V10H12V18H4V100H12V108H20V116H100V108H108V100H116V18H108V10H100V4Z' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='3'/%3E%3Crect x='17' y='17' width='86' height='86' fill='none' stroke='%23e6c69b' stroke-opacity='.14'/%3E%3C/svg%3E") 44 / 26px;
+    box-shadow: 0 40px 120px -60px rgba(0, 0, 0, 0.95);
   }
-  .cta-final__inner .hero__actions { justify-content: center; }
-  .cta-final__logo { margin-bottom: 1.4rem; }
-  .cta-final__title { font-size: var(--step-3); margin-block: 0.6rem 1rem; }
-  .cta-final__inner > * { position: relative; z-index: 1; }
+  /* Nubes y velo del interior, desvanecidos hacia los cuatro bordes */
+  .cta-final__inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(58% 46% at 10% 100%,
+        color-mix(in srgb, var(--violet-600) 38%, transparent) 0%, transparent 70%),
+      radial-gradient(58% 46% at 90% 100%,
+        color-mix(in srgb, var(--grape-800) 70%, transparent) 0%, transparent 70%),
+      radial-gradient(70% 55% at 50% 0%,
+        color-mix(in srgb, var(--grape-800) 35%, transparent) 0%, transparent 60%),
+      color-mix(in srgb, var(--ink) 72%, transparent);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
+      linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+    mask-image:
+      linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
+      linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+  .cta-final__inner > :not(.cta-final__corner) { position: relative; z-index: 1; }
+
+  /* Florituras de las cuatro esquinas: escalón + rombo, eco del marco */
+  .cta-final__inner > .cta-final__corner {
+    position: absolute;
+    z-index: 0;
+    width: clamp(2.6rem, 4.5vw, 3.6rem);
+    height: clamp(2.6rem, 4.5vw, 3.6rem);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M44 4H18V11H10V19H4V44' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='2'/%3E%3Cpath d='M21 13L29 21L21 29L13 21Z' fill='%23e6c69b' fill-opacity='.9'/%3E%3Ccircle cx='44' cy='4' r='1.8' fill='%23e6c69b' fill-opacity='.7'/%3E%3Ccircle cx='4' cy='44' r='1.8' fill='%23e6c69b' fill-opacity='.7'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+  .cta-final__corner--tl { top: 0.4rem; left: 0.4rem; }
+  .cta-final__corner--tr { top: 0.4rem; right: 0.4rem; transform: scaleX(-1); }
+  .cta-final__corner--bl { bottom: 0.4rem; left: 0.4rem; transform: scaleY(-1); }
+  .cta-final__corner--br { bottom: 0.4rem; right: 0.4rem; transform: scale(-1); }
+
+  /* Emblema: logo con halo y diamantes guardianes */
+  .cta-final__emblem {
+    display: block;
+    width: fit-content;
+    position: relative;
+    margin-inline: auto;
+    margin-bottom: 0.6rem;
+  }
+  /* Escala y tinte lila del logo (en el mockup no es blanco puro).
+     :global porque la clase pasada al componente no lleva el scope de la página. */
+  .cta-final :global(.cta-final__logo) { width: clamp(120px, 12vw, 160px); }
+  .cta-final :global(.cta-final__logo img) {
+    filter:
+      sepia(0.32) saturate(2.2) hue-rotate(212deg)
+      drop-shadow(0 0 22px color-mix(in srgb, var(--lavender-400) 65%, transparent))
+      drop-shadow(0 0 60px color-mix(in srgb, var(--violet-600) 50%, transparent));
+  }
+  /* Halo violeta pronunciado detrás del logo, como en el mockup */
+  .cta-final__emblem::before {
+    content: "";
+    position: absolute;
+    inset: -42%;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      color-mix(in srgb, var(--violet-600) 42%, transparent),
+      color-mix(in srgb, var(--lavender-400) 16%, transparent) 48%,
+      transparent 72%);
+  }
+  /* Destellos alargados de 4 puntas custodiando el logo */
+  .cta-final__emblem-star {
+    position: absolute;
+    color: var(--moonlight);
+    font-size: 1.1rem;
+    line-height: 1;
+    text-shadow:
+      0 0 10px rgba(238, 240, 255, 0.9),
+      0 0 24px color-mix(in srgb, var(--lavender-400) 80%, transparent);
+  }
+  .cta-final__emblem-star::after {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--lavender-200);
+    opacity: 0.85;
+    box-shadow: 0 0 6px color-mix(in srgb, var(--lavender-400) 80%, transparent);
+  }
+  .cta-final__emblem-star--t { top: -1.9rem; left: 50%; transform: translateX(-50%) scaleY(1.55); }
+  .cta-final__emblem-star--t::after { left: -0.9rem; top: 55%; }
+  .cta-final__emblem-star--l { top: 50%; left: -2.4rem; transform: translateY(-50%) scaleY(1.55); }
+  .cta-final__emblem-star--l::after { left: -0.6rem; top: -0.5rem; }
+  .cta-final__emblem-star--r { top: 50%; right: -2.4rem; transform: translateY(-50%) scaleY(1.55); }
+  .cta-final__emblem-star--r::after { right: -0.6rem; bottom: -0.5rem; }
+
+  .cta-final__title { font-size: var(--step-2); margin-block: 0.5rem 0.8rem; }
+  .cta-final__inner .lede { font-size: var(--step-0); }
+  /* En la referencia la segunda línea va recta, no en itálica */
+  .cta-final__title .accent-text { font-style: normal; }
+
+  /* Mini divisor bajo el título */
+  .cta-final__orn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1.1rem;
+    color: var(--lavender-400);
+    font-size: 0.7rem;
+    line-height: 1;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--lavender-400) 60%, transparent);
+  }
+  .cta-final__orn::before,
+  .cta-final__orn::after {
+    content: "";
+    width: 2.6rem;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent, color-mix(in srgb, var(--lavender-400) 50%, transparent));
+  }
+  .cta-final__orn::after {
+    background: linear-gradient(to left,
+      transparent, color-mix(in srgb, var(--lavender-400) 50%, transparent));
+  }
+
+  /* Botones talismán: contorno con esquinas cortadas y relleno propio */
+  .cta-final .hero__actions { justify-content: center; margin-top: 1.5rem; }
+  .cta-final .btn {
+    position: relative;
+    border: none;
+    border-radius: 0;
+    clip-path: polygon(
+      0.95rem 0, calc(100% - 0.95rem) 0, 100% 0.95rem,
+      100% calc(100% - 0.95rem), calc(100% - 0.95rem) 100%,
+      0.95rem 100%, 0 calc(100% - 0.95rem), 0 0.95rem);
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--lavender-200) 85%, transparent),
+      var(--lavender-400));
+    box-shadow: none;
+    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--violet-600) 60%, transparent));
+  }
+  .cta-final .btn::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    z-index: -1;
+    clip-path: polygon(
+      0.85rem 0, calc(100% - 0.85rem) 0, 100% 0.85rem,
+      100% calc(100% - 0.85rem), calc(100% - 0.85rem) 100%,
+      0.85rem 100%, 0 calc(100% - 0.85rem), 0 0.85rem);
+    background: linear-gradient(135deg, var(--lavender-400), var(--violet-600) 75%);
+  }
+  .cta-final .btn:hover {
+    box-shadow: none;
+    filter: drop-shadow(0 0 26px color-mix(in srgb, var(--lavender-400) 75%, transparent))
+      brightness(1.06);
+  }
+  .cta-final .btn--ghost {
+    background: color-mix(in srgb, var(--lavender-400) 45%, transparent);
+    filter: none;
+  }
+  .cta-final .btn--ghost::before {
+    background: color-mix(in srgb, var(--night-900) 90%, var(--lavender-400));
+  }
+  .cta-final .btn--ghost:hover {
+    background: color-mix(in srgb, var(--lavender-400) 70%, transparent);
+    filter: drop-shadow(0 0 18px color-mix(in srgb, var(--lavender-400) 45%, transparent));
+  }
+  .cta-final .btn--ghost span { color: var(--lavender-200); }
+
+  /* Remate inferior: puntos y luna creciente */
+  .cta-final__moonrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.3rem;
+    color: color-mix(in srgb, #e6c69b 55%, transparent);
+    font-size: 0.8rem;
+    letter-spacing: 0.4em;
+    line-height: 1;
+  }
+  .cta-final__moonrow-moon {
+    font-size: 1.1rem;
+    letter-spacing: 0;
+    color: #e8b08a;
+    text-shadow: 0 0 12px rgba(232, 176, 138, 0.65);
+  }
 </style>
 
 <script>
