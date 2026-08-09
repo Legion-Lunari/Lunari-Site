@@ -1,0 +1,368 @@
+---
+/**
+ * ConstellationReveal (sweep)
+ */
+---
+
+<style is:global>
+  [data-constellation] { position: relative; }
+  [data-constellation] > .cr-content {
+    --cr-p: -20%;
+    opacity: 0;
+  }
+  [data-constellation].cr-running > .cr-content {
+    opacity: 1;
+    -webkit-mask-image: linear-gradient(100deg, #000 calc(var(--cr-p) - 18%), transparent var(--cr-p));
+            mask-image: linear-gradient(100deg, #000 calc(var(--cr-p) - 18%), transparent var(--cr-p));
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+  }
+  [data-constellation].cr-revealed > .cr-content {
+    opacity: 1;
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  [data-constellation] > canvas.cr-canvas {
+    position: absolute;
+    inset: -50px; /* margen para que los destellos respiren fuera del box */
+    width: calc(100% + 100px);
+    height: calc(100% + 100px);
+    max-width: none;
+    pointer-events: none;
+    z-index: 2;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-constellation] > .cr-content {
+      opacity: 1 !important;
+      -webkit-mask-image: none !important;
+              mask-image: none !important;
+    }
+    [data-constellation] > canvas.cr-canvas { display: none; }
+  }
+</style>
+
+<script>
+  (() => {
+    const TAU = Math.PI * 2;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const PAD = 50; // debe coincidir con el inset del canvas
+
+    // Paleta del sitio: marfil de la luna, lavandas y blanco lunar
+    const CREAM = '#f5ead9';
+    const LILA = '#b9a3f0';
+    const PALE = '#eef0ff';
+    const LINE = 'rgba(169, 157, 224, 0.32)';
+    const RING = 'rgba(169, 157, 224, 0.38)';
+
+    const rand = (a: number, b: number) => a + Math.random() * (b - a);
+    const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1);
+    const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+    type Grad = (c: CanvasRenderingContext2D, s: number) => string | CanvasGradient;
+
+    interface Star {
+      x: number; y: number; size: number; delay: number; ph: number;
+      kind: number; ringR: number;
+      flareAmp: number; flareDur: number; flareGlow: number; flareRot: number;
+      flarePale: boolean; eaten: number;
+    }
+    interface Particle {
+      x: number; y: number; vx: number; vy: number;
+      size: number; rot: number; spin: number;
+      life: number; born: number; pale: boolean; star: boolean;
+    }
+
+    // Estrella de 4 puntas esbelta (más alta que ancha), lados cóncavos
+    // cerrados y degradado crema→lila, como la de la referencia lunar
+    function drawSpark(
+      ctx: CanvasRenderingContext2D,
+      x: number, y: number, size: number, rot: number, alpha: number, grad: Grad
+    ) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.globalAlpha = alpha;
+      const vy = size * 1.25, vx = size * 0.8, pinch = 0.13;
+      ctx.fillStyle = grad(ctx, size);
+      ctx.beginPath();
+      ctx.moveTo(0, -vy);
+      ctx.quadraticCurveTo(vx * pinch, -vy * pinch, vx, 0);
+      ctx.quadraticCurveTo(vx * pinch, vy * pinch, 0, vy);
+      ctx.quadraticCurveTo(-vx * pinch, vy * pinch, -vx, 0);
+      ctx.quadraticCurveTo(-vx * pinch, -vy * pinch, 0, -vy);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function buildStars(w: number, h: number, count: number, sweep: number): Star[] {
+      const stars: Star[] = [];
+      const cols = Math.ceil(Math.sqrt(count * w / h)) || 1;
+      const rows = Math.ceil(count / cols);
+      const cw = w / cols, ch = h / rows;
+      let i = 0;
+      for (let r = 0; r < rows && i < count; r++) {
+        for (let c = 0; c < cols && i < count; c++, i++) {
+          const x = PAD + c * cw + rand(cw * 0.2, cw * 0.8);
+          const roll = Math.random();
+          stars.push({
+            x,
+            y: PAD + r * ch + rand(ch * 0.2, ch * 0.8),
+            size: rand(3.5, 6.5),
+            delay: (x - PAD) / w * sweep * 0.45 + rand(0, 100),
+            ph: rand(0, TAU),
+            // kind: 0 = principal con anillo, 1 = destello normal, 2 = nodo anular
+            kind: roll < 0.22 ? 0 : (roll < 0.82 ? 1 : 2),
+            ringR: rand(2.2, 2.8),
+            flareAmp: rand(0.35, 0.95),
+            flareDur: rand(170, 340),
+            flareGlow: rand(0.4, 0.75),
+            flareRot: rand(-0.3, 0.3),
+            flarePale: Math.random() < 0.4,
+            eaten: 0,
+          });
+        }
+      }
+      return stars;
+    }
+
+    function buildLinks(stars: Star[]) {
+      const links: { a: number; b: number }[] = [];
+      const seen = new Set<string>();
+      stars.forEach((s, i) => {
+        stars
+          .map((o, j) => ({ j, d: (s.x - o.x) ** 2 + (s.y - o.y) ** 2 }))
+          .filter((o) => o.j !== i)
+          .sort((a, b) => a.d - b.d)
+          .slice(0, 2)
+          .forEach((o) => {
+            const key = Math.min(i, o.j) + '-' + Math.max(i, o.j);
+            if (!seen.has(key)) {
+              seen.add(key);
+              links.push({ a: i, b: o.j });
+            }
+          });
+      });
+      return links;
+    }
+
+    function animate(el: HTMLElement) {
+      const SWEEP = +(el.dataset.crDuration || 950);
+      const TAIL = 600;
+      const COUNT = +(el.dataset.crStars || 14);
+      const LEAD = 320;
+
+      const canvas = document.createElement('canvas');
+      canvas.className = 'cr-canvas';
+      el.appendChild(canvas);
+
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      const rect = el.getBoundingClientRect();
+      const w = rect.width + PAD * 2, h = rect.height + PAD * 2;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      const ctx = canvas.getContext('2d')!;
+      ctx.scale(dpr, dpr);
+
+      // Degradado vertical crema→lila, como la luna
+      const gradMoon: Grad = (c, s) => {
+        const g = c.createLinearGradient(0, -s * 1.25, 0, s * 1.25);
+        g.addColorStop(0, CREAM);
+        g.addColorStop(1, LILA);
+        return g;
+      };
+      const gradPale: Grad = () => PALE;
+
+      const stars = buildStars(rect.width, rect.height, COUNT, SWEEP);
+      const links = buildLinks(stars);
+      const content = el.querySelector<HTMLElement>('.cr-content')!;
+      el.classList.add('cr-running');
+
+      const y0 = PAD + rect.height * rand(0.25, 0.45);
+      const y1 = PAD + rect.height * rand(0.55, 0.75);
+      const particles: Particle[] = [];
+      const start = performance.now();
+      let done = false;
+
+      function emit(x: number, y: number, n: number, speed: number) {
+        for (let i = 0; i < n; i++) {
+          const a = rand(0, TAU);
+          const v = rand(0.2, 1) * speed;
+          particles.push({
+            x, y,
+            vx: Math.cos(a) * v - rand(0.2, 0.9),
+            vy: Math.sin(a) * v * 0.7,
+            size: rand(1.5, 4),
+            rot: rand(-0.4, 0.4),
+            spin: rand(-2, 2),
+            life: rand(350, TAIL),
+            born: performance.now(),
+            pale: Math.random() < 0.35,
+            star: Math.random() < 0.45,
+          });
+        }
+      }
+
+      function frame(now: number) {
+        const t = now - start;
+        ctx.clearRect(0, 0, w, h);
+
+        const sp = clamp01((t - LEAD) / SWEEP);
+        const px = easeInOut(sp);
+        const cx = -20 + (w + 40) * px;
+        const cy = y0 + (y1 - y0) * px + Math.sin(px * Math.PI * 2) * 8;
+
+        content.style.setProperty('--cr-p', (px * 145 - 10) + '%');
+
+        // Líneas finas lavanda entre estrellas
+        ctx.lineWidth = 0.8;
+        links.forEach((l) => {
+          const A = stars[l.a], B = stars[l.b];
+          const bornA = clamp01((t - A.delay) / 250);
+          const bornB = clamp01((t - B.delay) / 250);
+          if (bornA <= 0 || bornB <= 0) return;
+          let alpha = Math.min(bornA, bornB);
+          const eaten = Math.max(A.eaten, B.eaten);
+          if (eaten) alpha *= clamp01(1 - (now - eaten) / 300);
+          if (alpha <= 0) return;
+          const draw = Math.min(bornA, bornB);
+          ctx.globalAlpha = alpha;
+          ctx.strokeStyle = LINE;
+          ctx.beginPath();
+          ctx.moveTo(A.x, A.y);
+          ctx.lineTo(A.x + (B.x - A.x) * draw, A.y + (B.y - A.y) * draw);
+          ctx.stroke();
+        });
+
+        // Estrellas
+        stars.forEach((s) => {
+          if (s.eaten) {
+            // Flare sutil y distinto por estrella al ser devorada por el barrido
+            const f = 1 - clamp01((now - s.eaten) / s.flareDur);
+            if (f > 0) {
+              const soft = f * f * (3 - 2 * f); // smoothstep
+              drawSpark(ctx, s.x, s.y,
+                        s.size * (1 + s.flareAmp * (1 - soft)),
+                        s.flareRot * (1 - soft),
+                        soft * s.flareGlow,
+                        s.flarePale ? gradPale : gradMoon);
+            }
+            return;
+          }
+          const born = clamp01((t - s.delay) / 300);
+          if (born <= 0) return;
+          if (sp > 0 && cx >= s.x) {
+            s.eaten = now;
+            emit(s.x, s.y, Math.round(rand(4, 9)), rand(2.5, 4));
+            return;
+          }
+          const tw = 0.7 + 0.3 * Math.sin(t / 300 + s.ph);
+          ctx.globalAlpha = born * tw;
+
+          if (s.kind === 2) {
+            // Nodo anular: circulito hueco, como el de la línea vertical
+            ctx.strokeStyle = RING;
+            ctx.lineWidth = 1.1;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size * 0.55 * born, 0, TAU);
+            ctx.stroke();
+            ctx.fillStyle = PALE;
+            ctx.globalAlpha = born * tw * 0.5;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, 1, 0, TAU);
+            ctx.fill();
+            return;
+          }
+
+          // Halo suave lila
+          const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 3);
+          halo.addColorStop(0, LILA);
+          halo.addColorStop(1, 'transparent');
+          ctx.globalAlpha = born * tw * 0.25;
+          ctx.fillStyle = halo;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.size * 3, 0, TAU);
+          ctx.fill();
+
+          drawSpark(ctx, s.x, s.y, s.size * born, 0, born * tw, gradMoon);
+
+          if (s.kind === 0) {
+            // Anillo fino con una mota orbitando, como el aro de la luna
+            ctx.globalAlpha = born * 0.8;
+            ctx.strokeStyle = RING;
+            ctx.lineWidth = 0.8;
+            const R = s.size * s.ringR * born;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, R, 0, TAU);
+            ctx.stroke();
+            const oa = t / 900 + s.ph;
+            ctx.globalAlpha = born;
+            ctx.fillStyle = CREAM;
+            ctx.beginPath();
+            ctx.arc(s.x + Math.cos(oa) * R, s.y + Math.sin(oa) * R, 1.2, 0, TAU);
+            ctx.fill();
+          }
+        });
+
+        // Estela invisible: solo destellos a lo largo del recorrido
+        if (sp > 0 && sp < 1) {
+          emit(cx, cy, 2, 3);
+        } else if (sp >= 1 && !done) {
+          done = true;
+          el.classList.add('cr-revealed');
+          el.classList.remove('cr-running');
+        }
+
+        // Partículas
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          const age = now - p.born;
+          const lt = age / p.life;
+          if (lt >= 1) { particles.splice(i, 1); continue; }
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.05;
+          p.vx *= 0.96;
+          const a = (1 - lt) * (1 - lt);
+          if (p.star) {
+            drawSpark(ctx, p.x, p.y, p.size * (1 - lt * 0.5),
+                      p.rot + (age / 1000) * p.spin, a,
+                      p.pale ? gradPale : gradMoon);
+          } else {
+            ctx.globalAlpha = a;
+            ctx.fillStyle = p.pale ? PALE : LILA;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.4, 0, TAU);
+            ctx.fill();
+          }
+        }
+
+        if (sp < 1 || particles.length ||
+            stars.some((s) => s.eaten && now - s.eaten < s.flareDur)) {
+          requestAnimationFrame(frame);
+        } else {
+          canvas.remove();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    const els = document.querySelectorAll<HTMLElement>('[data-constellation]');
+    if (!els.length) return;
+    if (reduced) {
+      els.forEach((el) => el.classList.add('cr-revealed'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          io.unobserve(e.target);
+          const el = e.target as HTMLElement;
+          // data-cr-delay: espera antes de arrancar la animación
+          const delay = +(el.dataset.crDelay || 0);
+          delay ? setTimeout(() => animate(el), delay) : animate(el);
+        }
+      });
+    }, { threshold: 0.35 });
+    els.forEach((el) => io.observe(el));
+  })();
+</script>
