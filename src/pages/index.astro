@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TargonModel from '../components/TargonModel.astro';
 import LunariLogo from '../components/LunariLogo.astro';
+import ConstellationReveal from '../components/ConstellationReveal.astro';
 
 const DISCORD_URL = 'https://discord.com/invite/j2mEbRg9jc';
 
@@ -77,7 +78,8 @@ const vibes = [
   </section>
 
   <section class="section" id="nosotras">
-    <div class="wrap-narrow intro" data-reveal>
+    <div class="wrap-narrow intro" data-constellation data-cr-stars="16" data-cr-delay="600">
+     <div class="cr-content">
       <div class="intro__rail" aria-hidden="true">
         <span class="intro__rail-star intro__rail-star--top">✦</span>
         <span class="intro__rail-line"></span>
@@ -168,6 +170,7 @@ const vibes = [
           toda Latinoamérica.
         </p>
       </div>
+     </div>
     </div>
   </section>
 
@@ -312,6 +315,8 @@ const vibes = [
       </div>
     </div>
   </section>
+
+  <ConstellationReveal />
 </BaseLayout>
 
 <style>
@@ -518,6 +523,15 @@ const vibes = [
      --node-y ancla a la misma altura el nodo del riel y el centro de la luna. */
   .intro { position: relative; --node-y: 50%; }
   .intro__title { font-size: var(--step-2); }
+
+  /* Extiende la caja del reveal-constelación hacia la izquierda y en vertical
+     para que la máscara del barrido cubra también la luna y el riel (viven
+     fuera del flujo, en coordenadas negativas). El margen negativo compensa
+     el padding, así el layout no se mueve. */
+  .intro > :global(.cr-content) {
+    margin: -2rem 0 -2rem -13rem;
+    padding: 2rem 0 2rem 13rem;
+  }
 
   .intro__rail {
     position: absolute;
