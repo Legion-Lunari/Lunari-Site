@@ -1,20 +1,30 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import TargonClimb from '../components/TargonClimb.astro';
-import HouseReveal from '../components/HouseReveal.astro';
-import { houses, questions } from '../data/houses';
-import { ascentPoses } from '../data/ascent';
-import { revealPoses, peakPose } from '../data/reveal';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TargonClimb from "../components/TargonClimb.astro";
+import HouseReveal from "../components/HouseReveal.astro";
+import { houses, questions } from "../data/houses";
+import { ascentPoses } from "../data/ascent";
+import { revealPoses, peakPose } from "../data/reveal";
 
-const DISCORD_URL = 'https://discord.com/invite/j2mEbRg9jc';
+const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 
 // logo por casa (en /public/logos)
 const logos: Record<string, string> = {
-  febe: '/logos/Febe.svg', rea: '/logos/Rea.svg', dione: '/logos/Dione.svg', jano: '/logos/Jano.svg',
+  febe: "/logos/Febe.svg",
+  rea: "/logos/Rea.svg",
+  dione: "/logos/Dione.svg",
+  jano: "/logos/Jano.svg",
 };
 
 // Datos que el script del cliente necesita
-const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos };
+const quizData = {
+  houses,
+  questions,
+  ascentPoses,
+  revealPoses,
+  peakPose,
+  logos,
+};
 ---
 
 <BaseLayout
@@ -29,15 +39,14 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
 
   <section class="quiz section" aria-live="polite">
     <div class="wrap quiz__wrap">
-
       <!-- Intro -->
       <div class="quiz-panel quiz-intro is-active" data-panel="intro">
         <p class="eyebrow">El ascenso a Targon</p>
         <h1 class="display quiz-intro__title">Descubre tu casa</h1>
         <p class="lede quiz-intro__lede">
           Cuatro casas nacieron en las laderas del Monte Targon: las Valientes,
-          las Amables, las Inteligentes y las Creativas. Asciende paso a paso
-          y la montaña revelará a cuál perteneces.
+          las Amables, las Inteligentes y las Creativas. Asciende paso a paso y
+          la montaña revelará a cuál perteneces.
         </p>
         <p class="quiz-intro__meta">13 preguntas · unos 3 minutos</p>
         <button class="btn quiz-start" type="button">
@@ -48,7 +57,9 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
       <!-- Preguntas -->
       <div class="quiz-panel quiz-questions" data-panel="questions" hidden>
         <div class="quiz-progress">
-          <div class="quiz-progress__bar"><span class="quiz-progress__fill"></span></div>
+          <div class="quiz-progress__bar">
+            <span class="quiz-progress__fill"></span>
+          </div>
           <p class="quiz-progress__label">
             <span class="q-current">1</span> / {questions.length}
           </p>
@@ -61,7 +72,6 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
 
         <button class="quiz-back" type="button" hidden>← Anterior</button>
       </div>
-
     </div>
   </section>
 
@@ -92,7 +102,9 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
             <a href={DISCORD_URL} class="btn" target="_blank" rel="noopener">
               Unirme a mi casa en Discord <span aria-hidden="true">→</span>
             </a>
-            <button class="btn btn--ghost quiz-retry" type="button">Repetir el ritual</button>
+            <button class="btn btn--ghost quiz-retry" type="button"
+              >Repetir el ritual</button
+            >
           </div>
         </div>
       </div>
@@ -103,17 +115,70 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   <!-- Panel de ajuste (dev, ?tune=1) -->
   <aside class="tune" id="tune-panel" hidden aria-label="Ajuste del ascenso">
     <div class="tune__head">
-      <button class="tune__nav" data-tune="prev" type="button" aria-label="Paso anterior">◀</button>
-      <span class="tune__step">Paso <b data-tune="step">1</b> / <span data-tune="total">13</span></span>
-      <button class="tune__nav" data-tune="next" type="button" aria-label="Paso siguiente">▶</button>
+      <button
+        class="tune__nav"
+        data-tune="prev"
+        type="button"
+        aria-label="Paso anterior">◀</button
+      >
+      <span class="tune__step"
+        >Paso <b data-tune="step">1</b> / <span data-tune="total">13</span
+        ></span
+      >
+      <button
+        class="tune__nav"
+        data-tune="next"
+        type="button"
+        aria-label="Paso siguiente">▶</button
+      >
     </div>
 
     <div class="tune__rows">
-      <label class="tune__row"><span>Zoom (camZ)</span><input type="range" data-field="camZ" min="2.4" max="8" step="0.05"><output data-out="camZ"></output></label>
-      <label class="tune__row"><span>Altura (camY)</span><input type="range" data-field="camY" min="-3.5" max="3.5" step="0.05"><output data-out="camY"></output></label>
-      <label class="tune__row"><span>Mira (lookY)</span><input type="range" data-field="lookY" min="-3.5" max="3.5" step="0.05"><output data-out="lookY"></output></label>
-      <label class="tune__row"><span>Rotación (°)</span><input type="range" data-field="rotDeg" min="0" max="360" step="1"><output data-out="rotDeg"></output></label>
-      <label class="tune__row"><span>FOV</span><input type="range" data-field="fov" min="12" max="60" step="1"><output data-out="fov"></output></label>
+      <label class="tune__row"
+        ><span>Zoom (camZ)</span><input
+          type="range"
+          data-field="camZ"
+          min="2.4"
+          max="8"
+          step="0.05"
+        /><output data-out="camZ"></output></label
+      >
+      <label class="tune__row"
+        ><span>Altura (camY)</span><input
+          type="range"
+          data-field="camY"
+          min="-3.5"
+          max="3.5"
+          step="0.05"
+        /><output data-out="camY"></output></label
+      >
+      <label class="tune__row"
+        ><span>Mira (lookY)</span><input
+          type="range"
+          data-field="lookY"
+          min="-3.5"
+          max="3.5"
+          step="0.05"
+        /><output data-out="lookY"></output></label
+      >
+      <label class="tune__row"
+        ><span>Rotación (°)</span><input
+          type="range"
+          data-field="rotDeg"
+          min="0"
+          max="360"
+          step="1"
+        /><output data-out="rotDeg"></output></label
+      >
+      <label class="tune__row"
+        ><span>FOV</span><input
+          type="range"
+          data-field="fov"
+          min="12"
+          max="60"
+          step="1"
+        /><output data-out="fov"></output></label
+      >
       <div class="tune__row tune__row--side">
         <span>Texto</span>
         <div class="tune__side">
@@ -121,56 +186,103 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
           <button data-side="right" type="button">Derecha</button>
         </div>
       </div>
-      <label class="tune__row"><span>Texto X</span><input type="range" data-field="tx" min="-500" max="500" step="5"><output data-out="tx"></output></label>
-      <label class="tune__row"><span>Texto Y</span><input type="range" data-field="ty" min="-320" max="320" step="5"><output data-out="ty"></output></label>
+      <label class="tune__row"
+        ><span>Texto X</span><input
+          type="range"
+          data-field="tx"
+          min="-500"
+          max="500"
+          step="5"
+        /><output data-out="tx"></output></label
+      >
+      <label class="tune__row"
+        ><span>Texto Y</span><input
+          type="range"
+          data-field="ty"
+          min="-320"
+          max="320"
+          step="5"
+        /><output data-out="ty"></output></label
+      >
     </div>
 
     <div class="tune__actions">
-      <button class="btn tune__copy" data-tune="copy" type="button">Copiar configuración</button>
-      <button class="tune__reset" data-tune="reset" type="button">Restablecer paso</button>
+      <button class="btn tune__copy" data-tune="copy" type="button"
+        >Copiar configuración</button
+      >
+      <button class="tune__reset" data-tune="reset" type="button"
+        >Restablecer paso</button
+      >
     </div>
-    <p class="tune__hint">Ajusta y navega los pasos; al terminar, «Copiar configuración» y pégalo en <code>src/data/ascent.ts</code>.</p>
+    <p class="tune__hint">
+      Ajusta y navega los pasos; al terminar, «Copiar configuración» y pégalo en <code
+        >src/data/ascent.ts</code
+      >.
+    </p>
   </aside>
 
   <!-- Datos para el motor del quiz -->
-  <script type="application/json" id="quiz-data" set:html={JSON.stringify(quizData)}></script>
+  <script
+    type="application/json"
+    id="quiz-data"
+    set:html={JSON.stringify(quizData)}
+  />
 </BaseLayout>
 
 <script>
   // @ts-ignore: vanta no trae tipos
-  import FOG from 'vanta/dist/vanta.fog.min';
-  import * as THREE from 'three';
+  import FOG from "vanta/dist/vanta.fog.min";
+  import * as THREE from "three";
 
   type House = {
-    id: string; nombre: string; epiteto: string; lema: string;
-    descripcion: string[]; rasgos: string[]; color: string; simbolo: string;
+    id: string;
+    nombre: string;
+    epiteto: string;
+    lema: string;
+    descripcion: string[];
+    rasgos: string[];
+    color: string;
+    simbolo: string;
   };
   type Option = { texto: string; puntos: Record<string, number> };
   type Question = { pregunta: string; opciones: Option[] };
   type Pose = {
-    camY: number; camZ: number; lookY: number; rotDeg: number; fov: number;
-    side: 'left' | 'right'; tx: number; ty: number;
+    camY: number;
+    camZ: number;
+    lookY: number;
+    rotDeg: number;
+    fov: number;
+    side: "left" | "right";
+    tx: number;
+    ty: number;
   };
 
   type RPose = Pose & { slot: string };
-  const raw = document.getElementById('quiz-data')?.textContent || '{}';
+  const raw = document.getElementById("quiz-data")?.textContent || "{}";
   const data = JSON.parse(raw) as {
-    houses: House[]; questions: Question[]; ascentPoses: Pose[];
-    revealPoses: RPose[]; logos: Record<string, string>;
+    houses: House[];
+    questions: Question[];
+    ascentPoses: Pose[];
+    revealPoses: RPose[];
+    logos: Record<string, string>;
   };
   const { houses, questions, logos } = data;
   const poses: Pose[] = data.ascentPoses || [];
   const revealPoses: RPose[] = data.revealPoses || [];
-  const tuneParam = new URLSearchParams(location.search).get('tune');
-  const tuneAscent = tuneParam === '1';
-  const tuneReveal = tuneParam === 'reveal';
+  const tuneParam = new URLSearchParams(location.search).get("tune");
+  const tuneAscent = tuneParam === "1";
+  const tuneReveal = tuneParam === "reveal";
   const tuneMode = tuneParam !== null;
 
   // Control del ascenso 3D (TargonClimb)
   const TOTAL_STEPS = Math.max(1, questions.length - 1);
   const emitClimb = (s: number) =>
-    window.dispatchEvent(new CustomEvent('targon:climb', { detail: { step: s, total: TOTAL_STEPS } }));
-  const emitReset = () => window.dispatchEvent(new CustomEvent('targon:reset'));
+    window.dispatchEvent(
+      new CustomEvent("targon:climb", {
+        detail: { step: s, total: TOTAL_STEPS },
+      }),
+    );
+  const emitReset = () => window.dispatchEvent(new CustomEvent("targon:reset"));
 
   // Posición del texto de la pregunta según la pose del paso.
   function applyText(s: number) {
@@ -186,17 +298,28 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   function emitPose(s: number) {
     const p = poses[s];
     if (!p) return;
-    window.dispatchEvent(new CustomEvent('targon:pose', {
-      detail: { camY: p.camY, camZ: p.camZ, lookY: p.lookY, rotDeg: p.rotDeg, fov: p.fov },
-    }));
+    window.dispatchEvent(
+      new CustomEvent("targon:pose", {
+        detail: {
+          camY: p.camY,
+          camZ: p.camZ,
+          lookY: p.lookY,
+          rotDeg: p.rotDeg,
+          fov: p.fov,
+        },
+      }),
+    );
   }
   function emitSummit(cssColor: string) {
-    const t = document.createElement('span');
-    t.style.cssText = 'color:' + cssColor + ';position:absolute;visibility:hidden';
+    const t = document.createElement("span");
+    t.style.cssText =
+      "color:" + cssColor + ";position:absolute;visibility:hidden";
     document.body.appendChild(t);
     const rgb = getComputedStyle(t).color;
     t.remove();
-    window.dispatchEvent(new CustomEvent('targon:summit', { detail: { color: rgb } }));
+    window.dispatchEvent(
+      new CustomEvent("targon:summit", { detail: { color: rgb } }),
+    );
   }
 
   const panels = {
@@ -205,12 +328,12 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   };
 
   const els = {
-    fill: document.querySelector<HTMLElement>('.quiz-progress__fill')!,
-    current: document.querySelector<HTMLElement>('.q-current')!,
-    qText: document.querySelector<HTMLElement>('.quiz-question__text')!,
-    options: document.querySelector<HTMLElement>('.quiz-options')!,
-    qBlock: document.querySelector<HTMLElement>('.quiz-question')!,
-    back: document.querySelector<HTMLButtonElement>('.quiz-back')!,
+    fill: document.querySelector<HTMLElement>(".quiz-progress__fill")!,
+    current: document.querySelector<HTMLElement>(".q-current")!,
+    qText: document.querySelector<HTMLElement>(".quiz-question__text")!,
+    options: document.querySelector<HTMLElement>(".quiz-options")!,
+    qBlock: document.querySelector<HTMLElement>(".quiz-question")!,
+    back: document.querySelector<HTMLButtonElement>(".quiz-back")!,
   };
 
   let step = 0;
@@ -220,10 +343,10 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     for (const [key, el] of Object.entries(panels)) {
       const active = key === name;
       el.hidden = !active;
-      el.classList.toggle('is-active', active);
+      el.classList.toggle("is-active", active);
     }
     // Llevar el foco al inicio del panel para lectores de pantalla / teclado
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function renderQuestion() {
@@ -233,31 +356,32 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     els.qText.textContent = q.pregunta;
     els.back.hidden = step === 0;
     applyText(step); // lado y desplazamiento del texto según la pose del paso
-    if (tuneAscent) emitPose(step); // control directo en el panel
+    if (tuneAscent)
+      emitPose(step); // control directo en el panel
     else emitClimb(step); // gira y sube un paso en el monte
 
-    els.options.innerHTML = '';
+    els.options.innerHTML = "";
     q.opciones.forEach((opt, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'quiz-option';
-      if (answers[step] === i) b.classList.add('is-chosen');
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "quiz-option";
+      if (answers[step] === i) b.classList.add("is-chosen");
       b.innerHTML = `<span class="quiz-option__mark" aria-hidden="true">✦</span><span>${opt.texto}</span>`;
-      b.addEventListener('click', () => choose(i));
+      b.addEventListener("click", () => choose(i));
       els.options.appendChild(b);
     });
 
     // reinicia animación de entrada
-    els.qBlock.classList.remove('anim-in');
+    els.qBlock.classList.remove("anim-in");
     void els.qBlock.offsetWidth;
-    els.qBlock.classList.add('anim-in');
+    els.qBlock.classList.add("anim-in");
   }
 
   function choose(i: number) {
     if (tuneMode) return; // en modo ajuste no se avanza al responder
     answers[step] = i;
-    const buttons = els.options.querySelectorAll('.quiz-option');
-    buttons.forEach((b, idx) => b.classList.toggle('is-chosen', idx === i));
+    const buttons = els.options.querySelectorAll(".quiz-option");
+    buttons.forEach((b, idx) => b.classList.toggle("is-chosen", idx === i));
     // pequeña pausa para que se vea la selección, luego avanza
     window.setTimeout(() => {
       if (step < questions.length - 1) {
@@ -270,25 +394,29 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   }
 
   function finish() {
-    els.fill.style.transform = 'scaleX(1)';
+    els.fill.style.transform = "scaleX(1)";
     const scores: Record<string, number> = {};
     houses.forEach((h) => (scores[h.id] = 0));
     answers.forEach((choiceIdx, qi) => {
       const pts = questions[qi].opciones[choiceIdx]?.puntos || {};
-      for (const [id, val] of Object.entries(pts)) scores[id] = (scores[id] || 0) + (val as number);
+      for (const [id, val] of Object.entries(pts))
+        scores[id] = (scores[id] || 0) + (val as number);
     });
     let winner = houses[0];
     let best = -Infinity;
     for (const h of houses) {
-      if (scores[h.id] > best) { best = scores[h.id]; winner = h; }
+      if (scores[h.id] > best) {
+        best = scores[h.id];
+        winner = h;
+      }
     }
     showReveal(winner);
   }
 
   // Resuelve una variable CSS de color a rgb() real (para Three.js).
   function resolveColor(css: string) {
-    const t = document.createElement('span');
-    t.style.cssText = 'color:' + css + ';position:absolute;visibility:hidden';
+    const t = document.createElement("span");
+    t.style.cssText = "color:" + css + ";position:absolute;visibility:hidden";
     document.body.appendChild(t);
     const rgb = getComputedStyle(t).color;
     t.remove();
@@ -296,22 +424,33 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   }
 
   // Revelado de la casa (scroll)
-  const revealSection = document.getElementById('reveal')!;
-  const revealCaps = Array.from(revealSection.querySelectorAll<HTMLElement>('[data-cap]'));
-  const quizSection = document.querySelector<HTMLElement>('.quiz')!;
-  const climbEl = document.querySelector<HTMLElement>('.climb');
+  const revealSection = document.getElementById("reveal")!;
+  const revealCaps = Array.from(
+    revealSection.querySelectorAll<HTMLElement>("[data-cap]"),
+  );
+  const quizSection = document.querySelector<HTMLElement>(".quiz")!;
+  const climbEl = document.querySelector<HTMLElement>(".climb");
   let revealActive = false;
 
   function fillReveal(h: House) {
-    revealSection.style.setProperty('--house-color', h.color);
-    revealSection.querySelector<HTMLElement>('.reveal__name')!.textContent = h.nombre;
-    revealSection.querySelector<HTMLElement>('.reveal__epiteto')!.textContent = h.epiteto;
-    revealSection.querySelector<HTMLElement>('.reveal__lema')!.textContent = `“${h.lema}”`;
-    const descs = revealSection.querySelectorAll<HTMLElement>('.reveal__desc');
-    h.descripcion.forEach((par, i) => { if (descs[i]) descs[i].textContent = par; });
-    const ul = revealSection.querySelector<HTMLElement>('.reveal__rasgos')!;
-    ul.innerHTML = '';
-    h.rasgos.forEach((t) => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+    revealSection.style.setProperty("--house-color", h.color);
+    revealSection.querySelector<HTMLElement>(".reveal__name")!.textContent =
+      h.nombre;
+    revealSection.querySelector<HTMLElement>(".reveal__epiteto")!.textContent =
+      h.epiteto;
+    revealSection.querySelector<HTMLElement>(".reveal__lema")!.textContent =
+      `“${h.lema}”`;
+    const descs = revealSection.querySelectorAll<HTMLElement>(".reveal__desc");
+    h.descripcion.forEach((par, i) => {
+      if (descs[i]) descs[i].textContent = par;
+    });
+    const ul = revealSection.querySelector<HTMLElement>(".reveal__rasgos")!;
+    ul.innerHTML = "";
+    h.rasgos.forEach((t) => {
+      const li = document.createElement("li");
+      li.textContent = t;
+      ul.appendChild(li);
+    });
   }
 
   // Los tx/ty de las poses se afinaron a 1600px de ancho; se escalan por la
@@ -340,7 +479,7 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
       // El paso final llega a full antes del tope y se queda fijo (sin arrastre).
       if (i === N - 1 && p >= center - seg) vis = Math.min(1, (p - (center - seg)) / (seg * 0.5));
       cap.style.opacity = String(vis);
-      cap.style.pointerEvents = vis > 0.6 ? 'auto' : 'none';
+      cap.style.pointerEvents = vis > 0.6 ? "auto" : "none";
     });
   }
   let rrTick = false;
@@ -348,23 +487,39 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     if (!revealActive) return;
     const range = revealSection.offsetHeight - window.innerHeight;
     const p = range > 0 ? Math.min(1, Math.max(0, window.scrollY / range)) : 0;
-    window.dispatchEvent(new CustomEvent('reveal:progress', { detail: { p } }));
+    window.dispatchEvent(new CustomEvent("reveal:progress", { detail: { p } }));
     updateRevealCaps(p);
   }
-  window.addEventListener('scroll', () => {
-    if (revealActive && !rrTick) { rrTick = true; requestAnimationFrame(() => { rrTick = false; updateRevealScroll(); }); }
-  }, { passive: true });
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (revealActive && !rrTick) {
+        rrTick = true;
+        requestAnimationFrame(() => {
+          rrTick = false;
+          updateRevealScroll();
+        });
+      }
+    },
+    { passive: true },
+  );
 
   function showReveal(h: House) {
     fillReveal(h);
     revealCaps.forEach((cap, i) => positionRevealCap(cap, i));
     quizSection.hidden = true;
-    climbEl?.classList.add('is-off');
-    fogEl?.classList.add('is-hidden');
+    climbEl?.classList.add("is-off");
+    fogEl?.classList.add("is-hidden");
     revealSection.hidden = false;
-    window.dispatchEvent(new CustomEvent('reveal:init'));
-    window.dispatchEvent(new CustomEvent('reveal:active', { detail: { on: true } }));
-    window.dispatchEvent(new CustomEvent('reveal:house', { detail: { color: resolveColor(h.color), logo: logos[h.id] } }));
+    window.dispatchEvent(new CustomEvent("reveal:init"));
+    window.dispatchEvent(
+      new CustomEvent("reveal:active", { detail: { on: true } }),
+    );
+    window.dispatchEvent(
+      new CustomEvent("reveal:house", {
+        detail: { color: resolveColor(h.color), logo: logos[h.id] },
+      }),
+    );
     revealActive = true;
     window.scrollTo({ top: 0 });
     updateRevealScroll();
@@ -372,14 +527,16 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   function hideReveal() {
     revealActive = false;
     revealSection.hidden = true;
-    climbEl?.classList.remove('is-off');
-    window.dispatchEvent(new CustomEvent('reveal:active', { detail: { on: false } }));
+    climbEl?.classList.remove("is-off");
+    window.dispatchEvent(
+      new CustomEvent("reveal:active", { detail: { on: false } }),
+    );
     quizSection.hidden = false;
   }
 
   // Eventos
   // Bruma en movimiento (Vanta FOG) para el intro, con opacidad reducida (CSS).
-  const fogEl = document.getElementById('quiz-fog');
+  const fogEl = document.getElementById("quiz-fog");
   let vantaFog: any = null;
   if (fogEl && !tuneMode) {
     try {
@@ -396,114 +553,168 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
         lowlightColor: 0x4936a4,
         baseColor: 0xf9cdff,
       });
-    } catch (e) { console.error('[Vanta FOG]', e); }
+    } catch (e) {
+      console.error("[Vanta FOG]", e);
+    }
   } else if (fogEl) {
-    fogEl.classList.add('is-hidden');
+    fogEl.classList.add("is-hidden");
   }
 
-  document.querySelector('.quiz-start')?.addEventListener('click', () => {
+  document.querySelector(".quiz-start")?.addEventListener("click", () => {
     step = 0;
     answers.length = 0;
-    fogEl?.classList.add('is-hidden'); // la bruma se disipa al comenzar
-    show('questions');
+    fogEl?.classList.add("is-hidden"); // la bruma se disipa al comenzar
+    show("questions");
     renderQuestion();
   });
 
-  els.back.addEventListener('click', () => {
-    if (step > 0) { step--; renderQuestion(); }
+  els.back.addEventListener("click", () => {
+    if (step > 0) {
+      step--;
+      renderQuestion();
+    }
   });
 
-  document.querySelector('.quiz-retry')?.addEventListener('click', () => {
+  document.querySelector(".quiz-retry")?.addEventListener("click", () => {
     step = 0;
     answers.length = 0;
     hideReveal();
-    fogEl?.classList.remove('is-hidden'); // vuelve la bruma en el intro
+    fogEl?.classList.remove("is-hidden"); // vuelve la bruma en el intro
     emitReset();
-    show('intro');
+    show("intro");
   });
 
   // Panel de ajuste del ascenso (?tune=1)
   if (tuneAscent && poses.length) {
-    const panel = document.getElementById('tune-panel')!;
+    const panel = document.getElementById("tune-panel")!;
     panel.hidden = false;
-    document.getElementById('quiz-fog')?.classList.add('is-hidden'); // ver el modelo al ajustar
+    document.getElementById("quiz-fog")?.classList.add("is-hidden"); // ver el modelo al ajustar
     const stepLabel = panel.querySelector('[data-tune="step"]')!;
-    panel.querySelector('[data-tune="total"]')!.textContent = String(questions.length);
+    panel.querySelector('[data-tune="total"]')!.textContent = String(
+      questions.length,
+    );
 
-    const FIELDS = ['camZ', 'camY', 'lookY', 'rotDeg', 'fov', 'tx', 'ty'] as const;
+    const FIELDS = [
+      "camZ",
+      "camY",
+      "lookY",
+      "rotDeg",
+      "fov",
+      "tx",
+      "ty",
+    ] as const;
     const inputs: Record<string, HTMLInputElement> = {};
     const outputs: Record<string, HTMLElement> = {};
     FIELDS.forEach((f) => {
-      inputs[f] = panel.querySelector(`[data-field="${f}"]`) as HTMLInputElement;
+      inputs[f] = panel.querySelector(
+        `[data-field="${f}"]`,
+      ) as HTMLInputElement;
       outputs[f] = panel.querySelector(`[data-out="${f}"]`) as HTMLElement;
     });
-    const sideBtns = Array.from(panel.querySelectorAll<HTMLElement>('[data-side]'));
+    const sideBtns = Array.from(
+      panel.querySelectorAll<HTMLElement>("[data-side]"),
+    );
     const original = JSON.parse(JSON.stringify(poses)) as Pose[];
     let tuneStep = 0;
 
     const syncControls = () => {
       const p = poses[tuneStep] as any;
-      FIELDS.forEach((f) => { inputs[f].value = String(p[f]); outputs[f].textContent = String(p[f]); });
-      sideBtns.forEach((b) => b.classList.toggle('is-active', b.dataset.side === p.side));
+      FIELDS.forEach((f) => {
+        inputs[f].value = String(p[f]);
+        outputs[f].textContent = String(p[f]);
+      });
+      sideBtns.forEach((b) =>
+        b.classList.toggle("is-active", b.dataset.side === p.side),
+      );
       stepLabel.textContent = String(tuneStep + 1);
     };
     const gotoStep = (s: number) => {
       tuneStep = Math.max(0, Math.min(questions.length - 1, s));
       step = tuneStep;
-      show('questions');
+      show("questions");
       renderQuestion();
       syncControls();
     };
 
     FIELDS.forEach((f) => {
-      inputs[f].addEventListener('input', () => {
+      inputs[f].addEventListener("input", () => {
         (poses[tuneStep] as any)[f] = parseFloat(inputs[f].value);
         outputs[f].textContent = inputs[f].value;
         applyText(tuneStep);
         emitPose(tuneStep);
       });
     });
-    sideBtns.forEach((b) => b.addEventListener('click', () => {
-      poses[tuneStep].side = b.dataset.side as 'left' | 'right';
-      applyText(tuneStep);
-      syncControls();
-    }));
-    panel.querySelector('[data-tune="prev"]')!.addEventListener('click', () => gotoStep(tuneStep - 1));
-    panel.querySelector('[data-tune="next"]')!.addEventListener('click', () => gotoStep(tuneStep + 1));
-    panel.querySelector('[data-tune="reset"]')!.addEventListener('click', () => {
-      poses[tuneStep] = JSON.parse(JSON.stringify(original[tuneStep]));
-      gotoStep(tuneStep);
-    });
-    panel.querySelector('[data-tune="copy"]')!.addEventListener('click', async (e) => {
-      const code = 'export const ascentPoses: AscentPose[] = ' +
-        JSON.stringify(poses, null, 2).replace(/"(camY|camZ|lookY|rotDeg|fov|side|tx|ty)":/g, '$1:') + ';';
-      try { await navigator.clipboard.writeText(code); } catch (_) { /* ignore */ }
-      console.log('[ascent] Pega esto en src/data/ascent.ts:\n\n' + code);
-      const btn = e.currentTarget as HTMLElement;
-      const prev = btn.textContent;
-      btn.textContent = '¡Copiado! (y en consola)';
-      setTimeout(() => { btn.textContent = prev; }, 1900);
-    });
+    sideBtns.forEach((b) =>
+      b.addEventListener("click", () => {
+        poses[tuneStep].side = b.dataset.side as "left" | "right";
+        applyText(tuneStep);
+        syncControls();
+      }),
+    );
+    panel
+      .querySelector('[data-tune="prev"]')!
+      .addEventListener("click", () => gotoStep(tuneStep - 1));
+    panel
+      .querySelector('[data-tune="next"]')!
+      .addEventListener("click", () => gotoStep(tuneStep + 1));
+    panel
+      .querySelector('[data-tune="reset"]')!
+      .addEventListener("click", () => {
+        poses[tuneStep] = JSON.parse(JSON.stringify(original[tuneStep]));
+        gotoStep(tuneStep);
+      });
+    panel
+      .querySelector('[data-tune="copy"]')!
+      .addEventListener("click", async (e) => {
+        const code =
+          "export const ascentPoses: AscentPose[] = " +
+          JSON.stringify(poses, null, 2).replace(
+            /"(camY|camZ|lookY|rotDeg|fov|side|tx|ty)":/g,
+            "$1:",
+          ) +
+          ";";
+        try {
+          await navigator.clipboard.writeText(code);
+        } catch (_) {
+          /* ignore */
+        }
+        console.log("[ascent] Pega esto en src/data/ascent.ts:\n\n" + code);
+        const btn = e.currentTarget as HTMLElement;
+        const prev = btn.textContent;
+        btn.textContent = "¡Copiado! (y en consola)";
+        setTimeout(() => {
+          btn.textContent = prev;
+        }, 1900);
+      });
 
     gotoStep(0);
   }
 
   // Editor del revelado (?tune=reveal)
   if (tuneReveal && revealPoses.length) {
-    const panel = document.getElementById('tune-panel')!;
+    const panel = document.getElementById("tune-panel")!;
     panel.hidden = false;
-    panel.querySelector('.tune__title')?.remove();
+    panel.querySelector(".tune__title")?.remove();
     // Muestra el revelado con una casa de ejemplo, sin scroll driving.
     fillReveal(houses[0]);
     quizSection.hidden = true;
-    climbEl?.classList.add('is-off');
-    fogEl?.classList.add('is-hidden');
+    climbEl?.classList.add("is-off");
+    fogEl?.classList.add("is-hidden");
     revealSection.hidden = false;
-    revealSection.classList.add('is-tuning');
-    revealSection.style.setProperty('--house-color', houses[0].color);
-    window.dispatchEvent(new CustomEvent('reveal:init'));
-    window.dispatchEvent(new CustomEvent('reveal:active', { detail: { on: true } }));
-    window.dispatchEvent(new CustomEvent('reveal:house', { detail: { color: resolveColor(houses[0].color), logo: logos[houses[0].id] } }));
+    revealSection.classList.add("is-tuning");
+    revealSection.style.setProperty("--house-color", houses[0].color);
+    window.dispatchEvent(new CustomEvent("reveal:init"));
+    window.dispatchEvent(
+      new CustomEvent("reveal:active", { detail: { on: true } }),
+    );
+    window.dispatchEvent(
+      new CustomEvent("reveal:house", {
+        detail: {
+          color: resolveColor(houses[0].color),
+          logo: logos[houses[0].id],
+        },
+      }),
+    );
 
     // Pasos = revelado + 1 paso extra para el modelo FINAL (Peak Targon + logo).
     const peakPose = data.peakPose as RPose;
@@ -511,59 +722,141 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     const peakIndex = revealPoses.length;
 
     const stepLabel = panel.querySelector('[data-tune="step"]')!;
-    panel.querySelector('[data-tune="total"]')!.textContent = String(steps.length);
-    const FIELDS = ['camZ', 'camY', 'lookY', 'rotDeg', 'fov', 'tx', 'ty'] as const;
+    panel.querySelector('[data-tune="total"]')!.textContent = String(
+      steps.length,
+    );
+    const FIELDS = [
+      "camZ",
+      "camY",
+      "lookY",
+      "rotDeg",
+      "fov",
+      "tx",
+      "ty",
+    ] as const;
     const inputs: Record<string, HTMLInputElement> = {};
     const outputs: Record<string, HTMLElement> = {};
     FIELDS.forEach((f) => {
-      inputs[f] = panel.querySelector(`[data-field="${f}"]`) as HTMLInputElement;
+      inputs[f] = panel.querySelector(
+        `[data-field="${f}"]`,
+      ) as HTMLInputElement;
       outputs[f] = panel.querySelector(`[data-out="${f}"]`) as HTMLElement;
     });
-    const sideBtns = Array.from(panel.querySelectorAll<HTMLElement>('[data-side]'));
-    const txLabel = panel.querySelector('.tune__row [data-field="tx"]')?.closest('.tune__row')?.querySelector('span');
-    const tyLabel = panel.querySelector('.tune__row [data-field="ty"]')?.closest('.tune__row')?.querySelector('span');
+    const sideBtns = Array.from(
+      panel.querySelectorAll<HTMLElement>("[data-side]"),
+    );
+    const txLabel = panel
+      .querySelector('.tune__row [data-field="tx"]')
+      ?.closest(".tune__row")
+      ?.querySelector("span");
+    const tyLabel = panel
+      .querySelector('.tune__row [data-field="ty"]')
+      ?.closest(".tune__row")
+      ?.querySelector("span");
     const original = JSON.parse(JSON.stringify(steps)) as RPose[];
     let tStep = 0;
 
     const applyRevealTune = () => {
       const p = steps[tStep];
       const isPeak = tStep === peakIndex;
-      window.dispatchEvent(new CustomEvent('reveal:peak', { detail: { on: isPeak } }));
+      window.dispatchEvent(
+        new CustomEvent("reveal:peak", { detail: { on: isPeak } }),
+      );
       // En el paso final se ocultan todas las captions (sólo el logo).
-      revealCaps.forEach((c, i) => { c.style.opacity = (!isPeak && i === tStep) ? '1' : '0'; if (i < revealPoses.length) positionRevealCap(c, i); });
-      window.dispatchEvent(new CustomEvent('reveal:pose', {
-        detail: { camY: p.camY, camZ: p.camZ, lookY: p.lookY, rotDeg: p.rotDeg, fov: p.fov, tx: p.tx, ty: p.ty },
-      }));
+      revealCaps.forEach((c, i) => {
+        c.style.opacity = !isPeak && i === tStep ? "1" : "0";
+        if (i < revealPoses.length) positionRevealCap(c, i);
+      });
+      window.dispatchEvent(
+        new CustomEvent("reveal:pose", {
+          detail: {
+            camY: p.camY,
+            camZ: p.camZ,
+            lookY: p.lookY,
+            rotDeg: p.rotDeg,
+            fov: p.fov,
+            tx: p.tx,
+            ty: p.ty,
+          },
+        }),
+      );
       // En el paso final, tx/ty controlan el LOGO
-      if (txLabel) txLabel.textContent = isPeak ? 'Logo X' : 'Texto X';
-      if (tyLabel) tyLabel.textContent = isPeak ? 'Logo Y' : 'Texto Y';
+      if (txLabel) txLabel.textContent = isPeak ? "Logo X" : "Texto X";
+      if (tyLabel) tyLabel.textContent = isPeak ? "Logo Y" : "Texto Y";
     };
     const sync = () => {
       const p = steps[tStep] as any;
-      FIELDS.forEach((f) => { inputs[f].value = String(p[f]); outputs[f].textContent = String(p[f]); });
-      sideBtns.forEach((b) => b.classList.toggle('is-active', b.dataset.side === p.side));
+      FIELDS.forEach((f) => {
+        inputs[f].value = String(p[f]);
+        outputs[f].textContent = String(p[f]);
+      });
+      sideBtns.forEach((b) =>
+        b.classList.toggle("is-active", b.dataset.side === p.side),
+      );
       stepLabel.textContent = String(tStep + 1);
     };
-    const goto = (s: number) => { tStep = Math.max(0, Math.min(steps.length - 1, s)); applyRevealTune(); sync(); };
-    FIELDS.forEach((f) => inputs[f].addEventListener('input', () => {
-      (steps[tStep] as any)[f] = parseFloat(inputs[f].value);
-      outputs[f].textContent = inputs[f].value;
+    const goto = (s: number) => {
+      tStep = Math.max(0, Math.min(steps.length - 1, s));
       applyRevealTune();
-    }));
-    sideBtns.forEach((b) => b.addEventListener('click', () => { steps[tStep].side = b.dataset.side as 'left' | 'right'; applyRevealTune(); sync(); }));
-    panel.querySelector('[data-tune="prev"]')!.addEventListener('click', () => goto(tStep - 1));
-    panel.querySelector('[data-tune="next"]')!.addEventListener('click', () => goto(tStep + 1));
-    panel.querySelector('[data-tune="reset"]')!.addEventListener('click', () => { Object.assign(steps[tStep], JSON.parse(JSON.stringify(original[tStep]))); goto(tStep); });
-    panel.querySelector('[data-tune="copy"]')!.addEventListener('click', async (e) => {
-      const fmt = (o: any) => JSON.stringify(o, null, 2).replace(/"(camY|camZ|lookY|rotDeg|fov|side|tx|ty|slot)":/g, '$1:');
-      const code = 'export const revealPoses: RevealPose[] = ' + fmt(revealPoses) + ';\n\n' +
-        'export const peakPose: RevealPose = ' + fmt(peakPose) + ';';
-      try { await navigator.clipboard.writeText(code); } catch (_) { /* noop */ }
-      console.log('[reveal] Pega esto en src/data/reveal.ts:\n\n' + code);
-      const btn = e.currentTarget as HTMLElement; const prev = btn.textContent;
-      btn.textContent = '¡Copiado! (y en consola)';
-      setTimeout(() => { btn.textContent = prev; }, 1900);
-    });
+      sync();
+    };
+    FIELDS.forEach((f) =>
+      inputs[f].addEventListener("input", () => {
+        (steps[tStep] as any)[f] = parseFloat(inputs[f].value);
+        outputs[f].textContent = inputs[f].value;
+        applyRevealTune();
+      }),
+    );
+    sideBtns.forEach((b) =>
+      b.addEventListener("click", () => {
+        steps[tStep].side = b.dataset.side as "left" | "right";
+        applyRevealTune();
+        sync();
+      }),
+    );
+    panel
+      .querySelector('[data-tune="prev"]')!
+      .addEventListener("click", () => goto(tStep - 1));
+    panel
+      .querySelector('[data-tune="next"]')!
+      .addEventListener("click", () => goto(tStep + 1));
+    panel
+      .querySelector('[data-tune="reset"]')!
+      .addEventListener("click", () => {
+        Object.assign(
+          steps[tStep],
+          JSON.parse(JSON.stringify(original[tStep])),
+        );
+        goto(tStep);
+      });
+    panel
+      .querySelector('[data-tune="copy"]')!
+      .addEventListener("click", async (e) => {
+        const fmt = (o: any) =>
+          JSON.stringify(o, null, 2).replace(
+            /"(camY|camZ|lookY|rotDeg|fov|side|tx|ty|slot)":/g,
+            "$1:",
+          );
+        const code =
+          "export const revealPoses: RevealPose[] = " +
+          fmt(revealPoses) +
+          ";\n\n" +
+          "export const peakPose: RevealPose = " +
+          fmt(peakPose) +
+          ";";
+        try {
+          await navigator.clipboard.writeText(code);
+        } catch (_) {
+          /* noop */
+        }
+        console.log("[reveal] Pega esto en src/data/reveal.ts:\n\n" + code);
+        const btn = e.currentTarget as HTMLElement;
+        const prev = btn.textContent;
+        btn.textContent = "¡Copiado! (y en consola)";
+        setTimeout(() => {
+          btn.textContent = prev;
+        }, 1900);
+      });
     goto(0);
   }
 </script>
@@ -589,16 +882,32 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     mix-blend-mode: screen;
     transition: opacity 1.2s var(--ease-out);
   }
-  .quiz-fog.is-hidden { opacity: 0; }
-  .quiz-fog :global(canvas) { display: block; }
+  .quiz-fog.is-hidden {
+    opacity: 0;
+  }
+  .quiz-fog :global(canvas) {
+    display: block;
+  }
 
-  .quiz-panel { text-align: center; }
-  .quiz-panel[hidden] { display: none; }
+  .quiz-panel {
+    text-align: center;
+  }
+  .quiz-panel[hidden] {
+    display: none;
+  }
 
   /* Intro */
-  .quiz-intro { position: relative; }
-  .quiz-intro__title { margin: 0.3em 0 0.4em; font-size: var(--step-4); }
-  .quiz-intro__lede { max-width: 46ch; margin-inline: auto; }
+  .quiz-intro {
+    position: relative;
+  }
+  .quiz-intro__title {
+    margin: 0.3em 0 0.4em;
+    font-size: var(--step-4);
+  }
+  .quiz-intro__lede {
+    max-width: 46ch;
+    margin-inline: auto;
+  }
   .quiz-intro__meta {
     margin: 1.4rem 0 2rem;
     font-size: var(--step--1);
@@ -639,7 +948,10 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
   }
-  .q-current { color: var(--celeste-400); font-weight: 700; }
+  .q-current {
+    color: var(--celeste-400);
+    font-weight: 700;
+  }
 
   /* Pregunta: el bloque se posiciona a la izquierda o derecha del monte */
   .quiz-question {
@@ -685,12 +997,18 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     text-align: left;
   }
   @media (max-width: 760px) {
-    .quiz-question, .quiz-question.is-left, .quiz-question.is-right {
-      max-width: 100%; margin-inline: auto; text-align: center;
+    .quiz-question,
+    .quiz-question.is-left,
+    .quiz-question.is-right {
+      max-width: 100%;
+      margin-inline: auto;
+      text-align: center;
       /* En móvil se ignora el desfase de pose: la pregunta va siempre centrada */
       transform: none;
     }
-    .quiz-question__text { text-align: center; }
+    .quiz-question__text {
+      text-align: center;
+    }
   }
   /* Opciones sin cápsula: sólo texto que brilla al pasar / elegir.
      Se crean con JS → :global para que apliquen sin el scope de Astro. */
@@ -708,7 +1026,10 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     cursor: pointer;
     text-align: left;
     text-shadow: 0 2px 16px rgba(6, 7, 26, 0.7); /* legibilidad sobre el monte */
-    transition: color 0.28s var(--ease-out), transform 0.28s var(--ease-out), text-shadow 0.28s var(--ease-out);
+    transition:
+      color 0.28s var(--ease-out),
+      transform 0.28s var(--ease-out),
+      text-shadow 0.28s var(--ease-out);
   }
   :global(.quiz-option:hover),
   :global(.quiz-option.is-chosen) {
@@ -721,7 +1042,9 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   }
   :global(.quiz-option__mark) {
     color: var(--text-faint);
-    transition: color 0.28s var(--ease-out), text-shadow 0.28s var(--ease-out);
+    transition:
+      color 0.28s var(--ease-out),
+      text-shadow 0.28s var(--ease-out);
   }
   :global(.quiz-option:hover .quiz-option__mark),
   :global(.quiz-option.is-chosen .quiz-option__mark) {
@@ -740,32 +1063,58 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     cursor: pointer;
     transition: color 0.25s var(--ease-out);
   }
-  .quiz-back:hover { color: var(--celeste-400); }
+  .quiz-back:hover {
+    color: var(--celeste-400);
+  }
 
   /* animación de entrada de cada pregunta (sin transform: se reserva para el offset) */
-  .quiz-question.anim-in { animation: qIn 0.5s var(--ease-out); }
+  .quiz-question.anim-in {
+    animation: qIn 0.5s var(--ease-out);
+  }
   @keyframes qIn {
-    from { opacity: 0; filter: blur(5px); }
-    to   { opacity: 1; filter: blur(0); }
+    from {
+      opacity: 0;
+      filter: blur(5px);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .quiz-question.anim-in { animation: none; }
-    .quiz-progress__fill { transition: none; }
+    .quiz-question.anim-in {
+      animation: none;
+    }
+    .quiz-progress__fill {
+      transition: none;
+    }
   }
 
   /* Resultado: panel legible sobre el Peak Guardian */
   .quiz-result {
     max-width: 37.5rem;
     margin-inline: auto;
-    padding: clamp(1.6rem, 4vw, 2.6rem) clamp(1.4rem, 4vw, 2.4rem) clamp(1.8rem, 4vw, 2.6rem);
+    padding: clamp(1.6rem, 4vw, 2.6rem) clamp(1.4rem, 4vw, 2.4rem)
+      clamp(1.8rem, 4vw, 2.6rem);
     background: color-mix(in srgb, var(--ink) 56%, transparent);
     backdrop-filter: blur(16px) saturate(1.15);
     -webkit-backdrop-filter: blur(16px) saturate(1.15);
-    border: 1px solid color-mix(in srgb, var(--house-color, var(--lavender-400)) 32%, transparent);
+    border: 1px solid
+      color-mix(
+        in srgb,
+        var(--house-color, var(--lavender-400)) 32%,
+        transparent
+      );
     border-radius: var(--radius-lg);
     box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.95);
   }
-  .quiz-result__eyebrow { color: color-mix(in srgb, var(--house-color, var(--lavender-200)) 55%, var(--moonlight)); }
+  .quiz-result__eyebrow {
+    color: color-mix(
+      in srgb,
+      var(--house-color, var(--lavender-200)) 55%,
+      var(--moonlight)
+    );
+  }
   .quiz-result__glyph {
     display: block;
     font-size: clamp(2.6rem, 7vw, 4.2rem);
@@ -774,19 +1123,38 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     animation: glyphIn 0.8s var(--ease-out) both;
   }
   @keyframes glyphIn {
-    from { opacity: 0; transform: scale(0.6); }
-    to   { opacity: 1; transform: scale(1); }
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
   .quiz-result__name {
     font-size: var(--step-3);
-    color: color-mix(in srgb, var(--house-color, var(--lavender-400)) 45%, var(--moonlight));
-    text-shadow: 0 0 40px color-mix(in srgb, var(--house-color, var(--lavender-400)) 60%, transparent);
+    color: color-mix(
+      in srgb,
+      var(--house-color, var(--lavender-400)) 45%,
+      var(--moonlight)
+    );
+    text-shadow: 0 0 40px
+      color-mix(
+        in srgb,
+        var(--house-color, var(--lavender-400)) 60%,
+        transparent
+      );
   }
   .quiz-result__epiteto {
     font-size: var(--step--1);
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--house-color, var(--lavender-200)) 50%, var(--moonlight));
+    color: color-mix(
+      in srgb,
+      var(--house-color, var(--lavender-200)) 50%,
+      var(--moonlight)
+    );
     margin-top: 0.5rem;
   }
   .quiz-result__lema {
@@ -826,7 +1194,11 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     font-size: var(--step--1);
     letter-spacing: 0.06em;
     color: var(--text);
-    background: color-mix(in srgb, var(--house-color, var(--lavender-400)) 12%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--house-color, var(--lavender-400)) 12%,
+      transparent
+    );
   }
   .quiz-result__actions {
     display: flex;
@@ -856,22 +1228,45 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     opacity: 0.3;
     transition: opacity 0.25s var(--ease-out);
   }
-  .tune:hover, .tune:focus-within { opacity: 1; }
-  .tune[hidden] { display: none; }
-  .tune__head {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 0.5rem; margin-bottom: 0.9rem;
+  .tune:hover,
+  .tune:focus-within {
+    opacity: 1;
   }
-  .tune__step { font-size: var(--step--1); letter-spacing: 0.06em; }
-  .tune__step b { color: var(--celeste-400); }
+  .tune[hidden] {
+    display: none;
+  }
+  .tune__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+  }
+  .tune__step {
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+  }
+  .tune__step b {
+    color: var(--celeste-400);
+  }
   .tune__nav {
-    width: 34px; height: 34px; border-radius: 9px;
-    background: var(--surface); color: var(--text);
-    border: 1px solid var(--border); cursor: pointer;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
     transition: border-color 0.2s var(--ease-out);
   }
-  .tune__nav:hover { border-color: var(--lavender-400); }
-  .tune__rows { display: flex; flex-direction: column; gap: 0.55rem; }
+  .tune__nav:hover {
+    border-color: var(--lavender-400);
+  }
+  .tune__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
   .tune__row {
     display: grid;
     grid-template-columns: 92px 1fr 44px;
@@ -879,26 +1274,67 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     gap: 0.5rem;
     font-size: 0.72rem;
   }
-  .tune__row > span { color: var(--text-muted); }
-  .tune__row input[type="range"] { width: 100%; accent-color: var(--lavender-400); }
-  .tune__row output { text-align: right; font-variant-numeric: tabular-nums; color: var(--celeste-400); }
-  .tune__row--side { grid-template-columns: 92px 1fr; }
-  .tune__side { display: flex; gap: 0.35rem; }
+  .tune__row > span {
+    color: var(--text-muted);
+  }
+  .tune__row input[type="range"] {
+    width: 100%;
+    accent-color: var(--lavender-400);
+  }
+  .tune__row output {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--celeste-400);
+  }
+  .tune__row--side {
+    grid-template-columns: 92px 1fr;
+  }
+  .tune__side {
+    display: flex;
+    gap: 0.35rem;
+  }
   .tune__side button {
-    flex: 1; padding: 0.35em; font-size: 0.7rem;
-    background: var(--surface); color: var(--text-muted);
-    border: 1px solid var(--border-soft); border-radius: 8px; cursor: pointer;
+    flex: 1;
+    padding: 0.35em;
+    font-size: 0.7rem;
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    cursor: pointer;
   }
-  .tune__side button.is-active { border-color: var(--celeste-400); color: var(--moonlight); }
-  .tune__actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
-  .tune__copy { flex: 1; padding: 0.6em 1em; font-size: 0.78rem; }
+  .tune__side button.is-active {
+    border-color: var(--celeste-400);
+    color: var(--moonlight);
+  }
+  .tune__actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .tune__copy {
+    flex: 1;
+    padding: 0.6em 1em;
+    font-size: 0.78rem;
+  }
   .tune__reset {
-    padding: 0.6em 0.9em; font-size: 0.72rem;
-    background: transparent; color: var(--text-muted);
-    border: 1px solid var(--border); border-radius: 999px; cursor: pointer;
+    padding: 0.6em 0.9em;
+    font-size: 0.72rem;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
   }
-  .tune__hint { margin-top: 0.8rem; font-size: 0.66rem; line-height: 1.5; color: var(--text-faint); }
-  .tune__hint code { color: var(--lavender-200); }
+  .tune__hint {
+    margin-top: 0.8rem;
+    font-size: 0.66rem;
+    line-height: 1.5;
+    color: var(--text-faint);
+  }
+  .tune__hint code {
+    color: var(--lavender-200);
+  }
 
   /* Revelado de la casa (scroll) */
   .reveal {
@@ -906,17 +1342,26 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     z-index: 1;
     min-height: 520svh; /* 6 pasos; el último queda fijo al llegar al tope */
   }
-  .reveal[hidden] { display: none; }
+  .reveal[hidden] {
+    display: none;
+  }
   .reveal__pin {
     position: sticky;
     top: 0;
     height: 100svh;
     overflow: hidden;
   }
-  .reveal.is-tuning { min-height: 100svh; }
-  .reveal.is-tuning .reveal__pin { position: relative; }
+  .reveal.is-tuning {
+    min-height: 100svh;
+  }
+  .reveal.is-tuning .reveal__pin {
+    position: relative;
+  }
 
-  .reveal__stages { position: absolute; inset: 0; }
+  .reveal__stages {
+    position: absolute;
+    inset: 0;
+  }
   .reveal__cap {
     position: absolute;
     top: 50%; left: 50%;
@@ -929,8 +1374,12 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     transition: opacity 0.5s var(--ease-out);
     will-change: opacity;
   }
-  .reveal__cap.is-left { left: 27%; }
-  .reveal__cap.is-right { left: 73%; }
+  .reveal__cap.is-left {
+    left: 27%;
+  }
+  .reveal__cap.is-right {
+    left: 73%;
+  }
   /* Pasos 2 (lema) y 5 (desc2): centrados */
   .reveal__cap[data-rslot="lema"],
   .reveal__cap[data-rslot="desc2"] {
@@ -944,21 +1393,38 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     font-size: var(--step--1);
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--house-color, var(--lavender-200)) 55%, var(--moonlight));
+    color: color-mix(
+      in srgb,
+      var(--house-color, var(--lavender-200)) 55%,
+      var(--moonlight)
+    );
     margin-bottom: 0.8rem;
   }
   .reveal__name {
     font-size: var(--step-4);
     line-height: 0.95;
-    color: color-mix(in srgb, var(--house-color, var(--lavender-400)) 45%, var(--moonlight));
-    text-shadow: 0 0 40px color-mix(in srgb, var(--house-color, var(--lavender-400)) 55%, transparent);
+    color: color-mix(
+      in srgb,
+      var(--house-color, var(--lavender-400)) 45%,
+      var(--moonlight)
+    );
+    text-shadow: 0 0 40px
+      color-mix(
+        in srgb,
+        var(--house-color, var(--lavender-400)) 55%,
+        transparent
+      );
   }
   .reveal__epiteto {
     margin-top: 0.5rem;
     font-size: var(--step--1);
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--house-color, var(--lavender-200)) 50%, var(--moonlight));
+    color: color-mix(
+      in srgb,
+      var(--house-color, var(--lavender-200)) 50%,
+      var(--moonlight)
+    );
   }
   .reveal__lema {
     font-family: var(--font-display);
@@ -976,8 +1442,11 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     color: var(--moonlight);
   }
   .reveal__rasgos {
-    list-style: none; padding: 0;
-    display: flex; flex-wrap: wrap; gap: 0.7rem;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
     margin: 0 0 1.8rem;
   }
   :global(.reveal__rasgos li) {
@@ -987,7 +1456,25 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     font-size: var(--step--1);
     letter-spacing: 0.06em;
     color: var(--text);
-    background: color-mix(in srgb, var(--house-color, var(--lavender-400)) 14%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--house-color, var(--lavender-400)) 14%,
+      transparent
+    );
+  }
+  .reveal__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .reveal__cap--final {
+    text-align: center;
+  }
+  .reveal__cap--final .reveal__rasgos {
+    justify-content: center;
+  }
+  .reveal__cap--final .reveal__actions {
+    justify-content: center;
   }
   .reveal__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
   /* CTA final: centrado y en la franja baja, para no encimarse con el logo */
@@ -1004,7 +1491,8 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
 
   .reveal__hint {
     position: absolute;
-    bottom: 2rem; left: 50%;
+    bottom: 2rem;
+    left: 50%;
     transform: translateX(-50%);
     width: 1.625rem; height: 2.625rem;
     border: 1.5px solid var(--border);
@@ -1022,7 +1510,6 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
     30% { opacity: 1; }
     100% { opacity: 0; transform: translateY(0.875rem); }
   }
-  @media (prefers-reduced-motion: reduce) { .reveal__hint span { animation: none; } }
 
   @media (max-width: 760px) {
     .reveal__cap, .reveal__cap.is-left, .reveal__cap.is-right {
@@ -1033,5 +1520,8 @@ const quizData = { houses, questions, ascentPoses, revealPoses, peakPose, logos 
   }
 
   /* Oculta el 3D del ascenso durante el revelado */
-  :global(.climb.is-off) { opacity: 0 !important; visibility: hidden; }
+  :global(.climb.is-off) {
+    opacity: 0 !important;
+    visibility: hidden;
+  }
 </style>

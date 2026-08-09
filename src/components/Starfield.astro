@@ -32,20 +32,31 @@
 
 <script>
   // Velo: oscurece el fondo conforme se deja atrás el hero (independiente del WebGL).
-  const veil = document.querySelector<HTMLElement>('.starfield-veil');
+  const veil = document.querySelector<HTMLElement>(".starfield-veil");
   if (veil) {
-    const hero = document.querySelector<HTMLElement>('.hero');
+    const hero = document.querySelector<HTMLElement>(".hero");
     const VEIL_MAX = 0.6;
     let vtick = false;
     const updateVeil = () => {
       vtick = false;
       const vh = innerHeight || 1;
-      const start = hero ? Math.max(vh * 0.4, hero.offsetHeight - vh) : vh * 0.4;
+      const start = hero
+        ? Math.max(vh * 0.4, hero.offsetHeight - vh)
+        : vh * 0.4;
       const p = Math.min(1, Math.max(0, (scrollY - start) / vh));
       veil.style.opacity = String(p * VEIL_MAX);
     };
-    addEventListener('scroll', () => { if (!vtick) { vtick = true; requestAnimationFrame(updateVeil); } }, { passive: true });
-    addEventListener('resize', updateVeil, { passive: true });
+    addEventListener(
+      "scroll",
+      () => {
+        if (!vtick) {
+          vtick = true;
+          requestAnimationFrame(updateVeil);
+        }
+      },
+      { passive: true },
+    );
+    addEventListener("resize", updateVeil, { passive: true });
     updateVeil();
   }
 
@@ -54,8 +65,18 @@
     radius: 25,
     fov: 65,
 
-    main: { pointSizeMin: 0.0022, pointSizeMax: 0.0080, opacity: 1.5, speed: 1.0 },
-    bg:   { pointSizeMin: 0.0012, pointSizeMax: 0.0026, opacity: 0.42, speed: 0.55 },
+    main: {
+      pointSizeMin: 0.0022,
+      pointSizeMax: 0.008,
+      opacity: 1.5,
+      speed: 1.0,
+    },
+    bg: {
+      pointSizeMin: 0.0012,
+      pointSizeMax: 0.0026,
+      opacity: 0.42,
+      speed: 0.55,
+    },
 
     yawSpeed: 0.012,
     pitchAmp: 0.06,
@@ -63,7 +84,8 @@
     twinkle: 1.0,
 
     nebula: {
-      bakeW: 512, bakeH: 256,
+      bakeW: 512,
+      bakeH: 256,
       octaves: 10,
       spatialFrequency: 2.1,
       brightness: 2.0,
@@ -77,11 +99,12 @@
     vignette: 0.55,
     paletteFlipY: true,
 
-    detail: { src: '/detail.webp', amount: 1.0, yaw: 0.0, pitch: -0.25 },
+    detail: { src: "/detail.webp", amount: 1.0, yaw: 0.0, pitch: -0.25 },
   };
 
   // Paleta del sitio (32x32) embebida; el horneado de la nebulosa depende de ella.
-  const PALETTE_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFumlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDYgNzkuMTY0NzUzLCAyMDIxLzAyLzE1LTExOjUyOjEzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMyAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIyLTA1LTAzVDA5OjMyOjI5KzAyOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIyLTA1LTAzVDEwOjA2OjM1KzAyOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMi0wNS0wM1QxMDowNjozNSswMjowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6YmVhMDU2NjktNGYwMi00MjQ0LWE0ZjctM2ZiNWQ2ZDc2YjZkIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjgwZjhlNjQ5LTJmODAtMzA0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';
+  const PALETTE_URI =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFumlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDYgNzkuMTY0NzUzLCAyMDIxLzAyLzE1LTExOjUyOjEzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMyAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIyLTA1LTAzVDA5OjMyOjI5KzAyOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIyLTA1LTAzVDEwOjA2OjM1KzAyOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMi0wNS0wM1QxMDowNjozNSswMjowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6YmVhMDU2NjktNGYwMi00MjQ0LWE0ZjctM2ZiNWQ2ZDc2YjZkIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjgwZjhlNjQ5LTJmODAtMzA0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";
 
   const QUAD_VS = `
 attribute vec2 aPos;
@@ -160,7 +183,7 @@ vec4 snoise(vec3 v) {
 #define m33 mat3(-0.7373, 0.4562, 0.4980, 0, -0.7373, 0.6754, 0.6754, 0.4980, 0.5437)
 float fbm31(vec3 q) {
   float a = 1.0, sum = 0.0;
-  for (int i = 0; i < ${'${OCTAVES}'}; i++) {
+  for (int i = 0; i < ${"${OCTAVES}"}; i++) {
     q = m33 * q.zxy;
     sum += snoise(q / a).x * a;
     a *= _Falloff;
@@ -285,57 +308,124 @@ void main(void) {
 }
 `;
 
-  const canvas = document.getElementById('starfield') as HTMLCanvasElement | null;
-  const gl = canvas?.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: true }) || null;
+  const canvas = document.getElementById(
+    "starfield",
+  ) as HTMLCanvasElement | null;
+  const gl =
+    canvas?.getContext("webgl", {
+      alpha: false,
+      antialias: false,
+      premultipliedAlpha: true,
+    }) || null;
 
   if (canvas && gl) {
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const compile = (type: number, src: string) => {
       const s = gl.createShader(type)!;
-      gl.shaderSource(s, src); gl.compileShader(s);
-      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) || 'shader');
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+        throw new Error(gl.getShaderInfoLog(s) || "shader");
       return s;
     };
-    const link = (vs: string, fs: string, uniforms: string[], attribs: string[]) => {
+    const link = (
+      vs: string,
+      fs: string,
+      uniforms: string[],
+      attribs: string[],
+    ) => {
       const p = gl.createProgram()!;
       gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
       gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
       gl.linkProgram(p);
-      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p) || 'link');
-      const u: Record<string, WebGLUniformLocation | null> = {}, a: Record<string, number> = {};
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS))
+        throw new Error(gl.getProgramInfoLog(p) || "link");
+      const u: Record<string, WebGLUniformLocation | null> = {},
+        a: Record<string, number> = {};
       uniforms.forEach((n) => (u[n] = gl.getUniformLocation(p, n)));
       attribs.forEach((n) => (a[n] = gl.getAttribLocation(p, n)));
       return { p, u, a };
     };
 
-    const bakeProg = link(QUAD_VS, BAKE_FS.replace('${OCTAVES}', String(CFG.nebula.octaves)),
-      ['_Falloff', '_SpatialFrequency', '_Brightness', '_Contrast', '_Pow', '_Disc', '_Intensity',
-        '_ColorBase', 'uPalette'], ['aPos']);
-    const bgProg = link(QUAD_VS, BG_FS,
-      ['uNebula', 'uDetail', 'uRotation', 'uDetailOrient', 'uTanHalfFov', 'uAspect',
-        'uGrain', 'uVignette', 'uDetailAmount', 'uTime'], ['aPos']);
-    const starProg = link(STARS_VS, STARS_FS,
-      ['uProjection', 'uRotation', 'uRadius', 'uScreenHeight', 'uPointSizeMin', 'uPointSizeMax',
-        'uOpacity', 'uTime', 'uTwinkle', 'uPalette'], ['aData0', 'aData1']);
+    const bakeProg = link(
+      QUAD_VS,
+      BAKE_FS.replace("${OCTAVES}", String(CFG.nebula.octaves)),
+      [
+        "_Falloff",
+        "_SpatialFrequency",
+        "_Brightness",
+        "_Contrast",
+        "_Pow",
+        "_Disc",
+        "_Intensity",
+        "_ColorBase",
+        "uPalette",
+      ],
+      ["aPos"],
+    );
+    const bgProg = link(
+      QUAD_VS,
+      BG_FS,
+      [
+        "uNebula",
+        "uDetail",
+        "uRotation",
+        "uDetailOrient",
+        "uTanHalfFov",
+        "uAspect",
+        "uGrain",
+        "uVignette",
+        "uDetailAmount",
+        "uTime",
+      ],
+      ["aPos"],
+    );
+    const starProg = link(
+      STARS_VS,
+      STARS_FS,
+      [
+        "uProjection",
+        "uRotation",
+        "uRadius",
+        "uScreenHeight",
+        "uPointSizeMin",
+        "uPointSizeMax",
+        "uOpacity",
+        "uTime",
+        "uTwinkle",
+        "uPalette",
+      ],
+      ["aData0", "aData1"],
+    );
 
     const quadBuf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 3, -1, -1, 3]),
+      gl.STATIC_DRAW,
+    );
 
     const makeLayer = (count: number) => {
-      const d0 = new Float32Array(count * 4), d1 = new Float32Array(count * 4);
+      const d0 = new Float32Array(count * 4),
+        d1 = new Float32Array(count * 4);
       for (let i = 0; i < count; i++) {
         const z = Math.random() * 2 - 1;
         const t = Math.random() * Math.PI * 2;
         const r = Math.sqrt(1 - z * z);
         const c = Math.random();
         d0.set([r * Math.cos(t), r * Math.sin(t), z, c * c * c], i * 4);
-        d1.set([Math.random(), Math.random(), Math.random(), Math.random()], i * 4);
+        d1.set(
+          [Math.random(), Math.random(), Math.random(), Math.random()],
+          i * 4,
+        );
       }
       const mk = (arr: Float32Array) => {
         const b = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW); return b;
+        gl.bindBuffer(gl.ARRAY_BUFFER, b);
+        gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
+        return b;
       };
       return { b0: mk(d0), b1: mk(d1), count };
     };
@@ -344,8 +434,17 @@ void main(void) {
 
     const paletteTex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, paletteTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-      new Uint8Array([255, 255, 255, 255]));
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      1,
+      1,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      new Uint8Array([255, 255, 255, 255]),
+    );
 
     let nebulaTex: WebGLTexture | null = null;
     {
@@ -353,7 +452,14 @@ void main(void) {
       img.onload = () => {
         gl.bindTexture(gl.TEXTURE_2D, paletteTex);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, CFG.paletteFlipY);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          img,
+        );
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -368,8 +474,17 @@ void main(void) {
     const loadDetail = (src: string) => {
       const tex = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-        new Uint8Array([0, 0, 0, 255]));
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        1,
+        1,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        new Uint8Array([0, 0, 0, 255]),
+      );
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -378,13 +493,24 @@ void main(void) {
       img.onload = () => {
         gl.bindTexture(gl.TEXTURE_2D, tex);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          img,
+        );
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
         gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(
+          gl.TEXTURE_2D,
+          gl.TEXTURE_MIN_FILTER,
+          gl.LINEAR_MIPMAP_LINEAR,
+        );
         if (reduced) requestAnimationFrame(loop);
       };
-      img.onerror = () => console.warn('[Starfield] detail no cargó:', src);
+      img.onerror = () => console.warn("[Starfield] detail no cargó:", src);
       img.src = src;
       return tex;
     };
@@ -394,14 +520,30 @@ void main(void) {
       const N = CFG.nebula;
       const tex = gl!.createTexture();
       gl!.bindTexture(gl!.TEXTURE_2D, tex);
-      gl!.texImage2D(gl!.TEXTURE_2D, 0, gl!.RGBA, N.bakeW, N.bakeH, 0, gl!.RGBA, gl!.UNSIGNED_BYTE, null);
+      gl!.texImage2D(
+        gl!.TEXTURE_2D,
+        0,
+        gl!.RGBA,
+        N.bakeW,
+        N.bakeH,
+        0,
+        gl!.RGBA,
+        gl!.UNSIGNED_BYTE,
+        null,
+      );
       gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MIN_FILTER, gl!.LINEAR);
       gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MAG_FILTER, gl!.LINEAR);
       gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_S, gl!.REPEAT);
       gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_T, gl!.CLAMP_TO_EDGE);
       const fbo = gl!.createFramebuffer();
       gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
-      gl!.framebufferTexture2D(gl!.FRAMEBUFFER, gl!.COLOR_ATTACHMENT0, gl!.TEXTURE_2D, tex, 0);
+      gl!.framebufferTexture2D(
+        gl!.FRAMEBUFFER,
+        gl!.COLOR_ATTACHMENT0,
+        gl!.TEXTURE_2D,
+        tex,
+        0,
+      );
       gl!.viewport(0, 0, N.bakeW, N.bakeH);
       gl!.useProgram(bakeProg.p);
       gl!.disable(gl!.BLEND);
@@ -426,50 +568,93 @@ void main(void) {
     }
 
     const proj = new Float32Array(16);
-    const perspective = (fovyDeg: number, aspect: number, near: number, far: number) => {
-      const f = 1 / Math.tan(fovyDeg * Math.PI / 360), nf = 1 / (near - far);
+    const perspective = (
+      fovyDeg: number,
+      aspect: number,
+      near: number,
+      far: number,
+    ) => {
+      const f = 1 / Math.tan((fovyDeg * Math.PI) / 360),
+        nf = 1 / (near - far);
       proj.fill(0);
-      proj[0] = f / aspect; proj[5] = f;
-      proj[10] = (far + near) * nf; proj[11] = -1; proj[14] = 2 * far * near * nf;
+      proj[0] = f / aspect;
+      proj[5] = f;
+      proj[10] = (far + near) * nf;
+      proj[11] = -1;
+      proj[14] = 2 * far * near * nf;
     };
     const rot = new Float32Array(9);
     const rotation = (yaw: number, pitch: number) => {
-      const cy = Math.cos(yaw), sy = Math.sin(yaw);
-      const cx = Math.cos(pitch), sx = Math.sin(pitch);
-      rot[0] = cy; rot[1] = sx * sy; rot[2] = -cx * sy;
-      rot[3] = 0; rot[4] = cx; rot[5] = sx;
-      rot[6] = sy; rot[7] = -sx * cy; rot[8] = cx * cy;
+      const cy = Math.cos(yaw),
+        sy = Math.sin(yaw);
+      const cx = Math.cos(pitch),
+        sx = Math.sin(pitch);
+      rot[0] = cy;
+      rot[1] = sx * sy;
+      rot[2] = -cx * sy;
+      rot[3] = 0;
+      rot[4] = cx;
+      rot[5] = sx;
+      rot[6] = sy;
+      rot[7] = -sx * cy;
+      rot[8] = cx * cy;
     };
 
     const detailOrient = new Float32Array(9);
     {
-      const yaw = CFG.detail.yaw, pitch = CFG.detail.pitch;
-      const cy = Math.cos(yaw), sy = Math.sin(yaw);
-      const cx = Math.cos(pitch), sx = Math.sin(pitch);
-      detailOrient[0] = cy; detailOrient[1] = sx * sy; detailOrient[2] = -cx * sy;
-      detailOrient[3] = 0; detailOrient[4] = cx; detailOrient[5] = sx;
-      detailOrient[6] = sy; detailOrient[7] = -sx * cy; detailOrient[8] = cx * cy;
+      const yaw = CFG.detail.yaw,
+        pitch = CFG.detail.pitch;
+      const cy = Math.cos(yaw),
+        sy = Math.sin(yaw);
+      const cx = Math.cos(pitch),
+        sx = Math.sin(pitch);
+      detailOrient[0] = cy;
+      detailOrient[1] = sx * sy;
+      detailOrient[2] = -cx * sy;
+      detailOrient[3] = 0;
+      detailOrient[4] = cx;
+      detailOrient[5] = sx;
+      detailOrient[6] = sy;
+      detailOrient[7] = -sx * cy;
+      detailOrient[8] = cx * cy;
     }
 
-    let vw = 0, vh = 0, aspect = 1;
+    let vw = 0,
+      vh = 0,
+      aspect = 1;
     const resize = () => {
       const dpr = 1; // fondo: 1x basta y evita saturar el compositor
-      const w = Math.round(innerWidth * dpr), h = Math.round(innerHeight * dpr);
+      const w = Math.round(innerWidth * dpr),
+        h = Math.round(innerHeight * dpr);
       if (canvas.width === w && canvas.height === h) return;
-      canvas.width = w; canvas.height = h;
-      vw = w; vh = h; aspect = w / h;
+      canvas.width = w;
+      canvas.height = h;
+      vw = w;
+      vh = h;
+      aspect = w / h;
       perspective(CFG.fov, aspect, 0.1, 100);
       if (reduced) requestAnimationFrame(loop);
     };
-    addEventListener('resize', resize);
+    addEventListener("resize", resize);
     resize();
 
     gl.disable(gl.DEPTH_TEST);
-    const tanHalfFov = Math.tan(CFG.fov * Math.PI / 360);
+    const tanHalfFov = Math.tan((CFG.fov * Math.PI) / 360);
 
-    const drawStarLayer = (layer: { b0: WebGLBuffer | null; b1: WebGLBuffer | null; count: number },
-      opts: { pointSizeMin: number; pointSizeMax: number; opacity: number; speed: number }, t: number) => {
-      rotation(t * CFG.yawSpeed * opts.speed, Math.sin(t * CFG.pitchSpeed) * CFG.pitchAmp * opts.speed);
+    const drawStarLayer = (
+      layer: { b0: WebGLBuffer | null; b1: WebGLBuffer | null; count: number },
+      opts: {
+        pointSizeMin: number;
+        pointSizeMax: number;
+        opacity: number;
+        speed: number;
+      },
+      t: number,
+    ) => {
+      rotation(
+        t * CFG.yawSpeed * opts.speed,
+        Math.sin(t * CFG.pitchSpeed) * CFG.pitchAmp * opts.speed,
+      );
       gl.uniformMatrix3fv(starProg.u.uRotation, false, rot);
       gl.uniform1f(starProg.u.uPointSizeMin, opts.pointSizeMin);
       gl.uniform1f(starProg.u.uPointSizeMax, opts.pointSizeMax);
@@ -489,10 +674,15 @@ void main(void) {
       gl.viewport(0, 0, vw, vh);
 
       gl.disable(gl.BLEND);
-      if (!nebulaTex) { gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); }
-      else {
+      if (!nebulaTex) {
+        gl.clearColor(0, 0, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      } else {
         gl.useProgram(bgProg.p);
-        rotation(t * CFG.yawSpeed * CFG.main.speed, Math.sin(t * CFG.pitchSpeed) * CFG.pitchAmp * CFG.main.speed);
+        rotation(
+          t * CFG.yawSpeed * CFG.main.speed,
+          Math.sin(t * CFG.pitchSpeed) * CFG.pitchAmp * CFG.main.speed,
+        );
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, nebulaTex);
         gl.uniform1i(bgProg.u.uNebula, 0);
@@ -506,7 +696,7 @@ void main(void) {
         gl.uniform1f(bgProg.u.uGrain, CFG.grain);
         gl.uniform1f(bgProg.u.uVignette, CFG.vignette);
         gl.uniform1f(bgProg.u.uDetailAmount, CFG.detail.amount);
-        gl.uniform1f(bgProg.u.uTime, 10.0 * t % 1000.0);
+        gl.uniform1f(bgProg.u.uTime, (10.0 * t) % 1000.0);
         gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
         gl.enableVertexAttribArray(bgProg.a.aPos);
         gl.vertexAttribPointer(bgProg.a.aPos, 2, gl.FLOAT, false, 0, 0);
@@ -532,7 +722,10 @@ void main(void) {
     const FRAME_MS = 1000 / 30;
     let lastDraw = 0;
     function loop(now: number) {
-      if (now - lastDraw >= FRAME_MS) { lastDraw = now; frame(now); }
+      if (now - lastDraw >= FRAME_MS) {
+        lastDraw = now;
+        frame(now);
+      }
       if (!reduced) requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);

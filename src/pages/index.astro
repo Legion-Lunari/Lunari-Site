@@ -4,7 +4,7 @@ import TargonModel from '../components/TargonModel.astro';
 import LunariLogo from '../components/LunariLogo.astro';
 import ConstellationReveal from '../components/ConstellationReveal.astro';
 
-const DISCORD_URL = 'https://discord.com/invite/j2mEbRg9jc';
+const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 
 const pilares = [
   {
@@ -36,45 +36,75 @@ const vibes = [
 
 <BaseLayout>
   <section class="hero" id="hero">
-   <div class="hero__pin">
-    <div class="hero__stage" aria-hidden="true">
-      <TargonModel class="hero__targon" />
-    </div>
-    <div class="hero__scrim" aria-hidden="true"></div>
-
-    <!-- Cada etapa aparece y se desvanece con el scroll de descenso -->
-    <div class="hero__stages">
-      <div class="hero__cap hero__cap--title" data-cap data-start="0" data-end="0.24">
-        <div class="hero__cap-fog" data-hero-fog aria-hidden="true"></div>
-        <h1 class="hero__title">Legion <span class="hero__title-accent">Lunari</span></h1>
-        <p class="hero__cap-sub">Comunidad de Discord · League of Legends · LAN/LAS</p>
+    <div class="hero__pin">
+      <div class="hero__stage" aria-hidden="true">
+        <TargonModel class="hero__targon" />
       </div>
+      <div class="hero__scrim" aria-hidden="true"></div>
 
-      <div class="hero__cap hero__cap--left" data-cap data-narr data-start="0.24" data-end="0.48">
-        <p class="hero__narr">En la cima del Monte Targon,<br />donde la luz roza las estrellas…</p>
-      </div>
+      <!-- Cada etapa aparece y se desvanece con el scroll de descenso -->
+      <div class="hero__stages">
+        <div
+          class="hero__cap hero__cap--title"
+          data-cap
+          data-start="0"
+          data-end="0.24"
+        >
+          <div class="hero__cap-fog" data-hero-fog aria-hidden="true"></div>
+          <h1 class="hero__title">
+            Legion <span class="hero__title-accent">Lunari</span>
+          </h1>
+          <p class="hero__cap-sub">
+            Comunidad de Discord · League of Legends · LAN/LAS
+          </p>
+        </div>
 
-      <div class="hero__cap hero__cap--right" data-cap data-narr data-start="0.48" data-end="0.72">
-        <p class="hero__narr">…desciende una hermandad<br />de invocadoras.</p>
-      </div>
+        <div
+          class="hero__cap hero__cap--left"
+          data-cap
+          data-narr
+          data-start="0.24"
+          data-end="0.48"
+        >
+          <p class="hero__narr">
+            En la cima del Monte Targon,<br />donde la luz roza las estrellas…
+          </p>
+        </div>
 
-      <div class="hero__cap hero__cap--cta" data-cap data-start="0.72" data-end="1.3">
-        <p class="hero__narr hero__narr--lead">
-          Honesta, amigable y <span class="accent-text">mágica</span>.
-        </p>
-        <div class="hero__actions">
-          <a href={DISCORD_URL} class="btn" target="_blank" rel="noopener">
-            Unirse al Discord <span aria-hidden="true">→</span>
-          </a>
-          <a href="/quiz-de-casas" class="btn btn--ghost">Descubre tu casa</a>
+        <div
+          class="hero__cap hero__cap--right"
+          data-cap
+          data-narr
+          data-start="0.48"
+          data-end="0.72"
+        >
+          <p class="hero__narr">
+            …desciende una hermandad<br />de invocadoras.
+          </p>
+        </div>
+
+        <div
+          class="hero__cap hero__cap--cta"
+          data-cap
+          data-start="0.72"
+          data-end="1.3"
+        >
+          <p class="hero__narr hero__narr--lead">
+            Honesta, amigable y <span class="accent-text">mágica</span>.
+          </p>
+          <div class="hero__actions">
+            <a href={DISCORD_URL} class="btn" target="_blank" rel="noopener">
+              Unirse al Discord <span aria-hidden="true">→</span>
+            </a>
+            <a href="/quiz-de-casas" class="btn btn--ghost">Descubre tu casa</a>
+          </div>
         </div>
       </div>
-    </div>
 
-    <a href="#nosotras" class="hero__scroll" aria-label="Descender a Targon">
-      <span></span>
-    </a>
-   </div>
+      <a href="#nosotras" class="hero__scroll" aria-label="Descender a Targon">
+        <span></span>
+      </a>
+    </div>
   </section>
 
   <section class="section" id="nosotras">
@@ -322,7 +352,10 @@ const vibes = [
 <style>
   /* Hero: el Monte Targon como pieza central. Estático por defecto;
      con .is-journey (lo añade el JS) se vuelve un recorrido de descenso. */
-  .hero { position: relative; min-height: 100svh; }
+  .hero {
+    position: relative;
+    min-height: 100svh;
+  }
   .hero__pin {
     position: relative;
     height: 100svh;
@@ -336,7 +369,11 @@ const vibes = [
     z-index: 0;
     pointer-events: none;
   }
-  .hero__targon { position: absolute; inset: 0; pointer-events: auto; }
+  .hero__targon {
+    position: absolute;
+    inset: 0;
+    pointer-events: auto;
+  }
 
   /* Vela para legibilidad del texto sobre la montaña */
   .hero__scrim {
@@ -345,7 +382,11 @@ const vibes = [
     z-index: 1;
     pointer-events: none;
     background:
-      radial-gradient(130% 80% at 50% 40%, transparent 32%, color-mix(in srgb, var(--bg) 62%, transparent) 100%),
+      radial-gradient(
+        130% 80% at 50% 40%,
+        transparent 32%,
+        color-mix(in srgb, var(--bg) 62%, transparent) 100%
+      ),
       linear-gradient(to top, var(--bg) 2%, transparent 42%);
   }
 
@@ -368,7 +409,9 @@ const vibes = [
     line-height: 0.9;
     letter-spacing: -0.02em;
   }
-  .hero__title-accent { color: inherit; }
+  .hero__title-accent {
+    color: inherit;
+  }
   .hero__cap-sub {
     margin-top: 1rem;
     font-size: var(--step--1);
@@ -384,7 +427,9 @@ const vibes = [
     color: var(--moonlight);
     text-wrap: balance;
   }
-  .hero__narr--lead { margin-bottom: 1.8rem; }
+  .hero__narr--lead {
+    margin-bottom: 1.8rem;
+  }
 
   /* Neblina oscura tras el título para separarlo del monte (Vanta FOG) */
   .hero__cap--title {
@@ -393,8 +438,13 @@ const vibes = [
     isolation: isolate;
   }
   .hero__cap--title > .hero__title,
-  .hero__cap--title > .hero__cap-sub { position: relative; z-index: 1; }
-  .hero__cap--title .hero__cap-sub { color: var(--text-muted); }
+  .hero__cap--title > .hero__cap-sub {
+    position: relative;
+    z-index: 1;
+  }
+  .hero__cap--title .hero__cap-sub {
+    color: var(--text-muted);
+  }
 
   .hero__cap-fog {
     position: absolute;
@@ -403,15 +453,23 @@ const vibes = [
     pointer-events: none;
     opacity: 0.5;
     /* Base tenue; respaldo si Vanta no carga o hay reduced-motion */
-    background: radial-gradient(58% 56% at 50% 52%,
+    background: radial-gradient(
+      58% 56% at 50% 52%,
       color-mix(in srgb, var(--ink) 46%, transparent) 0%,
       color-mix(in srgb, var(--night-900) 22%, transparent) 46%,
-      transparent 74%);
+      transparent 74%
+    );
     /* Máscara sin meseta: se difumina desde el centro, sin borde superior visible */
-    -webkit-mask-image: radial-gradient(60% 58% at 50% 50%, #000 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(
+      60% 58% at 50% 50%,
+      #000 0%,
+      transparent 72%
+    );
     mask-image: radial-gradient(60% 58% at 50% 50%, #000 0%, transparent 72%);
   }
-  .hero__cap-fog :global(canvas) { display: block; }
+  .hero__cap-fog :global(canvas) {
+    display: block;
+  }
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
@@ -419,10 +477,14 @@ const vibes = [
     justify-content: center;
   }
   /* En modo estático las narrativas intermedias no se muestran */
-  .hero__cap[data-narr] { display: none; }
+  .hero__cap[data-narr] {
+    display: none;
+  }
 
   /* Modo recorrido (JS + movimiento permitido) */
-  .hero.is-journey { min-height: 265svh; }
+  .hero.is-journey {
+    min-height: 265svh;
+  }
   .hero.is-journey .hero__pin {
     position: sticky;
     top: 0;
@@ -446,7 +508,9 @@ const vibes = [
     transform: translate(-50%, -50%);
     will-change: opacity, transform;
   }
-  .hero.is-journey .hero__cap[data-narr] { display: block; }
+  .hero.is-journey .hero__cap[data-narr] {
+    display: block;
+  }
 
   /* Narrativas a los lados: no roban protagonismo al modelo del centro */
   .hero.is-journey .hero__cap--left {
@@ -470,7 +534,8 @@ const vibes = [
 
   .hero__scroll {
     position: absolute;
-    bottom: 2rem; left: 50%;
+    bottom: 2rem;
+    left: 50%;
     transform: translateX(-50%);
     width: 1.625rem; height: 2.625rem;
     border: 1.5px solid var(--border);
@@ -493,10 +558,14 @@ const vibes = [
     100% { opacity: 0; transform: translateY(0.875rem); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero__scroll span { animation: none; }
+    .hero__scroll span {
+      animation: none;
+    }
   }
   @media (max-width: 720px) {
-    .hero__title { font-size: clamp(2.6rem, 1.6rem + 6vw, 4rem); }
+    .hero__title {
+      font-size: clamp(2.6rem, 1.6rem + 6vw, 4rem);
+    }
   }
 
   /* Puente entre el hero (fondo --bg sólido) y las secciones (fondo fijo visible):
@@ -1162,40 +1231,42 @@ const vibes = [
 <script>
   // Recorrido de descenso: cada etapa de texto aparece y se desvanece
   // conforme la cámara desciende el Monte Targon.
-  const hero = document.querySelector<HTMLElement>('.hero');
-  const caps = Array.from(document.querySelectorAll<HTMLElement>('[data-cap]'));
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hero = document.querySelector<HTMLElement>(".hero");
+  const caps = Array.from(document.querySelectorAll<HTMLElement>("[data-cap]"));
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Neblina oscura tras el título (Vanta FOG), sólo con movimiento permitido.
-  const fogEl = document.querySelector<HTMLElement>('[data-hero-fog]');
+  const fogEl = document.querySelector<HTMLElement>("[data-hero-fog]");
   if (fogEl && !reduced) {
     Promise.all([
-      import('three'),
+      import("three"),
       // @ts-ignore: vanta no trae tipos
-      import('vanta/dist/vanta.fog.min'),
-    ]).then(([THREE, FOGmod]) => {
-      const FOG = (FOGmod as any).default || FOGmod;
-      FOG({
-        el: fogEl,
-        THREE,
-        mouseControls: false,
-        touchControls: false,
-        gyroControls: false,
-        minHeight: 120,
-        minWidth: 120,
-        blurFactor: 0.9,
-        zoom: 0.7,
-        speed: 1.0,
-        highlightColor: 0x263a72,
-        midtoneColor: 0x211a52,
-        lowlightColor: 0x101038,
-        baseColor: 0x0a0b24,
-      });
-    }).catch((e) => console.error('[HeroFog]', e));
+      import("vanta/dist/vanta.fog.min"),
+    ])
+      .then(([THREE, FOGmod]) => {
+        const FOG = (FOGmod as any).default || FOGmod;
+        FOG({
+          el: fogEl,
+          THREE,
+          mouseControls: false,
+          touchControls: false,
+          gyroControls: false,
+          minHeight: 120,
+          minWidth: 120,
+          blurFactor: 0.9,
+          zoom: 0.7,
+          speed: 1.0,
+          highlightColor: 0x263a72,
+          midtoneColor: 0x211a52,
+          lowlightColor: 0x101038,
+          baseColor: 0x0a0b24,
+        });
+      })
+      .catch((e) => console.error("[HeroFog]", e));
   }
 
   if (hero && caps.length && !reduced) {
-    hero.classList.add('is-journey');
+    hero.classList.add("is-journey");
 
     const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
     const smooth = (edge0: number, edge1: number, x: number) => {
@@ -1205,9 +1276,9 @@ const vibes = [
 
     const stages = caps.map((el, i) => ({
       el,
-      start: parseFloat(el.dataset.start || '0'),
-      end: parseFloat(el.dataset.end || '1'),
-      isCta: el.classList.contains('hero__cap--cta'),
+      start: parseFloat(el.dataset.start || "0"),
+      end: parseFloat(el.dataset.end || "1"),
+      isCta: el.classList.contains("hero__cap--cta"),
       isFirst: i === 0,
     }));
 
@@ -1229,14 +1300,21 @@ const vibes = [
         const y = lerp(s.isFirst ? 0 : DRIFT * 0.5, -DRIFT * 0.5, clampedLocal);
         s.el.style.opacity = String(vis);
         s.el.style.transform = `translate(-50%, calc(-50% + ${y.toFixed(1)}px))`;
-        s.el.style.pointerEvents = vis > 0.6 ? 'auto' : 'none';
+        s.el.style.pointerEvents = vis > 0.6 ? "auto" : "none";
       }
     };
 
-    window.addEventListener('scroll', () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(update); }
-    }, { passive: true });
-    window.addEventListener('resize', update, { passive: true });
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener("resize", update, { passive: true });
     update();
   }
 </script>
