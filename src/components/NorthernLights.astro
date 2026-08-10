@@ -25,7 +25,7 @@
   .nl :global(canvas) {
     position: absolute;
     display: block;
-    filter: blur(6px) drop-shadow(0 0 30px rgba(51, 180, 172, 0.6));
+    filter: drop-shadow(0 0 30px rgba(51, 180, 172, 0.6));
     transform-origin: 0 100%;
     transform: skewX(-16deg);
     animation: nlFade 6s 1;
@@ -48,6 +48,9 @@
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const lowSpec =
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+      ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4);
 
     // Ajustes de la aurora
     const CURVE_POINTS = 10;
@@ -58,7 +61,7 @@
     const CURVE_POINT_MIN_FLOAT_DIST = 15;
     const CURVE_POINT_MAX_FLOAT_TIME = 9000;
     const CURVE_POINT_MIN_FLOAT_TIME = 3000;
-    const BRUSH_COUNT = 460; // reducido para rendimiento
+    const BRUSH_COUNT = lowSpec ? 150 : 460; // reducido para rendimiento
     const BRUSH_WIDTH = 30;
     const BRUSH_HEIGHT = 450;
     const BRUSH_MIN_SCALE_Y = 0.02;
@@ -416,27 +419,42 @@
         NL_ROOT!.appendChild(canvas);
         ctx = canvas.getContext("2d")!;
       }
-      canvas.width = W;
-      canvas.height = H;
+      const SCALE = 0.5;
+      canvas.width = W * SCALE;
+      canvas.height = H * SCALE;
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      ctx.scale(SCALE, SCALE);
       ctx.globalCompositeOperation = "color-dodge";
       curves = makeCurves(W, H);
     }
 
-    function anim() {
-      ctx.clearRect(0, 0, W, H);
-      for (let i = 0; i < curves.length; i++) {
-        curves[i].update();
-        curves[i].draw(ctx);
+    const FRAME_MS = 1000 / 30;
+    let lastDraw = 0;
+    function anim(now: number) {
+      if (now - lastDraw >= FRAME_MS) {
+        lastDraw = now;
+        ctx.clearRect(0, 0, W, H);
+        for (let i = 0; i < curves.length; i++) {
+          curves[i].update();
+          curves[i].draw(ctx);
+        }
       }
       if (!reduced) raf = requestAnimationFrame(anim);
     }
 
-    build();
-    if (reduced) {
-      curves.forEach((c) => c.update());
-      ctx.clearRect(0, 0, W, H);
-      curves.forEach((c) => c.draw(ctx));
-    } else anim();
+    const start = () => {
+      build();
+      if (reduced) {
+        curves.forEach((c) => c.update());
+        ctx.clearRect(0, 0, W, H);
+        curves.forEach((c) => c.draw(ctx));
+      } else requestAnimationFrame(anim);
+    };
+
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(start, { timeout: 500 });
+    } else setTimeout(start, 100);
 
     let rt: number;
     window.addEventListener("resize", () => {
