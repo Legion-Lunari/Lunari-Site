@@ -4,7 +4,6 @@ import SiteNav from "../components/SiteNav.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import Starfield from "../components/Starfield.astro";
 import NorthernLights from "../components/NorthernLights.astro";
-import SocialBubble from "../components/SocialBubble.astro";
 import StarTrail from "../components/StarTrail.astro";
 
 interface Props {
@@ -51,6 +50,27 @@ const {
     </main>
     {!hideFooter && <SiteFooter />}
     <StarTrail />
+
+    <style is:global>
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      main#main {
+        flex: 1 0 auto;
+      }
+
+      body > footer {
+        flex-shrink: 0;
+      }
+    </style>
 
     <script>
       // Reveal al scroll

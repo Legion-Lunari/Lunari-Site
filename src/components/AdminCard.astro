@@ -1,0 +1,356 @@
+﻿---
+// AdminCard.astro
+
+export interface Props {
+  /** Character/display name shown as the big title */
+  name: string;
+  /** Role label under the name (default: "ADMINISTRADORA") */
+  role?: string;
+  /** Path or URL to the background artwork */
+  image: string;
+  /** CSS object-position for the background image, e.g. "center 15%" */
+  imagePosition?: string;
+  /** LoL playstyle, e.g. "Agresivo" */
+  playstyle: string;
+  /** Region, e.g. "LAN" */
+  region: string;
+  /** Lane(s), e.g. "SUPP - JG" */
+  lanes: string;
+  /** Label for the last row — "INSTA" or "MBTI" work well */
+  lastLabel?: string;
+  /** Value for the last row — @handle or a type like "INFJ" */
+  lastValue: string;
+  /** Optional confession/quote line. Omit to hide the whole block */
+  confession?: string;
+  /** Manual overlay color (hex/rgb). Leave unset to auto-detect from the image */
+  overlayColor?: string;
+}
+
+const {
+  name,
+  role = "ADMINISTRADORA",
+  image,
+  imagePosition = "center 15%",
+  playstyle,
+  region,
+  lanes,
+  lastLabel = "INSTA",
+  lastValue,
+  confession,
+  overlayColor,
+} = Astro.props;
+
+const autoColor = !overlayColor;
+const initialColor = overlayColor ?? "#7a1229";
+
+const pills = [
+  { label: "Estilo de juego", value: playstyle },
+  { label: "Región", value: region },
+  { label: "Línea", value: lanes },
+  { label: lastLabel, value: lastValue },
+];
+---
+
+<div
+  class="admin-card"
+  data-auto-color={autoColor ? "true" : "false"}
+  style={`--overlay-color:${initialColor}; --overlay-color-soft:${initialColor}00;`}
+>
+  <img
+    class="card__bg"
+    src={image}
+    alt={name}
+    style={`object-position:${imagePosition};`}
+    crossorigin="anonymous"
+    loading="lazy"
+    decoding="async"
+  />
+
+  <div class="card__scrim" aria-hidden="true"></div>
+
+  <div class="card__content">
+    <div class="card__heading">
+      <h1 class="card__name">{name}</h1>
+      <p class="card__role">{role}</p>
+    </div>
+
+    <div class="card__pills">
+      {
+        pills.map((p) => (
+          <div class="pill">
+            <span class="pill__label">{p.label}</span>
+            <svg
+              class="pill__icon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z" />
+            </svg>
+            <span class="pill__value">{p.value}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    {
+      confession && (
+        <div class="card__confession">
+          <h2>Confesión:</h2>
+          <p>&ldquo;{confession}&rdquo;</p>
+        </div>
+      )
+    }
+
+    <div class="card__footer">
+      <svg
+        class="footer__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        aria-hidden="true"
+      >
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5"></rect>
+        <circle cx="12" cy="12" r="4.6"></circle>
+        <circle cx="17.6" cy="6.4" r="0.9" fill="currentColor" stroke="none"
+        ></circle>
+      </svg>
+      <span>Legion Lunari</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Baloo+2:wght@400;500;600;700&display=swap");
+
+  .admin-card {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 9 / 16;
+    border-radius: 18px;
+    overflow: hidden;
+    container-type: inline-size;
+    container-name: admincard;
+    font-family: "Baloo 2", system-ui, sans-serif;
+    color: #fff;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    isolation: isolate;
+  }
+
+  .card__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .card__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 40%,
+      var(--overlay-color) 60%,
+      var(--overlay-color) 100%
+    );
+    transition: background 0.6s ease;
+  }
+
+  .card__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    padding: 0 7cqw 6cqw;
+    box-sizing: border-box;
+  }
+
+  .card__heading {
+    margin-top: auto;
+    text-align: center;
+    padding-bottom: 3cqw;
+  }
+
+  .card__name {
+    margin: 0;
+    font-family: "Cinzel Decorative", serif;
+    font-weight: 700;
+    font-size: clamp(1.9rem, 11cqw, 4rem);
+    line-height: 1;
+    letter-spacing: 0.03em;
+    color: #fdfaf4;
+    text-shadow:
+      0 2px 0 rgba(60, 8, 16, 0.55),
+      0 4px 14px rgba(0, 0, 0, 0.5),
+      0 0 30px rgba(0, 0, 0, 0.25);
+  }
+
+  .card__role {
+    margin: 0.6em 0 0;
+    font-size: clamp(0.8rem, 3.1cqw, 1.15rem);
+    font-weight: 400;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    text-indent: 0.35em; /* nudge for the trailing letter-spacing */
+    color: #f3ecec;
+  }
+
+  .card__pills {
+    display: flex;
+    flex-direction: column;
+    gap: 2.4cqw;
+    width: 100%;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 3cqw;
+    width: 100%;
+    background: #e7e5e4;
+    color: #2a2a2a;
+    border-radius: 999px;
+    padding: 3cqw 5cqw;
+    box-sizing: border-box;
+    font-size: clamp(0.72rem, 3cqw, 1rem);
+  }
+
+  .pill__label {
+    font-weight: 500;
+    white-space: nowrap;
+    min-width: 9em;
+  }
+
+  .pill__icon {
+    flex: 0 0 auto;
+    width: clamp(0.7rem, 3cqw, 1.1rem);
+    height: clamp(0.7rem, 3cqw, 1.1rem);
+    color: #6b6b6b;
+  }
+
+  .pill__value {
+    font-weight: 400;
+    margin-left: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card__confession {
+    text-align: center;
+    margin-top: 5cqw;
+  }
+
+  .card__confession h2 {
+    margin: 0 0 0.4em;
+    font-size: clamp(1rem, 4.2cqw, 1.6rem);
+    font-weight: 700;
+  }
+
+  .card__confession p {
+    margin: 0;
+    font-size: clamp(0.75rem, 3cqw, 1.05rem);
+    font-weight: 400;
+    line-height: 1.4;
+    color: #f4eeee;
+  }
+
+  .card__footer {
+    margin-top: 5cqw;
+    display: flex;
+    align-items: center;
+    gap: 2cqw;
+    font-size: clamp(0.7rem, 2.6cqw, 0.95rem);
+    font-weight: 600;
+  }
+
+  .footer__icon {
+    width: clamp(0.9rem, 3.4cqw, 1.3rem);
+    height: clamp(0.9rem, 3.4cqw, 1.3rem);
+  }
+</style>
+
+<script>
+  // Auto-detect a representative color from each card's background image
+  // (favors saturated pixels so it lands close to the art's accent hue),
+  // unless the caller passed an explicit `overlayColor` prop.
+  function averageColor(
+    img: HTMLImageElement,
+  ): [number, number, number] | null {
+    const size = 32;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    try {
+      ctx.drawImage(img, 0, 0, size, size);
+      const { data } = ctx.getImageData(0, 0, size, size);
+      let r = 0,
+        g = 0,
+        b = 0,
+        weight = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const [rr, gg, bb, aa] = [
+          data[i],
+          data[i + 1],
+          data[i + 2],
+          data[i + 3],
+        ];
+        if (aa < 200) continue;
+        const max = Math.max(rr, gg, bb);
+        const min = Math.min(rr, gg, bb);
+        const sat = max === 0 ? 0 : (max - min) / max;
+        const w = 0.2 + sat; // bias toward vivid pixels over grays
+        r += rr * w;
+        g += gg * w;
+        b += bb * w;
+        weight += w;
+      }
+      if (weight === 0) return null;
+      return [
+        Math.round(r / weight),
+        Math.round(g / weight),
+        Math.round(b / weight),
+      ];
+    } catch {
+      return null; // tainted canvas (cross-origin image without CORS)
+    }
+  }
+
+  function darken(
+    [r, g, b]: [number, number, number],
+    amount: number,
+  ): [number, number, number] {
+    return [r, g, b].map((v) => Math.round(v * (1 - amount))) as [
+      number,
+      number,
+      number,
+    ];
+  }
+
+  function applyAutoColor(card: HTMLElement) {
+    const img = card.querySelector(".card__bg") as HTMLImageElement | null;
+    if (!img) return;
+    const run = () => {
+      const rgb = averageColor(img);
+      if (!rgb) return;
+      const [r, g, b] = darken(rgb, 0.25);
+      card.style.setProperty("--overlay-color", `rgb(${r}, ${g}, ${b})`);
+    };
+    if (img.complete) run();
+    else img.addEventListener("load", run, { once: true });
+  }
+
+  document
+    .querySelectorAll<HTMLElement>('.admin-card[data-auto-color="true"]')
+    .forEach(applyAutoColor);
+</script>
