@@ -1,11 +1,11 @@
 ---
-import '../styles/global.css';
-import SiteNav from '../components/SiteNav.astro';
-import SiteFooter from '../components/SiteFooter.astro';
-import Starfield from '../components/Starfield.astro';
-import NorthernLights from '../components/NorthernLights.astro';
-import SocialBubble from '../components/SocialBubble.astro';
-import StarTrail from '../components/StarTrail.astro';
+import "../styles/global.css";
+import SiteNav from "../components/SiteNav.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import Starfield from "../components/Starfield.astro";
+import NorthernLights from "../components/NorthernLights.astro";
+import SocialBubble from "../components/SocialBubble.astro";
+import StarTrail from "../components/StarTrail.astro";
 
 interface Props {
   title?: string;
@@ -13,8 +13,8 @@ interface Props {
   hideFooter?: boolean;
 }
 const {
-  title = 'Legion Lunari - Comunidad LoL para invocadoras',
-  description = 'Legion Lunari es una comunidad de Discord exclusiva para mujeres de League of Legends (LAN): honesta, amigable y mágica. Encuentra tu casa entre las estrellas.',
+  title = "Legion Lunari - Comunidad LoL para invocadoras",
+  description = "Legion Lunari es una comunidad de Discord exclusiva para mujeres de League of Legends (LAN): honesta, amigable y mágica. Encuentra tu casa entre las estrellas.",
   hideFooter = false,
 } = Astro.props;
 ---
@@ -50,7 +50,6 @@ const {
       <slot />
     </main>
     {!hideFooter && <SiteFooter />}
-    <SocialBubble />
     <StarTrail />
 
     <script>

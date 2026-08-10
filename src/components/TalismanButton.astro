@@ -1,0 +1,120 @@
+﻿---
+interface Props {
+  href?: string;
+  class?: string;
+  variant?: "solid" | "ghost";
+}
+
+const { href, class: className, variant = "solid" } = Astro.props;
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+  href={href}
+  data-variant={variant}
+  class:list={["talisman-btn", className]}
+  target="_blank"
+>
+  <slot name="left-icon" />
+
+  <slot />
+
+  <slot name="right-icon" />
+</Tag>
+
+<style>
+  .talisman-btn {
+    --btn-bg: var(--action);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--step-0);
+    letter-spacing: 0.01em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.85em 1.6em;
+    cursor: pointer;
+    color: var(--moonlight);
+    position: relative;
+    border: none;
+    border-radius: 0;
+    clip-path: polygon(
+      0.95rem 0,
+      calc(100% - 0.95rem) 0,
+      100% 0.95rem,
+      100% calc(100% - 0.95rem),
+      calc(100% - 0.95rem) 100%,
+      0.95rem 100%,
+      0 calc(100% - 0.95rem),
+      0 0.95rem
+    );
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--lavender-200) 85%, transparent),
+      var(--lavender-400)
+    );
+    filter: drop-shadow(
+      0 0 16px color-mix(in srgb, var(--violet-600) 60%, transparent)
+    );
+    transition:
+      transform 0.3s var(--ease-out),
+      filter 0.3s var(--ease-out);
+    will-change: transform;
+  }
+
+  .talisman-btn::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    z-index: -1;
+    clip-path: polygon(
+      0.85rem 0,
+      calc(100% - 0.85rem) 0,
+      100% 0.85rem,
+      100% calc(100% - 0.85rem),
+      calc(100% - 0.85rem) 100%,
+      0.85rem 100%,
+      0 calc(100% - 0.85rem),
+      0 0.85rem
+    );
+    background: linear-gradient(
+      135deg,
+      var(--lavender-400),
+      var(--violet-600) 75%
+    );
+  }
+
+  .talisman-btn:hover {
+    transform: translateY(-2px);
+    filter: drop-shadow(
+        0 0 26px color-mix(in srgb, var(--lavender-400) 75%, transparent)
+      )
+      brightness(1.06);
+  }
+
+  .talisman-btn:active {
+    transform: translateY(0);
+  }
+
+  /* ghost variant — layered on top of the base above */
+  .talisman-btn[data-variant="ghost"] {
+    color: var(--text);
+    background: color-mix(in srgb, var(--lavender-400) 45%, transparent);
+    filter: none;
+  }
+
+  .talisman-btn[data-variant="ghost"]::before {
+    background: color-mix(in srgb, var(--night-900) 90%, var(--lavender-400));
+  }
+
+  .talisman-btn[data-variant="ghost"] span {
+    color: var(--lavender-200);
+  }
+
+  .talisman-btn[data-variant="ghost"]:hover {
+    background: color-mix(in srgb, var(--lavender-400) 70%, transparent);
+    filter: drop-shadow(
+      0 0 18px color-mix(in srgb, var(--lavender-400) 45%, transparent)
+    );
+  }
+</style>

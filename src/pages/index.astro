@@ -1,36 +1,37 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import TargonModel from '../components/TargonModel.astro';
-import LunariLogo from '../components/LunariLogo.astro';
-import ConstellationReveal from '../components/ConstellationReveal.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TargonModel from "../components/TargonModel.astro";
+import LunariLogo from "../components/LunariLogo.astro";
+import ConstellationReveal from "../components/ConstellationReveal.astro";
+import TalismanButton from "../components/TalismanButton.astro";
 
 const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 
 const pilares = [
   {
-    phase: '🌒',
-    title: 'Torneos y concursos',
-    body: 'Competencias y eventos pensados para que el talento de nuestras jugadoras brille en un entorno seguro y competitivo.',
+    phase: "🌒",
+    title: "Torneos y concursos",
+    body: "Competencias y eventos pensados para que el talento de nuestras jugadoras brille en un entorno seguro y competitivo.",
   },
   {
-    phase: '🌓',
-    title: 'Mentorías',
-    body: 'Espacios de aprendizaje donde crecer dentro del juego acompañada por otras integrantes de la comunidad.',
+    phase: "🌓",
+    title: "Mentorías",
+    body: "Espacios de aprendizaje donde crecer dentro del juego acompañada por otras integrantes de la comunidad.",
   },
   {
-    phase: '🌔',
-    title: 'Experiencias',
-    body: 'Encuentros digitales y presenciales que conectan a miles de jugadoras de toda Latinoamérica.',
+    phase: "🌔",
+    title: "Experiencias",
+    body: "Encuentros digitales y presenciales que conectan a miles de jugadoras de toda Latinoamérica.",
   },
 ];
 
 const vibes = [
-  'Espacios seguros e inclusivos',
-  'Competencia y aprendizaje',
-  'Libertad de ser tú misma',
-  'Talento y visibilidad femenina',
-  'Vínculos dentro de la comunidad',
-  'Jugadoras de toda Latinoamérica',
+  "Espacios seguros e inclusivos",
+  "Competencia y aprendizaje",
+  "Libertad de ser tú misma",
+  "Talento y visibilidad femenina",
+  "Vínculos dentro de la comunidad",
+  "Jugadoras de toda Latinoamérica",
 ];
 ---
 
@@ -108,99 +109,143 @@ const vibes = [
   </section>
 
   <section class="section" id="nosotras">
-    <div class="wrap-narrow intro" data-constellation data-cr-stars="16" data-cr-delay="600">
-     <div class="cr-content">
-      <div class="intro__rail" aria-hidden="true">
-        <span class="intro__rail-star intro__rail-star--top">✦</span>
-        <span class="intro__rail-line"></span>
-        <span class="intro__rail-node"></span>
-        <span class="intro__rail-star intro__rail-star--bottom">✦</span>
+    <div
+      class="wrap-narrow intro"
+      data-constellation
+      data-cr-stars="16"
+      data-cr-delay="600"
+    >
+      <div class="cr-content">
+        <div class="intro__rail" aria-hidden="true">
+          <span class="intro__rail-star intro__rail-star--top">✦</span>
+          <span class="intro__rail-line"></span>
+          <span class="intro__rail-node"></span>
+          <span class="intro__rail-star intro__rail-star--bottom">✦</span>
+        </div>
+        <div class="intro__moon" aria-hidden="true">
+          <svg class="intro__moon-crescent" viewBox="0 0 220 220" fill="none">
+            <defs>
+              <linearGradient id="moon-grad" x1="0.2" y1="0" x2="0.6" y2="1">
+                <stop offset="0%" stop-color="#f5ead9"></stop>
+                <stop offset="45%" stop-color="#dccbe4"></stop>
+                <stop offset="100%" stop-color="#9c86c8"></stop>
+              </linearGradient>
+              <radialGradient id="moon-haze" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#5b2ed6" stop-opacity="0.22"
+                ></stop>
+                <stop offset="60%" stop-color="#5b2ed6" stop-opacity="0.10"
+                ></stop>
+                <stop offset="100%" stop-color="#5b2ed6" stop-opacity="0"
+                ></stop>
+              </radialGradient>
+              <radialGradient id="moon-star-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"
+                ></stop>
+                <stop offset="35%" stop-color="#b9a3f0" stop-opacity="0.35"
+                ></stop>
+                <stop offset="100%" stop-color="#8c7be8" stop-opacity="0"
+                ></stop>
+              </radialGradient>
+              <linearGradient id="moon-ring" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#d9c6b6" stop-opacity="0.45"
+                ></stop>
+                <stop offset="55%" stop-color="#d9c6b6" stop-opacity="0.3"
+                ></stop>
+                <stop offset="100%" stop-color="#d9c6b6" stop-opacity="0"
+                ></stop>
+              </linearGradient>
+              <mask id="moon-cut">
+                <rect width="220" height="220" fill="#fff"></rect>
+                <!-- círculo desplazado a la derecha: creciente fina que abre → -->
+                <circle cx="124" cy="108" r="66" fill="#000"></circle>
+              </mask>
+            </defs>
+
+            <!-- bruma violeta detrás de todo el emblema -->
+            <circle cx="108" cy="110" r="106" fill="url(#moon-haze)"></circle>
+
+            <!-- anillos que encierran la luna (se desvanecen hacia la derecha) -->
+            <circle
+              cx="106"
+              cy="110"
+              r="88"
+              stroke="url(#moon-ring)"
+              stroke-width="1.2"></circle>
+            <circle
+              cx="106"
+              cy="110"
+              r="95"
+              stroke="url(#moon-ring)"
+              stroke-opacity="0.35"
+              stroke-width="1"></circle>
+
+            <!-- creciente -->
+            <circle
+              cx="98"
+              cy="110"
+              r="70"
+              fill="url(#moon-grad)"
+              mask="url(#moon-cut)"></circle>
+
+            <!-- estrella de 4 puntas alargada, centro-derecha -->
+            <g class="intro__moon-flare">
+              <circle cx="131" cy="108" r="36" fill="url(#moon-star-glow)"
+              ></circle>
+              <path
+                d="M131 74 Q134.5 102 152 108 Q134.5 114 131 142 Q127.5 114 110 108 Q127.5 102 131 74 Z"
+                fill="#ffffff"></path>
+            </g>
+
+            <!-- polvo violeta a la izquierda y abajo de la creciente -->
+            <circle cx="34" cy="96" r="1.4" fill="#b9a3f0" opacity="0.7"
+            ></circle>
+            <circle cx="26" cy="126" r="1" fill="#8c7be8" opacity="0.6"
+            ></circle>
+            <circle cx="40" cy="150" r="1.8" fill="#b9a3f0" opacity="0.5"
+            ></circle>
+            <circle cx="56" cy="172" r="1.2" fill="#eef0ff" opacity="0.65"
+            ></circle>
+            <circle cx="78" cy="188" r="1.5" fill="#8c7be8" opacity="0.55"
+            ></circle>
+            <circle cx="48" cy="66" r="1.1" fill="#8c7be8" opacity="0.5"
+            ></circle>
+            <circle cx="64" cy="44" r="1.3" fill="#b9a3f0" opacity="0.6"
+            ></circle>
+            <circle cx="30" cy="74" r="0.8" fill="#eef0ff" opacity="0.45"
+            ></circle>
+            <circle cx="22" cy="108" r="0.9" fill="#eef0ff" opacity="0.4"
+            ></circle>
+            <circle cx="52" cy="132" r="0.8" fill="#b9a3f0" opacity="0.45"
+            ></circle>
+            <circle cx="68" cy="184" r="0.9" fill="#b9a3f0" opacity="0.4"
+            ></circle>
+            <circle cx="90" cy="200" r="1.1" fill="#8c7be8" opacity="0.5"
+            ></circle>
+            <circle cx="104" cy="26" r="1" fill="#b9a3f0" opacity="0.5"
+            ></circle>
+            <circle cx="84" cy="18" r="0.8" fill="#eef0ff" opacity="0.4"
+            ></circle>
+          </svg>
+        </div>
+        <div class="intro__content stack">
+          <p class="eyebrow" data-phase="✦">¿Quiénes somos?</p>
+          <h2 class="intro__title">
+            Espacios seguros y competitivos
+            <span class="accent-text">para mujeres en League of Legends.</span>
+          </h2>
+          <div class="intro__divider" aria-hidden="true"><span>✦</span></div>
+          <p class="lede intro__p">
+            Legión Lunari es una comunidad dedicada a crear espacios
+            <span class="accent-text">seguros y competitivos</span> para mujeres dentro
+            de League of Legends.
+          </p>
+          <p class="intro__p">
+            Organizamos eventos, torneos, concursos, mentorías y experiencias,
+            tanto digitales como presenciales, conectando a miles de jugadoras
+            de toda Latinoamérica.
+          </p>
+        </div>
       </div>
-      <div class="intro__moon" aria-hidden="true">
-        <svg class="intro__moon-crescent" viewBox="0 0 220 220" fill="none">
-          <defs>
-            <linearGradient id="moon-grad" x1="0.2" y1="0" x2="0.6" y2="1">
-              <stop offset="0%" stop-color="#f5ead9" />
-              <stop offset="45%" stop-color="#dccbe4" />
-              <stop offset="100%" stop-color="#9c86c8" />
-            </linearGradient>
-            <radialGradient id="moon-haze" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#5b2ed6" stop-opacity="0.22" />
-              <stop offset="60%" stop-color="#5b2ed6" stop-opacity="0.10" />
-              <stop offset="100%" stop-color="#5b2ed6" stop-opacity="0" />
-            </radialGradient>
-            <radialGradient id="moon-star-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
-              <stop offset="35%" stop-color="#b9a3f0" stop-opacity="0.35" />
-              <stop offset="100%" stop-color="#8c7be8" stop-opacity="0" />
-            </radialGradient>
-            <linearGradient id="moon-ring" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#d9c6b6" stop-opacity="0.45" />
-              <stop offset="55%" stop-color="#d9c6b6" stop-opacity="0.3" />
-              <stop offset="100%" stop-color="#d9c6b6" stop-opacity="0" />
-            </linearGradient>
-            <mask id="moon-cut">
-              <rect width="220" height="220" fill="#fff" />
-              <!-- círculo desplazado a la derecha: creciente fina que abre → -->
-              <circle cx="124" cy="108" r="66" fill="#000" />
-            </mask>
-          </defs>
-
-          <!-- bruma violeta detrás de todo el emblema -->
-          <circle cx="108" cy="110" r="106" fill="url(#moon-haze)" />
-
-          <!-- anillos que encierran la luna (se desvanecen hacia la derecha) -->
-          <circle cx="106" cy="110" r="88" stroke="url(#moon-ring)" stroke-width="1.2" />
-          <circle cx="106" cy="110" r="95" stroke="url(#moon-ring)" stroke-opacity="0.35" stroke-width="1" />
-
-          <!-- creciente -->
-          <circle cx="98" cy="110" r="70" fill="url(#moon-grad)" mask="url(#moon-cut)" />
-
-          <!-- estrella de 4 puntas alargada, centro-derecha -->
-          <g class="intro__moon-flare">
-            <circle cx="131" cy="108" r="36" fill="url(#moon-star-glow)" />
-            <path
-              d="M131 74 Q134.5 102 152 108 Q134.5 114 131 142 Q127.5 114 110 108 Q127.5 102 131 74 Z"
-              fill="#ffffff"
-            />
-          </g>
-
-          <!-- polvo violeta a la izquierda y abajo de la creciente -->
-          <circle cx="34" cy="96" r="1.4" fill="#b9a3f0" opacity="0.7" />
-          <circle cx="26" cy="126" r="1" fill="#8c7be8" opacity="0.6" />
-          <circle cx="40" cy="150" r="1.8" fill="#b9a3f0" opacity="0.5" />
-          <circle cx="56" cy="172" r="1.2" fill="#eef0ff" opacity="0.65" />
-          <circle cx="78" cy="188" r="1.5" fill="#8c7be8" opacity="0.55" />
-          <circle cx="48" cy="66" r="1.1" fill="#8c7be8" opacity="0.5" />
-          <circle cx="64" cy="44" r="1.3" fill="#b9a3f0" opacity="0.6" />
-          <circle cx="30" cy="74" r="0.8" fill="#eef0ff" opacity="0.45" />
-          <circle cx="22" cy="108" r="0.9" fill="#eef0ff" opacity="0.4" />
-          <circle cx="52" cy="132" r="0.8" fill="#b9a3f0" opacity="0.45" />
-          <circle cx="68" cy="184" r="0.9" fill="#b9a3f0" opacity="0.4" />
-          <circle cx="90" cy="200" r="1.1" fill="#8c7be8" opacity="0.5" />
-          <circle cx="104" cy="26" r="1" fill="#b9a3f0" opacity="0.5" />
-          <circle cx="84" cy="18" r="0.8" fill="#eef0ff" opacity="0.4" />
-        </svg>
-      </div>
-      <div class="intro__content stack">
-        <p class="eyebrow" data-phase="✦">¿Quiénes somos?</p>
-        <h2 class="intro__title">
-          Espacios seguros y competitivos
-          <span class="accent-text">para mujeres en League of Legends.</span>
-        </h2>
-        <div class="intro__divider" aria-hidden="true"><span>✦</span></div>
-        <p class="lede intro__p">
-          Legión Lunari es una comunidad dedicada a crear espacios
-          <span class="accent-text">seguros y competitivos</span> para mujeres
-          dentro de League of Legends.
-        </p>
-        <p class="intro__p">
-          Organizamos eventos, torneos, concursos, mentorías y experiencias,
-          tanto digitales como presenciales, conectando a miles de jugadoras de
-          toda Latinoamérica.
-        </p>
-      </div>
-     </div>
     </div>
   </section>
 
@@ -212,16 +257,26 @@ const vibes = [
         <span class="pilares-divider" aria-hidden="true">✦</span>
       </div>
       <div class="pilares">
-        {pilares.map((p, i) => (
-          <article class="pilar" data-reveal style={`--reveal-delay:${i * 120}ms`}>
-            <div class="pilar__frame">
-              <h3 class="pilar__title">{p.title}</h3>
-              <span class="pilar__divider" aria-hidden="true">✦</span>
-              <p class="pilar__body">{p.body}</p>
-            </div>
-            <span class="pilar__gem" aria-hidden="true">✦</span>
-          </article>
-        ))}
+        {
+          pilares.map((p, i) => (
+            <article
+              class="pilar"
+              data-reveal
+              style={`--reveal-delay:${i * 120}ms`}
+            >
+              <div class="pilar__frame">
+                <h3 class="pilar__title">{p.title}</h3>
+                <span class="pilar__divider" aria-hidden="true">
+                  ✦
+                </span>
+                <p class="pilar__body">{p.body}</p>
+              </div>
+              <span class="pilar__gem" aria-hidden="true">
+                ✦
+              </span>
+            </article>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -231,7 +286,8 @@ const vibes = [
       <div class="comunidad__text stack" data-reveal>
         <div class="comunidad__kicker">
           <p class="eyebrow">Nuestra misión</p>
-          <span class="comunidad__kicker-line" aria-hidden="true"><i>✦</i></span>
+          <span class="comunidad__kicker-line" aria-hidden="true"><i>✦</i></span
+          >
         </div>
         <h2 class="comunidad__title">
           Una comunidad activa,<br />
@@ -263,61 +319,111 @@ const vibes = [
         <svg class="comunidad__beam-orbits" viewBox="0 0 220 220" fill="none">
           <defs>
             <!-- Cada arco se desvanece en sus extremos (gradiente sobre su cuerda) -->
-            <linearGradient id="orb-a" gradientUnits="userSpaceOnUse" x1="110" y1="30" x2="110" y2="190">
-              <stop offset="0%" stop-color="#a99de0" stop-opacity="0" />
-              <stop offset="30%" stop-color="#a99de0" stop-opacity="0.35" />
-              <stop offset="70%" stop-color="#a99de0" stop-opacity="0.35" />
-              <stop offset="100%" stop-color="#a99de0" stop-opacity="0" />
+            <linearGradient
+              id="orb-a"
+              gradientUnits="userSpaceOnUse"
+              x1="110"
+              y1="30"
+              x2="110"
+              y2="190"
+            >
+              <stop offset="0%" stop-color="#a99de0" stop-opacity="0"></stop>
+              <stop offset="30%" stop-color="#a99de0" stop-opacity="0.35"
+              ></stop>
+              <stop offset="70%" stop-color="#a99de0" stop-opacity="0.35"
+              ></stop>
+              <stop offset="100%" stop-color="#a99de0" stop-opacity="0"></stop>
             </linearGradient>
-            <linearGradient id="orb-b" gradientUnits="userSpaceOnUse" x1="110" y1="10" x2="39" y2="181">
-              <stop offset="0%" stop-color="#a99de0" stop-opacity="0" />
-              <stop offset="35%" stop-color="#a99de0" stop-opacity="0.16" />
-              <stop offset="65%" stop-color="#a99de0" stop-opacity="0.16" />
-              <stop offset="100%" stop-color="#a99de0" stop-opacity="0" />
+            <linearGradient
+              id="orb-b"
+              gradientUnits="userSpaceOnUse"
+              x1="110"
+              y1="10"
+              x2="39"
+              y2="181"
+            >
+              <stop offset="0%" stop-color="#a99de0" stop-opacity="0"></stop>
+              <stop offset="35%" stop-color="#a99de0" stop-opacity="0.16"
+              ></stop>
+              <stop offset="65%" stop-color="#a99de0" stop-opacity="0.16"
+              ></stop>
+              <stop offset="100%" stop-color="#a99de0" stop-opacity="0"></stop>
             </linearGradient>
-            <linearGradient id="orb-c" gradientUnits="userSpaceOnUse" x1="110" y1="55" x2="55" y2="110">
-              <stop offset="0%" stop-color="#a99de0" stop-opacity="0" />
-              <stop offset="40%" stop-color="#a99de0" stop-opacity="0.28" />
-              <stop offset="60%" stop-color="#a99de0" stop-opacity="0.28" />
-              <stop offset="100%" stop-color="#a99de0" stop-opacity="0" />
+            <linearGradient
+              id="orb-c"
+              gradientUnits="userSpaceOnUse"
+              x1="110"
+              y1="55"
+              x2="55"
+              y2="110"
+            >
+              <stop offset="0%" stop-color="#a99de0" stop-opacity="0"></stop>
+              <stop offset="40%" stop-color="#a99de0" stop-opacity="0.28"
+              ></stop>
+              <stop offset="60%" stop-color="#a99de0" stop-opacity="0.28"
+              ></stop>
+              <stop offset="100%" stop-color="#a99de0" stop-opacity="0"></stop>
             </linearGradient>
           </defs>
           <!-- medio círculo principal alrededor de la estrella -->
-          <path d="M110 30 A80 80 0 0 0 110 190" stroke="url(#orb-a)" />
+          <path d="M110 30 A80 80 0 0 0 110 190" stroke="url(#orb-a)"></path>
           <!-- arco exterior, más tenue y parcial -->
-          <path d="M110 10 A100 100 0 0 0 39 181" stroke="url(#orb-b)" />
+          <path d="M110 10 A100 100 0 0 0 39 181" stroke="url(#orb-b)"></path>
           <!-- arco interior corto -->
-          <path d="M110 55 A55 55 0 0 0 55 110" stroke="url(#orb-c)" />
+          <path d="M110 55 A55 55 0 0 0 55 110" stroke="url(#orb-c)"></path>
           <!-- nodos sobre los aros -->
-          <circle cx="30" cy="110" r="2" fill="#e3aed1" fill-opacity="0.85" />
-          <circle cx="110" cy="30" r="1.6" fill="#eef0ff" fill-opacity="0.8" />
-          <circle cx="53" cy="167" r="1.4" fill="#a99de0" fill-opacity="0.7" />
-          <circle cx="71" cy="71" r="1.3" fill="#eef0ff" fill-opacity="0.6" />
+          <circle cx="30" cy="110" r="2" fill="#e3aed1" fill-opacity="0.85"
+          ></circle>
+          <circle cx="110" cy="30" r="1.6" fill="#eef0ff" fill-opacity="0.8"
+          ></circle>
+          <circle cx="53" cy="167" r="1.4" fill="#a99de0" fill-opacity="0.7"
+          ></circle>
+          <circle cx="71" cy="71" r="1.3" fill="#eef0ff" fill-opacity="0.6"
+          ></circle>
         </svg>
         <span class="comunidad__beam-star">✦</span>
       </div>
       <ul class="vibes" data-reveal style="--reveal-delay:120ms">
-        {vibes.map((v, i) => (
-          <li class="vibe">
-            {v}
-            {i < vibes.length - 1 && <span class="vibe__sep" aria-hidden="true">✦</span>}
-          </li>
-        ))}
+        {
+          vibes.map((v, i) => (
+            <li class="vibe">
+              {v}
+              {i < vibes.length - 1 && (
+                <span class="vibe__sep" aria-hidden="true">
+                  ✦
+                </span>
+              )}
+            </li>
+          ))
+        }
       </ul>
     </div>
   </section>
 
   <section class="section cta-final">
     <div class="wrap cta-final__inner" data-reveal>
-      <span class="cta-final__corner cta-final__corner--tl" aria-hidden="true"></span>
-      <span class="cta-final__corner cta-final__corner--tr" aria-hidden="true"></span>
-      <span class="cta-final__corner cta-final__corner--bl" aria-hidden="true"></span>
-      <span class="cta-final__corner cta-final__corner--br" aria-hidden="true"></span>
+      <span class="cta-final__corner cta-final__corner--tl" aria-hidden="true"
+      ></span>
+      <span class="cta-final__corner cta-final__corner--tr" aria-hidden="true"
+      ></span>
+      <span class="cta-final__corner cta-final__corner--bl" aria-hidden="true"
+      ></span>
+      <span class="cta-final__corner cta-final__corner--br" aria-hidden="true"
+      ></span>
       <div class="cta-final__emblem">
-        <span class="cta-final__emblem-star cta-final__emblem-star--t" aria-hidden="true">✦</span>
-        <span class="cta-final__emblem-star cta-final__emblem-star--l" aria-hidden="true">✦</span>
+        <span
+          class="cta-final__emblem-star cta-final__emblem-star--t"
+          aria-hidden="true">✦</span
+        >
+        <span
+          class="cta-final__emblem-star cta-final__emblem-star--l"
+          aria-hidden="true">✦</span
+        >
         <LunariLogo class="cta-final__logo" />
-        <span class="cta-final__emblem-star cta-final__emblem-star--r" aria-hidden="true">✦</span>
+        <span
+          class="cta-final__emblem-star cta-final__emblem-star--r"
+          aria-hidden="true">✦</span
+        >
       </div>
       <p class="eyebrow">Nuestra visión</p>
       <h2 class="cta-final__title">
@@ -331,12 +437,15 @@ const vibes = [
         mujeres dentro de League of Legends y los esports.
       </p>
       <div class="hero__actions">
-        <a href={DISCORD_URL} class="btn" target="_blank" rel="noopener">
-          Unirse al Discord <span aria-hidden="true">→</span>
-        </a>
-        <a href="/quiz-de-casas" class="btn btn--ghost">
-          Hacer el quiz de casas <span aria-hidden="true">✦</span>
-        </a>
+        <TalismanButton href={DISCORD_URL}>
+          Unirse al Discord <span aria-hidden="true" slot="right-icon">→</span>
+        </TalismanButton>
+
+        <TalismanButton href="/quiz-de-casas" variant="ghost">
+          Hacer el quiz de casas <span aria-hidden="true" slot="right-icon"
+            >✦</span
+          >
+        </TalismanButton>
       </div>
       <div class="cta-final__moonrow" aria-hidden="true">
         <span>· · ·</span>
@@ -537,7 +646,8 @@ const vibes = [
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 1.625rem; height: 2.625rem;
+    width: 1.625rem;
+    height: 2.625rem;
     border: 1.5px solid var(--border);
     border-radius: 999px;
     display: grid;
@@ -546,16 +656,25 @@ const vibes = [
     z-index: 3;
   }
   .hero__scroll span {
-    width: 0.25rem; height: 0.5rem;
+    width: 0.25rem;
+    height: 0.5rem;
     border-radius: 999px;
     background: var(--celeste-400);
     box-shadow: 0 0 10px var(--celeste-400);
     animation: scrollDot 1.8s var(--ease-out) infinite;
   }
   @keyframes scrollDot {
-    0% { opacity: 0; transform: translateY(0); }
-    30% { opacity: 1; }
-    100% { opacity: 0; transform: translateY(0.875rem); }
+    0% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(0.875rem);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .hero__scroll span {
@@ -590,8 +709,13 @@ const vibes = [
   /* Quiénes somos: texto acompañado por un riel vertical ornamental y una
      luna creciente con destello (ambos decorativos, se ocultan si no caben).
      --node-y ancla a la misma altura el nodo del riel y el centro de la luna. */
-  .intro { position: relative; --node-y: 50%; }
-  .intro__title { font-size: var(--step-2); }
+  .intro {
+    position: relative;
+    --node-y: 50%;
+  }
+  .intro__title {
+    font-size: var(--step-2);
+  }
 
   /* Extiende la caja del reveal-constelación hacia la izquierda y en vertical
      para que la máscara del barrido cubra también la luna y el riel (viven
@@ -616,10 +740,15 @@ const vibes = [
     transform: translateX(-50%);
     font-size: 0.85rem;
     line-height: 1;
-    text-shadow: 0 0 10px color-mix(in srgb, var(--lavender-400) 60%, transparent);
+    text-shadow: 0 0 10px
+      color-mix(in srgb, var(--lavender-400) 60%, transparent);
   }
-  .intro__rail-star--top { top: 0; }
-  .intro__rail-star--bottom { bottom: 0; }
+  .intro__rail-star--top {
+    top: 0;
+  }
+  .intro__rail-star--bottom {
+    bottom: 0;
+  }
   .intro__rail-line {
     position: absolute;
     left: 50%;
@@ -627,11 +756,13 @@ const vibes = [
     top: 1.2rem;
     bottom: 1.2rem;
     width: 1px;
-    background: linear-gradient(to bottom,
+    background: linear-gradient(
+      to bottom,
       transparent,
       color-mix(in srgb, var(--lavender-400) 45%, transparent) 22%,
       color-mix(in srgb, var(--lavender-400) 45%, transparent) 78%,
-      transparent);
+      transparent
+    );
   }
   /* El nodo va sobre la línea, a la altura de la luna */
   .intro__rail-node {
@@ -669,11 +800,20 @@ const vibes = [
     animation: moonStarTwinkle 3.8s ease-in-out infinite;
   }
   @keyframes moonStarTwinkle {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(0.88); }
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(0.88);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .intro__moon-flare { animation: none; }
+    .intro__moon-flare {
+      animation: none;
+    }
   }
 
   /* Cola ornamental tras el eyebrow */
@@ -681,8 +821,11 @@ const vibes = [
     content: "";
     width: 4.5rem;
     height: 1px;
-    background: linear-gradient(to right,
-      color-mix(in srgb, var(--lavender-400) 55%, transparent), transparent);
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--lavender-400) 55%, transparent),
+      transparent
+    );
   }
 
   .intro__divider {
@@ -695,19 +838,26 @@ const vibes = [
   .intro__divider span {
     font-size: 1rem;
     line-height: 1;
-    text-shadow: 0 0 12px color-mix(in srgb, var(--lavender-400) 70%, transparent);
+    text-shadow: 0 0 12px
+      color-mix(in srgb, var(--lavender-400) 70%, transparent);
   }
   .intro__divider::before,
   .intro__divider::after {
     content: "";
     flex: 1;
     height: 1px;
-    background: linear-gradient(to right,
-      transparent, color-mix(in srgb, var(--lavender-400) 50%, transparent));
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--lavender-400) 50%, transparent)
+    );
   }
   .intro__divider::after {
-    background: linear-gradient(to left,
-      transparent, color-mix(in srgb, var(--lavender-400) 50%, transparent));
+    background: linear-gradient(
+      to left,
+      transparent,
+      color-mix(in srgb, var(--lavender-400) 50%, transparent)
+    );
   }
 
   /* Párrafos con marcador estelar */
@@ -723,14 +873,19 @@ const vibes = [
     font-size: 0.8em;
     line-height: 1;
     color: var(--lavender-400);
-    text-shadow: 0 0 8px color-mix(in srgb, var(--lavender-400) 60%, transparent);
+    text-shadow: 0 0 8px
+      color-mix(in srgb, var(--lavender-400) 60%, transparent);
   }
 
   @media (max-width: 66rem) {
-    .intro__moon { display: none; }
+    .intro__moon {
+      display: none;
+    }
   }
   @media (max-width: 58rem) {
-    .intro__rail { display: none; }
+    .intro__rail {
+      display: none;
+    }
   }
 
   /* Pilares: marcos ornamentales estilo carta astral (borde champán con
@@ -776,18 +931,26 @@ const vibes = [
     text-align: center;
     transition: transform 0.4s var(--ease-out);
   }
-  .pilar:hover { transform: translateY(-6px); }
+  .pilar:hover {
+    transform: translateY(-6px);
+  }
   .pilar__frame {
     flex: 1;
     padding: 2.4rem 1.2rem 2.2rem;
     border: 26px solid transparent;
-    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M44 4H20V10H12V18H4V100H12V108H20V116H100V108H108V100H116V18H108V10H100V4Z' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='3'/%3E%3Crect x='17' y='17' width='86' height='86' fill='none' stroke='%23e6c69b' stroke-opacity='.14'/%3E%3C/svg%3E") 44 / 26px;
-    background: linear-gradient(172deg,
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M44 4H20V10H12V18H4V100H12V108H20V116H100V108H108V100H116V18H108V10H100V4Z' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='3'/%3E%3Crect x='17' y='17' width='86' height='86' fill='none' stroke='%23e6c69b' stroke-opacity='.14'/%3E%3C/svg%3E")
+      44 / 26px;
+    background: linear-gradient(
+      172deg,
       color-mix(in srgb, var(--grape-800) 30%, transparent),
-      color-mix(in srgb, var(--ink) 45%, transparent));
+      color-mix(in srgb, var(--ink) 45%, transparent)
+    );
     box-shadow: 0 30px 70px -50px rgba(0, 0, 0, 0.9);
   }
-  .pilar__title { font-size: var(--step-1); color: var(--moonlight); }
+  .pilar__title {
+    font-size: var(--step-1);
+    color: var(--moonlight);
+  }
   .pilar__divider {
     display: flex;
     align-items: center;
@@ -809,7 +972,11 @@ const vibes = [
   .pilar__divider::after {
     background: linear-gradient(to left, transparent, var(--orn-soft));
   }
-  .pilar__body { color: var(--text-muted); margin-top: 1rem; font-size: var(--step-0); }
+  .pilar__body {
+    color: var(--text-muted);
+    margin-top: 1rem;
+    font-size: var(--step-0);
+  }
   .pilar__gem {
     position: absolute;
     left: 50%;
@@ -846,7 +1013,8 @@ const vibes = [
       0 0.9rem,
       0.45rem 0.9rem,
       0.45rem 0.45rem,
-      0.9rem 0.45rem);
+      0.9rem 0.45rem
+    );
   }
   .comunidad__grid {
     display: grid;
@@ -855,13 +1023,19 @@ const vibes = [
     align-items: center;
   }
   @media (max-width: 820px) {
-    .comunidad__grid { grid-template-columns: 1fr; }
-    .comunidad__beam { display: none; }
+    .comunidad__grid {
+      grid-template-columns: 1fr;
+    }
+    .comunidad__beam {
+      display: none;
+    }
   }
 
   /* Eyebrow con subrayado desvanecido y diamante sobre la línea */
   /* El título va pegado al kicker, como en la referencia */
-  .comunidad__title { margin-top: 0.5rem; }
+  .comunidad__title {
+    margin-top: 0.5rem;
+  }
   .comunidad__kicker-line {
     position: relative;
     display: block;
@@ -883,13 +1057,16 @@ const vibes = [
   }
 
   /* En la referencia "inclusiva." va recta, con destello al final */
-  .comunidad__title .accent-text { font-style: normal; }
+  .comunidad__title .accent-text {
+    font-style: normal;
+  }
   .comunidad__spark {
     color: var(--lavender-400);
     font-size: 0.45em;
     vertical-align: 0.55em;
     margin-left: 0.02em;
-    text-shadow: 0 0 10px color-mix(in srgb, var(--lavender-400) 70%, transparent);
+    text-shadow: 0 0 10px
+      color-mix(in srgb, var(--lavender-400) 70%, transparent);
   }
 
   /* Divisor: ✦ ─── ☾ ─── ✦ */
@@ -903,25 +1080,36 @@ const vibes = [
   .comunidad__line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(to right,
+    background: linear-gradient(
+      to right,
       color-mix(in srgb, var(--rose) 20%, transparent),
       var(--rose-soft),
-      color-mix(in srgb, var(--rose) 20%, transparent));
+      color-mix(in srgb, var(--rose) 20%, transparent)
+    );
   }
-  .comunidad__gem { font-size: 0.6rem; line-height: 1; text-shadow: 0 0 8px var(--rose-soft); }
+  .comunidad__gem {
+    font-size: 0.6rem;
+    line-height: 1;
+    text-shadow: 0 0 8px var(--rose-soft);
+  }
   .comunidad__moon {
     font-size: 1.15rem;
     line-height: 1;
     text-shadow: 0 0 10px var(--rose-soft);
   }
 
-  .comunidad__cta { border-color: var(--rose-soft); }
+  .comunidad__cta {
+    border-color: var(--rose-soft);
+  }
   .comunidad__cta:hover {
     border-color: var(--rose);
     box-shadow: 0 0 34px -8px var(--rose-soft);
     background: color-mix(in srgb, var(--rose) 8%, transparent);
   }
-  .comunidad__cta span { color: var(--rose); font-size: 0.8em; }
+  .comunidad__cta span {
+    color: var(--rose);
+    font-size: 0.8em;
+  }
 
   /* Haz vertical entre columnas con gran estrella y aro tenue */
   .comunidad__beam {
@@ -936,11 +1124,13 @@ const vibes = [
     bottom: -1.5rem;
     left: 50%;
     width: 1px;
-    background: linear-gradient(to bottom,
+    background: linear-gradient(
+      to bottom,
       transparent,
       color-mix(in srgb, var(--lavender-200) 32%, transparent) 22%,
       color-mix(in srgb, var(--lavender-200) 32%, transparent) 78%,
-      transparent);
+      transparent
+    );
   }
   /* Aros orbitales: semicírculos que envuelven la estrella por la izquierda */
   .comunidad__beam-orbits {
@@ -985,11 +1175,15 @@ const vibes = [
     letter-spacing: 0.015em;
     line-height: 1.2;
     color: var(--moonlight);
-    filter: drop-shadow(0 0 14px color-mix(in srgb, var(--rose) 22%, transparent));
+    filter: drop-shadow(
+      0 0 14px color-mix(in srgb, var(--rose) 22%, transparent)
+    );
     transition: filter 0.3s var(--ease-out);
   }
   .vibe:hover {
-    filter: drop-shadow(0 0 22px color-mix(in srgb, var(--rose) 40%, transparent));
+    filter: drop-shadow(
+      0 0 22px color-mix(in srgb, var(--rose) 40%, transparent)
+    );
   }
   /* Capa contorno (escalonada) */
   .vibe::before {
@@ -998,10 +1192,12 @@ const vibes = [
     inset: 0;
     z-index: -2;
     clip-path: var(--plaque-clip);
-    background: linear-gradient(100deg,
+    background: linear-gradient(
+      100deg,
       var(--rose-soft),
       color-mix(in srgb, var(--rose) 22%, transparent) 60%,
-      var(--rose-soft));
+      var(--rose-soft)
+    );
   }
   /* Capa relleno (misma escalera, 1.5px adentro) */
   .vibe::after {
@@ -1010,9 +1206,11 @@ const vibes = [
     inset: 1.5px;
     z-index: -1;
     clip-path: var(--plaque-clip);
-    background: linear-gradient(100deg,
+    background: linear-gradient(
+      100deg,
       color-mix(in srgb, var(--grape-800) 50%, var(--ink)),
-      color-mix(in srgb, var(--ink) 82%, var(--grape-800)));
+      color-mix(in srgb, var(--ink) 82%, var(--grape-800))
+    );
   }
   /* Separador ✦ entre placas */
   .vibe__sep {
@@ -1037,7 +1235,8 @@ const vibes = [
        marco en vez de cortarse en seco contra el borde superior */
     /* Mismo marco escalonado que los pilares */
     border: 26px solid transparent;
-    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M44 4H20V10H12V18H4V100H12V108H20V116H100V108H108V100H116V18H108V10H100V4Z' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='3'/%3E%3Crect x='17' y='17' width='86' height='86' fill='none' stroke='%23e6c69b' stroke-opacity='.14'/%3E%3C/svg%3E") 44 / 26px;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M44 4H20V10H12V18H4V100H12V108H20V116H100V108H108V100H116V18H108V10H100V4Z' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='3'/%3E%3Crect x='17' y='17' width='86' height='86' fill='none' stroke='%23e6c69b' stroke-opacity='.14'/%3E%3C/svg%3E")
+      44 / 26px;
     box-shadow: 0 40px 120px -60px rgba(0, 0, 0, 0.95);
   }
   /* Nubes y velo del interior, desvanecidos hacia los cuatro bordes */
@@ -1047,12 +1246,21 @@ const vibes = [
     inset: 0;
     z-index: 0;
     background:
-      radial-gradient(58% 46% at 10% 100%,
-        color-mix(in srgb, var(--violet-600) 38%, transparent) 0%, transparent 70%),
-      radial-gradient(58% 46% at 90% 100%,
-        color-mix(in srgb, var(--grape-800) 70%, transparent) 0%, transparent 70%),
-      radial-gradient(70% 55% at 50% 0%,
-        color-mix(in srgb, var(--grape-800) 35%, transparent) 0%, transparent 60%),
+      radial-gradient(
+        58% 46% at 10% 100%,
+        color-mix(in srgb, var(--violet-600) 38%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        58% 46% at 90% 100%,
+        color-mix(in srgb, var(--grape-800) 70%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        70% 55% at 50% 0%,
+        color-mix(in srgb, var(--grape-800) 35%, transparent) 0%,
+        transparent 60%
+      ),
       color-mix(in srgb, var(--ink) 72%, transparent);
     -webkit-mask-image:
       linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
@@ -1063,7 +1271,10 @@ const vibes = [
     -webkit-mask-composite: source-in;
     mask-composite: intersect;
   }
-  .cta-final__inner > :not(.cta-final__corner) { position: relative; z-index: 1; }
+  .cta-final__inner > :not(.cta-final__corner) {
+    position: relative;
+    z-index: 1;
+  }
 
   /* Florituras de las cuatro esquinas: escalón + rombo, eco del marco */
   .cta-final__inner > .cta-final__corner {
@@ -1071,12 +1282,28 @@ const vibes = [
     z-index: 0;
     width: clamp(2.6rem, 4.5vw, 3.6rem);
     height: clamp(2.6rem, 4.5vw, 3.6rem);
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M44 4H18V11H10V19H4V44' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='2'/%3E%3Cpath d='M21 13L29 21L21 29L13 21Z' fill='%23e6c69b' fill-opacity='.9'/%3E%3Ccircle cx='44' cy='4' r='1.8' fill='%23e6c69b' fill-opacity='.7'/%3E%3Ccircle cx='4' cy='44' r='1.8' fill='%23e6c69b' fill-opacity='.7'/%3E%3C/svg%3E") no-repeat center / contain;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M44 4H18V11H10V19H4V44' fill='none' stroke='%23e6c69b' stroke-opacity='.7' stroke-width='2'/%3E%3Cpath d='M21 13L29 21L21 29L13 21Z' fill='%23e6c69b' fill-opacity='.9'/%3E%3Ccircle cx='44' cy='4' r='1.8' fill='%23e6c69b' fill-opacity='.7'/%3E%3Ccircle cx='4' cy='44' r='1.8' fill='%23e6c69b' fill-opacity='.7'/%3E%3C/svg%3E")
+      no-repeat center / contain;
   }
-  .cta-final__corner--tl { top: 0.4rem; left: 0.4rem; }
-  .cta-final__corner--tr { top: 0.4rem; right: 0.4rem; transform: scaleX(-1); }
-  .cta-final__corner--bl { bottom: 0.4rem; left: 0.4rem; transform: scaleY(-1); }
-  .cta-final__corner--br { bottom: 0.4rem; right: 0.4rem; transform: scale(-1); }
+  .cta-final__corner--tl {
+    top: 0.4rem;
+    left: 0.4rem;
+  }
+  .cta-final__corner--tr {
+    top: 0.4rem;
+    right: 0.4rem;
+    transform: scaleX(-1);
+  }
+  .cta-final__corner--bl {
+    bottom: 0.4rem;
+    left: 0.4rem;
+    transform: scaleY(-1);
+  }
+  .cta-final__corner--br {
+    bottom: 0.4rem;
+    right: 0.4rem;
+    transform: scale(-1);
+  }
 
   /* Emblema: logo con halo y diamantes guardianes */
   .cta-final__emblem {
@@ -1088,12 +1315,17 @@ const vibes = [
   }
   /* Escala y tinte lila del logo (en el mockup no es blanco puro).
      :global porque la clase pasada al componente no lleva el scope de la página. */
-  .cta-final :global(.cta-final__logo) { width: clamp(120px, 12vw, 160px); }
+  .cta-final :global(.cta-final__logo) {
+    width: clamp(120px, 12vw, 160px);
+  }
   .cta-final :global(.cta-final__logo img) {
-    filter:
-      sepia(0.32) saturate(2.2) hue-rotate(212deg)
-      drop-shadow(0 0 22px color-mix(in srgb, var(--lavender-400) 65%, transparent))
-      drop-shadow(0 0 60px color-mix(in srgb, var(--violet-600) 50%, transparent));
+    filter: sepia(0.32) saturate(2.2) hue-rotate(212deg)
+      drop-shadow(
+        0 0 22px color-mix(in srgb, var(--lavender-400) 65%, transparent)
+      )
+      drop-shadow(
+        0 0 60px color-mix(in srgb, var(--violet-600) 50%, transparent)
+      );
   }
   /* Halo violeta pronunciado detrás del logo, como en el mockup */
   .cta-final__emblem::before {
@@ -1101,10 +1333,12 @@ const vibes = [
     position: absolute;
     inset: -42%;
     border-radius: 50%;
-    background: radial-gradient(circle,
+    background: radial-gradient(
+      circle,
       color-mix(in srgb, var(--violet-600) 42%, transparent),
       color-mix(in srgb, var(--lavender-400) 16%, transparent) 48%,
-      transparent 72%);
+      transparent 72%
+    );
   }
   /* Destellos alargados de 4 puntas custodiando el logo */
   .cta-final__emblem-star {
@@ -1126,17 +1360,45 @@ const vibes = [
     opacity: 0.85;
     box-shadow: 0 0 6px color-mix(in srgb, var(--lavender-400) 80%, transparent);
   }
-  .cta-final__emblem-star--t { top: -1.9rem; left: 50%; transform: translateX(-50%) scaleY(1.55); }
-  .cta-final__emblem-star--t::after { left: -0.9rem; top: 55%; }
-  .cta-final__emblem-star--l { top: 50%; left: -2.4rem; transform: translateY(-50%) scaleY(1.55); }
-  .cta-final__emblem-star--l::after { left: -0.6rem; top: -0.5rem; }
-  .cta-final__emblem-star--r { top: 50%; right: -2.4rem; transform: translateY(-50%) scaleY(1.55); }
-  .cta-final__emblem-star--r::after { right: -0.6rem; bottom: -0.5rem; }
+  .cta-final__emblem-star--t {
+    top: -1.9rem;
+    left: 50%;
+    transform: translateX(-50%) scaleY(1.55);
+  }
+  .cta-final__emblem-star--t::after {
+    left: -0.9rem;
+    top: 55%;
+  }
+  .cta-final__emblem-star--l {
+    top: 50%;
+    left: -2.4rem;
+    transform: translateY(-50%) scaleY(1.55);
+  }
+  .cta-final__emblem-star--l::after {
+    left: -0.6rem;
+    top: -0.5rem;
+  }
+  .cta-final__emblem-star--r {
+    top: 50%;
+    right: -2.4rem;
+    transform: translateY(-50%) scaleY(1.55);
+  }
+  .cta-final__emblem-star--r::after {
+    right: -0.6rem;
+    bottom: -0.5rem;
+  }
 
-  .cta-final__title { font-size: var(--step-2); margin-block: 0.5rem 0.8rem; }
-  .cta-final__inner .lede { font-size: var(--step-0); }
+  .cta-final__title {
+    font-size: var(--step-2);
+    margin-block: 0.5rem 0.8rem;
+  }
+  .cta-final__inner .lede {
+    font-size: var(--step-0);
+  }
   /* En la referencia la segunda línea va recta, no en itálica */
-  .cta-final__title .accent-text { font-style: normal; }
+  .cta-final__title .accent-text {
+    font-style: normal;
+  }
 
   /* Mini divisor bajo el título */
   .cta-final__orn {
@@ -1148,65 +1410,32 @@ const vibes = [
     color: var(--lavender-400);
     font-size: 0.7rem;
     line-height: 1;
-    text-shadow: 0 0 10px color-mix(in srgb, var(--lavender-400) 60%, transparent);
+    text-shadow: 0 0 10px
+      color-mix(in srgb, var(--lavender-400) 60%, transparent);
   }
   .cta-final__orn::before,
   .cta-final__orn::after {
     content: "";
     width: 2.6rem;
     height: 1px;
-    background: linear-gradient(to right,
-      transparent, color-mix(in srgb, var(--lavender-400) 50%, transparent));
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--lavender-400) 50%, transparent)
+    );
   }
   .cta-final__orn::after {
-    background: linear-gradient(to left,
-      transparent, color-mix(in srgb, var(--lavender-400) 50%, transparent));
+    background: linear-gradient(
+      to left,
+      transparent,
+      color-mix(in srgb, var(--lavender-400) 50%, transparent)
+    );
   }
 
-  /* Botones talismán: contorno con esquinas cortadas y relleno propio */
-  .cta-final .hero__actions { justify-content: center; margin-top: 1.5rem; }
-  .cta-final .btn {
-    position: relative;
-    border: none;
-    border-radius: 0;
-    clip-path: polygon(
-      0.95rem 0, calc(100% - 0.95rem) 0, 100% 0.95rem,
-      100% calc(100% - 0.95rem), calc(100% - 0.95rem) 100%,
-      0.95rem 100%, 0 calc(100% - 0.95rem), 0 0.95rem);
-    background: linear-gradient(135deg,
-      color-mix(in srgb, var(--lavender-200) 85%, transparent),
-      var(--lavender-400));
-    box-shadow: none;
-    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--violet-600) 60%, transparent));
+  .cta-final .hero__actions {
+    justify-content: center;
+    margin-top: 1.5rem;
   }
-  .cta-final .btn::before {
-    content: "";
-    position: absolute;
-    inset: 2px;
-    z-index: -1;
-    clip-path: polygon(
-      0.85rem 0, calc(100% - 0.85rem) 0, 100% 0.85rem,
-      100% calc(100% - 0.85rem), calc(100% - 0.85rem) 100%,
-      0.85rem 100%, 0 calc(100% - 0.85rem), 0 0.85rem);
-    background: linear-gradient(135deg, var(--lavender-400), var(--violet-600) 75%);
-  }
-  .cta-final .btn:hover {
-    box-shadow: none;
-    filter: drop-shadow(0 0 26px color-mix(in srgb, var(--lavender-400) 75%, transparent))
-      brightness(1.06);
-  }
-  .cta-final .btn--ghost {
-    background: color-mix(in srgb, var(--lavender-400) 45%, transparent);
-    filter: none;
-  }
-  .cta-final .btn--ghost::before {
-    background: color-mix(in srgb, var(--night-900) 90%, var(--lavender-400));
-  }
-  .cta-final .btn--ghost:hover {
-    background: color-mix(in srgb, var(--lavender-400) 70%, transparent);
-    filter: drop-shadow(0 0 18px color-mix(in srgb, var(--lavender-400) 45%, transparent));
-  }
-  .cta-final .btn--ghost span { color: var(--lavender-200); }
 
   /* Remate inferior: puntos y luna creciente */
   .cta-final__moonrow {
