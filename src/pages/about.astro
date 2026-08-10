@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AdminCard from "../components/AdminCard.astro";
 import Button from "../components/Button.astro";
+import StarSummon from "../components/StarSummon.astro";
 
 const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 const INSTAGRAM_URL = "https://www.instagram.com/legionlunari/";
@@ -18,6 +19,8 @@ interface AdminData {
   lastLabel: string;
   lastValue: string;
   confession?: string;
+  /** Color de acento de su carta (marco, nombre, ornamentos) */
+  accent: string;
 }
 
 interface Social {
@@ -38,6 +41,7 @@ const admins: AdminData[] = [
     lastLabel: "INSTA",
     lastValue: "arinini_rang",
     confession: "Si un hombre me da la razón, estoy equivocada",
+    accent: "#e8c47c",
   },
   {
     name: "Blueberry",
@@ -49,6 +53,7 @@ const admins: AdminData[] = [
     lastLabel: "INSTA",
     lastValue: "blueberrrrry_",
     confession: "Si no envío un sticker de perro, no estas hablando conmigo",
+    accent: "#b9a3f0",
   },
   {
     name: "Grecia",
@@ -61,6 +66,7 @@ const admins: AdminData[] = [
     lastLabel: "INSTA",
     lastValue: "greciaxbooks",
     confession: "Amante de la lectura, el café y los videojuegos",
+    accent: "#e0596b",
   },
 ];
 
@@ -73,9 +79,10 @@ const socials: Social[] = [
     href: INSTAGRAM_URL,
     style: {
       background:
-        "linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5)",
+        "linear-gradient(rgba(16,16,43,0.92), rgba(16,16,43,0.92)) padding-box, linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5) border-box",
       color: "#ffffff",
-      border: "none",
+      border: "1.5px solid transparent",
+      boxShadow: "0 0 26px -10px #d62976",
     },
     icon: `<svg
             viewBox="0 0 24 24"
@@ -100,7 +107,13 @@ const socials: Social[] = [
   {
     name: "Ko-fi",
     href: KOFI_URL,
-    style: { background: "#FF5E5B", color: "#ffffff", border: "none" },
+    style: {
+      background:
+        "linear-gradient(rgba(16,16,43,0.92), rgba(16,16,43,0.92)) padding-box, linear-gradient(135deg, #ff5e5b, #ff9d8a) border-box",
+      color: "#ff9d94",
+      border: "1.5px solid transparent",
+      boxShadow: "0 0 26px -10px #ff5e5b",
+    },
     icon: `<svg
             xmlns="http://www.w3.org/2000/svg"
             width="${ICON_WIDTH}px"
@@ -118,7 +131,13 @@ const socials: Social[] = [
   {
     name: "Discord",
     href: DISCORD_URL,
-    style: { background: "#5865F2", color: "#ffffff", border: "none" },
+    style: {
+      background:
+        "linear-gradient(rgba(16,16,43,0.92), rgba(16,16,43,0.92)) padding-box, linear-gradient(135deg, #5865f2, #96a2ff) border-box",
+      color: "#aab3ff",
+      border: "1.5px solid transparent",
+      boxShadow: "0 0 26px -10px #5865f2",
+    },
     icon: `<svg
             xmlns="http://www.w3.org/2000/svg"
             width="${ICON_WIDTH}px"
@@ -143,45 +162,84 @@ const socials: Social[] = [
   title="Nosotras - Legion Lunari"
   description="Conoce al staff y el corazón detrás de Legion Lunari, la comunidad de LoL/LAN exclusiva para mujeres."
 >
-  <section class="social-network">
-    <h3 class="social-network-title">¡Sigue nuestras redes sociales!</h3>
+  <div class="summon-stage">
+    <section class="social-network">
+      <div class="ns-head" data-summon="1">
+        <span class="ns-moon" aria-hidden="true">
+          <i class="ns-moon__line"></i>
+          <em>✦</em>
+          <svg class="ns-moon__svg" viewBox="0 0 26 24">
+            <defs>
+              <mask id="ns-moon-cut">
+                <rect width="26" height="24" fill="#fff"></rect>
+                <circle cx="15" cy="9.5" r="7.6" fill="#000"></circle>
+              </mask>
+            </defs>
+            <!-- creciente fina que abre hacia la estrellita -->
+            <circle cx="11.5" cy="12" r="8" fill="#cbbcf2" mask="url(#ns-moon-cut)"></circle>
+            <path
+              d="M19.5 4 Q20 6.6 22.5 7 Q20 7.4 19.5 10 Q19 7.4 16.5 7 Q19 6.6 19.5 4Z"
+              fill="#e9e2f8"
+            ></path>
+          </svg>
+          <em>✦</em>
+          <i class="ns-moon__line ns-moon__line--end"></i>
+        </span>
+        <h3 class="ns-title">
+          <span class="ns-title__line" aria-hidden="true"><i>+</i><b>✦</b></span>
+          <span>¡Sigue nuestras redes <span class="ns-grad">sociales</span>!</span>
+          <span class="ns-title__line ns-title__line--end" aria-hidden="true"><b>✦</b><i>+</i></span>
+        </h3>
+      </div>
 
-    <div class="social-network-links">
-      {
-        socials.map((social) => (
-          <Button href={social.href} style={social.style}>
-            <span slot="left-icon" set:html={social.icon} />
-            {social.name}
-          </Button>
-        ))
-      }
-    </div>
-  </section>
+      <div class="social-network-links">
+        {
+          socials.map((social, i) => (
+            <span class="summon-item" data-summon={String(2 + i)}>
+              <Button href={social.href} style={social.style}>
+                <span slot="left-icon" set:html={social.icon} />
+                {social.name}
+              </Button>
+            </span>
+          ))
+        }
+      </div>
+    </section>
 
-  <section class="staff">
-    <h3 style="display: flex; justify-content: center; margin-bottom: 2rem;">
-      Nuestra administración
-    </h3>
+    <section class="staff">
+      <div class="ns-head" data-summon="5">
+        <h3 class="ns-title">
+          <span class="ns-title__line" aria-hidden="true"><i>+</i><b>✦</b></span>
+          <span>Nuestra adminis<span class="ns-grad">tración</span></span>
+          <span class="ns-title__line ns-title__line--end" aria-hidden="true"><b>✦</b><i>+</i></span>
+        </h3>
+      </div>
 
-    <div class="staff-grid">
-      {
-        admins.map((admin) => (
-          <AdminCard
-            name={admin.name}
-            role={admin.role}
-            image={admin.image}
-            imagePosition={admin.imagePosition}
-            playstyle={admin.playstyle}
-            region={admin.region}
-            lanes={admin.lanes}
-            lastLabel={admin.lastLabel}
-            lastValue={admin.lastValue}
-            confession={admin.confession}
-          />
-        ))
-      }
-    </div>
-  </section>
+      <div class="staff-grid">
+        {
+          admins.map((admin, i) => (
+            <div class="summon-card" data-summon={String(6 + i)}>
+              <AdminCard
+                name={admin.name}
+                role={admin.role}
+                image={admin.image}
+                imagePosition={admin.imagePosition}
+                playstyle={admin.playstyle}
+                region={admin.region}
+                lanes={admin.lanes}
+                lastLabel={admin.lastLabel}
+                lastValue={admin.lastValue}
+                confession={admin.confession}
+                accent={admin.accent}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+
+  <StarSummon />
 </BaseLayout>
 
 <style>
@@ -198,8 +256,115 @@ const socials: Social[] = [
     justify-content: center;
   }
 
-  .social-network-title {
+  /* Encabezados ornamentados: ☾ arriba y título flanqueado por ── ✦ */
+  .ns-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
     margin-bottom: 2rem;
+  }
+  /* Ornamento lunar: ── · ✦ ☾✦ ✦ · ── */
+  .ns-moon {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--lavender-200);
+    font-size: 1rem;
+    line-height: 1;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--lavender-400) 60%, transparent);
+  }
+  .ns-moon em {
+    font-style: normal;
+    font-size: 0.5rem;
+  }
+  .ns-moon__svg {
+    width: 1.7rem;
+    height: auto;
+    max-width: none;
+    filter: drop-shadow(0 0 7px rgba(185, 163, 240, 0.75));
+  }
+  .ns-moon__line {
+    position: relative;
+    width: clamp(2.5rem, 8vw, 6.5rem);
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent, color-mix(in srgb, var(--lavender-200) 50%, transparent));
+  }
+  .ns-moon__line--end {
+    background: linear-gradient(to left,
+      transparent, color-mix(in srgb, var(--lavender-200) 50%, transparent));
+  }
+  /* Puntito de diamante sobre cada línea */
+  .ns-moon__line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    width: 3px;
+    height: 3px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background: color-mix(in srgb, var(--lavender-200) 75%, transparent);
+  }
+  .ns-moon__line--end::after { left: 70%; }
+  .ns-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
+    margin: 0;
+    font-size: var(--step-2);
+    color: var(--moonlight);
+    text-align: center;
+  }
+  .ns-grad {
+    background: linear-gradient(120deg, var(--lavender-200), var(--lavender-400) 55%, var(--violet-600));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .ns-title__line {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--lavender-200);
+    font-size: 0.8rem;
+    line-height: 1;
+    text-shadow: 0 0 8px color-mix(in srgb, var(--lavender-400) 55%, transparent);
+  }
+  .ns-title__line b { font-weight: 400; }
+  /* Crucecita satélite, más tenue y elevada */
+  .ns-title__line i {
+    font-style: normal;
+    font-size: 0.7em;
+    opacity: 0.65;
+    transform: translateY(-0.5em);
+  }
+  .ns-title__line::before,
+  .ns-title__line::after {
+    content: "";
+    height: 1px;
+  }
+  .ns-title__line::before {
+    width: clamp(1.5rem, 6vw, 5rem);
+    background: linear-gradient(to right,
+      transparent, color-mix(in srgb, var(--lavender-200) 55%, transparent));
+  }
+  .ns-title__line::after {
+    width: 1.3rem;
+    background: color-mix(in srgb, var(--lavender-200) 40%, transparent);
+  }
+  .ns-title__line--end::before {
+    width: 1.3rem;
+    background: color-mix(in srgb, var(--lavender-200) 40%, transparent);
+  }
+  .ns-title__line--end::after {
+    width: clamp(1.5rem, 6vw, 5rem);
+    background: linear-gradient(to left,
+      transparent, color-mix(in srgb, var(--lavender-200) 55%, transparent));
+  }
+  @media (max-width: 680px) {
+    .ns-title__line { display: none; }
   }
 
   .social-network-links {
@@ -217,7 +382,7 @@ const socials: Social[] = [
   }
 
   .staff {
-    padding-top: 3rem;
+    padding-top: 3.5rem;
   }
 
   .staff-grid {
@@ -227,6 +392,13 @@ const socials: Social[] = [
       minmax(max(240px, (100% - 3 * 1.5rem) / 4), 1fr)
     );
     justify-items: center;
-    gap: 1.5rem;
+    gap: 2rem 1.5rem;
+  }
+
+  /* Anclas de invocación: centran su carta */
+  .summon-card {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 </style>

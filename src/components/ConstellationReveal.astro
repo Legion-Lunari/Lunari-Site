@@ -145,7 +145,7 @@
       return links;
     }
 
-    function animate(el: HTMLElement) {
+    function animate(el: HTMLElement, onDone?: () => void) {
       const SWEEP = +(el.dataset.crDuration || 950);
       const TAIL = 600;
       const COUNT = +(el.dataset.crStars || 14);
@@ -180,6 +180,7 @@
       const y0 = PAD + rect.height * rand(0.25, 0.45);
       const y1 = PAD + rect.height * rand(0.55, 0.75);
       const particles: Particle[] = [];
+      const headTrail: { x: number; y: number }[] = [];
       const start = performance.now();
       let done = false;
 
@@ -256,6 +257,16 @@
             return;
           }
           const tw = 0.7 + 0.3 * Math.sin(t / 300 + s.ph);
+
+          // Ping de nacimiento: anillo que se expande y disuelve al aparecer
+          if (born < 1) {
+            ctx.globalAlpha = (1 - born) * 0.35;
+            ctx.strokeStyle = RING;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size * (1.2 + 2.2 * born), 0, TAU);
+            ctx.stroke();
+          }
           ctx.globalAlpha = born * tw;
 
           if (s.kind === 2) {
@@ -303,13 +314,32 @@
           }
         });
 
-        // Estela invisible: solo destellos a lo largo del recorrido
+        // Estela del cometa: trazo cónico que sigue a la cabeza del barrido
         if (sp > 0 && sp < 1) {
           emit(cx, cy, 2, 3);
-        } else if (sp >= 1 && !done) {
+          headTrail.push({ x: cx, y: cy });
+          if (headTrail.length > 12) headTrail.shift();
+        } else if (headTrail.length) {
+          headTrail.shift(); // al terminar, la estela se retrae sola
+        }
+        ctx.lineCap = 'round';
+        for (let i = 1; i < headTrail.length; i++) {
+          const a = headTrail[i - 1], b = headTrail[i];
+          const k = i / headTrail.length;
+          ctx.globalAlpha = k * 0.3;
+          ctx.strokeStyle = i % 2 ? PALE : LILA;
+          ctx.lineWidth = k * 2.2;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+
+        if (sp >= 1 && !done) {
           done = true;
           el.classList.add('cr-revealed');
           el.classList.remove('cr-running');
+          onDone?.();
         }
 
         // Partículas
@@ -336,7 +366,7 @@
           }
         }
 
-        if (sp < 1 || particles.length ||
+        if (sp < 1 || particles.length || headTrail.length ||
             stars.some((s) => s.eaten && now - s.eaten < s.flareDur)) {
           requestAnimationFrame(frame);
         } else {
@@ -352,15 +382,59 @@
       els.forEach((el) => el.classList.add('cr-revealed'));
       return;
     }
+
+    // Orquestación: los elementos con data-cr-seq corren en cadena, uno tras
+    // otro en orden de secuencia; cada uno arranca cuando el anterior termina
+    // su barrido (con las brasas del previo aún flotando). Los elementos sin
+    // seq se animan solos al entrar en pantalla, como siempre.
+    const chain = Array.from(document.querySelectorAll<HTMLElement>('[data-constellation][data-cr-seq]'))
+      .sort((a, b) => +(a.dataset.crSeq || 0) - +(b.dataset.crSeq || 0));
+    type ChainState = 'idle' | 'armed' | 'running' | 'done';
+    const state = new Map<HTMLElement, ChainState>();
+    chain.forEach((el) => state.set(el, 'idle'));
+
+    function startEl(el: HTMLElement) {
+      state.set(el, 'running');
+      const delay = +(el.dataset.crDelay || 0);
+      const run = () => animate(el, () => {
+        state.set(el, 'done');
+        chainAdvance();
+      });
+      delay ? setTimeout(run, delay) : run();
+    }
+
+    function chainAdvance() {
+      // Avanza hasta el primer elemento pendiente; si está armado, corre.
+      for (const el of chain) {
+        const s = state.get(el);
+        if (s === 'done') continue;
+        if (s === 'running') return; // uno a la vez
+        if (s === 'armed') startEl(el);
+        return; // si está idle, esperamos a que entre en pantalla
+      }
+    }
+
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) {
-          io.unobserve(e.target);
-          const el = e.target as HTMLElement;
-          // data-cr-delay: espera antes de arrancar la animación
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        const el = e.target as HTMLElement;
+        if (!state.has(el)) {
+          // Elemento suelto (sin secuencia)
           const delay = +(el.dataset.crDelay || 0);
           delay ? setTimeout(() => animate(el), delay) : animate(el);
+          return;
         }
+        state.set(el, 'armed');
+        chainAdvance();
+        // Seguro: si sus predecesores nunca entran en pantalla (p. ej. se
+        // llegó con scroll directo), no lo dejamos esperando para siempre.
+        setTimeout(() => {
+          if (state.get(el) === 'armed' &&
+              !chain.some((o) => state.get(o) === 'running')) {
+            startEl(el);
+          }
+        }, 1600);
       });
     }, { threshold: 0.35 });
     els.forEach((el) => io.observe(el));
