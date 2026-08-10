@@ -31,6 +31,9 @@
 </style>
 
 <script>
+  const lowSpec =
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+    ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4);
   // Velo: oscurece el fondo conforme se deja atrás el hero (independiente del WebGL).
   const veil = document.querySelector<HTMLElement>(".starfield-veil");
   if (veil) {
@@ -61,7 +64,7 @@
   }
 
   const CFG = {
-    count: 14000,
+    count: lowSpec ? 6000 : 14000,
     radius: 25,
     fov: 65,
 
@@ -728,6 +731,13 @@ void main(void) {
       }
       if (!reduced) requestAnimationFrame(loop);
     }
-    requestAnimationFrame(loop);
+
+    const startLoop = () => {
+      requestAnimationFrame(loop);
+    };
+
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(startLoop, { timeout: 500 });
+    } else setTimeout(startLoop, 100);
   }
 </script>
