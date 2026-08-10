@@ -240,50 +240,6 @@ p {
 }
 
 /* Botones */
-.btn {
-  --btn-bg: var(--action);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: var(--step-0);
-  letter-spacing: 0.01em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6em;
-  padding: 0.85em 1.6em;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  color: var(--moonlight);
-  background: linear-gradient(135deg, var(--lavender-400), var(--action) 70%);
-  box-shadow: var(--glow-accent);
-  transition:
-    transform 0.3s var(--ease-out),
-    box-shadow 0.3s var(--ease-out),
-    filter 0.3s var(--ease-out);
-  will-change: transform;
-}
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 55px -6px
-    color-mix(in srgb, var(--lavender-400) 70%, transparent);
-  filter: brightness(1.08);
-}
-.btn:active {
-  transform: translateY(0);
-}
-
-.btn--ghost {
-  background: transparent;
-  border-color: var(--border);
-  color: var(--text);
-  box-shadow: none;
-}
-.btn--ghost:hover {
-  border-color: var(--lavender-400);
-  box-shadow: var(--glow-accent);
-  filter: none;
-  background: color-mix(in srgb, var(--lavender-400) 8%, transparent);
-}
 
 /* Superficies */
 .card {

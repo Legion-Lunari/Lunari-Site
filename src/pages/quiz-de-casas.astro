@@ -5,6 +5,7 @@ import HouseReveal from "../components/HouseReveal.astro";
 import { houses, questions } from "../data/houses";
 import { ascentPoses } from "../data/ascent";
 import { revealPoses, peakPose } from "../data/reveal";
+import Button from "../components/Button.astro";
 
 const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 
@@ -49,9 +50,10 @@ const quizData = {
           la montaña revelará a cuál perteneces.
         </p>
         <p class="quiz-intro__meta">13 preguntas · unos 3 minutos</p>
-        <button class="btn quiz-start" type="button">
-          Comenzar el ascenso <span aria-hidden="true">✦</span>
-        </button>
+        <Button class="quiz-start">
+          Comenzar el ascenso <span aria-hidden="true" slot="right-icon">✦</span
+          >
+        </Button>
       </div>
 
       <!-- Preguntas -->
@@ -99,11 +101,14 @@ const quizData = {
         <div class="reveal__cap reveal__cap--final" data-rslot="final" data-cap>
           <ul class="reveal__rasgos"></ul>
           <div class="reveal__actions">
-            <a href={DISCORD_URL} class="btn" target="_blank" rel="noopener">
-              Unirme a mi casa en Discord <span aria-hidden="true">→</span>
-            </a>
-            <button class="btn btn--ghost quiz-retry" type="button"
-              >Repetir el ritual</button
+            <Button href={DISCORD_URL} variant="talisman">
+              Unirme a mi casa en Discord <span
+                aria-hidden="true"
+                slot="right-icon">→</span
+              >
+            </Button>
+            <Button class="quiz-retry" variant="talisman-ghost"
+              >Repetir el ritual</Button
             >
           </div>
         </div>
@@ -286,13 +291,13 @@ const quizData = {
 
   // Posición del texto de la pregunta según la pose del paso.
   function applyText(s: number) {
-    const p = poses[s] || ({ side: 'left', tx: 0, ty: 0 } as Pose);
+    const p = poses[s] || ({ side: "left", tx: 0, ty: 0 } as Pose);
     // tx/ty afinados a 1600px; se escalan por el ancho para seguir al modelo.
     const k = window.innerWidth / 1600;
-    els.qBlock.classList.toggle('is-left', p.side !== 'right');
-    els.qBlock.classList.toggle('is-right', p.side === 'right');
-    els.qBlock.style.setProperty('--tx', (p.tx || 0) * k + 'px');
-    els.qBlock.style.setProperty('--ty', (p.ty || 0) * k + 'px');
+    els.qBlock.classList.toggle("is-left", p.side !== "right");
+    els.qBlock.classList.toggle("is-right", p.side === "right");
+    els.qBlock.style.setProperty("--tx", (p.tx || 0) * k + "px");
+    els.qBlock.style.setProperty("--ty", (p.ty || 0) * k + "px");
   }
   // Control directo del modelo (tuning): fija la pose del paso.
   function emitPose(s: number) {
@@ -461,14 +466,19 @@ const quizData = {
     const pose = revealPoses[i];
     if (!pose) return;
     const k = window.innerWidth / REVEAL_BASE_W;
-    cap.classList.toggle('is-left', pose.side !== 'right');
-    cap.classList.toggle('is-right', pose.side === 'right');
-    cap.style.setProperty('--tx', (pose.tx || 0) * k + 'px');
-    cap.style.setProperty('--ty', (pose.ty || 0) * k + 'px');
+    cap.classList.toggle("is-left", pose.side !== "right");
+    cap.classList.toggle("is-right", pose.side === "right");
+    cap.style.setProperty("--tx", (pose.tx || 0) * k + "px");
+    cap.style.setProperty("--ty", (pose.ty || 0) * k + "px");
   }
-  window.addEventListener('resize', () => {
-    if (revealActive) revealCaps.forEach((cap, i) => positionRevealCap(cap, i));
-  }, { passive: true });
+  window.addEventListener(
+    "resize",
+    () => {
+      if (revealActive)
+        revealCaps.forEach((cap, i) => positionRevealCap(cap, i));
+    },
+    { passive: true },
+  );
   function updateRevealCaps(p: number) {
     const N = revealPoses.length;
     const seg = 1 / (N - 1);
@@ -477,7 +487,8 @@ const quizData = {
       let vis = 1 - Math.min(1, Math.abs(p - center) / (seg * 0.62));
       vis = Math.max(0, vis);
       // El paso final llega a full antes del tope y se queda fijo (sin arrastre).
-      if (i === N - 1 && p >= center - seg) vis = Math.min(1, (p - (center - seg)) / (seg * 0.5));
+      if (i === N - 1 && p >= center - seg)
+        vis = Math.min(1, (p - (center - seg)) / (seg * 0.5));
       cap.style.opacity = String(vis);
       cap.style.pointerEvents = vis > 0.6 ? "auto" : "none";
     });
@@ -870,7 +881,10 @@ const quizData = {
     align-items: center;
     padding-top: calc(var(--nav-h) + 3rem);
   }
-  .quiz__wrap { width: min(100% - var(--gutter) * 2, 72.5rem); margin-inline: auto; }
+  .quiz__wrap {
+    width: min(100% - var(--gutter) * 2, 72.5rem);
+    margin-inline: auto;
+  }
 
   /* Bruma en movimiento del intro (Vanta FOG), opacidad reducida */
   .quiz-fog {
@@ -967,11 +981,13 @@ const quizData = {
     inset: -3rem -3.8rem;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(104% 74% at 50% 47%,
+    background: radial-gradient(
+      104% 74% at 50% 47%,
       color-mix(in srgb, var(--ink) 78%, transparent) 0%,
       color-mix(in srgb, var(--ink) 70%, transparent) 34%,
       color-mix(in srgb, var(--ink) 30%, transparent) 62%,
-      transparent 82%);
+      transparent 82%
+    );
     filter: blur(20px);
     /* Máscara: radial suave desplazado por ruido de baja frecuencia → borde de
        neblina orgánico; el blur alto lo funde para que se sienta difuminado. */
@@ -984,9 +1000,20 @@ const quizData = {
     -webkit-mask-mode: alpha;
     mask-mode: alpha;
   }
-  .quiz-question.is-left { margin-right: auto; margin-left: 0; text-align: left; }
-  .quiz-question.is-right { margin-left: auto; margin-right: 0; text-align: left; }
-  .quiz-question__phase { font-size: 1.8rem; filter: saturate(0.2) brightness(1.6); }
+  .quiz-question.is-left {
+    margin-right: auto;
+    margin-left: 0;
+    text-align: left;
+  }
+  .quiz-question.is-right {
+    margin-left: auto;
+    margin-right: 0;
+    text-align: left;
+  }
+  .quiz-question__phase {
+    font-size: 1.8rem;
+    filter: saturate(0.2) brightness(1.6);
+  }
   .quiz-question__text {
     font-size: var(--step-2);
     margin: 0.5rem 0 1.6rem;
@@ -1364,9 +1391,13 @@ const quizData = {
   }
   .reveal__cap {
     position: absolute;
-    top: 50%; left: 50%;
+    top: 50%;
+    left: 50%;
     width: min(100% - var(--gutter) * 2, 28.75rem);
-    transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, 0px)));
+    transform: translate(
+      calc(-50% + var(--tx, 0px)),
+      calc(-50% + var(--ty, 0px))
+    );
     opacity: 0;
     pointer-events: none;
     text-align: left;
@@ -1476,7 +1507,11 @@ const quizData = {
   .reveal__cap--final .reveal__actions {
     justify-content: center;
   }
-  .reveal__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .reveal__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
   /* CTA final: centrado y en la franja baja, para no encimarse con el logo */
   .reveal__cap--final {
     text-align: center;
@@ -1486,34 +1521,56 @@ const quizData = {
     --ty: 0px !important;
     width: min(100% - var(--gutter) * 2, 40rem);
   }
-  .reveal__cap--final .reveal__rasgos { justify-content: center; }
-  .reveal__cap--final .reveal__actions { justify-content: center; }
+  .reveal__cap--final .reveal__rasgos {
+    justify-content: center;
+  }
+  .reveal__cap--final .reveal__actions {
+    justify-content: center;
+  }
 
   .reveal__hint {
     position: absolute;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 1.625rem; height: 2.625rem;
+    width: 1.625rem;
+    height: 2.625rem;
     border: 1.5px solid var(--border);
     border-radius: 999px;
-    display: grid; justify-items: center; padding-top: 0.5rem;
+    display: grid;
+    justify-items: center;
+    padding-top: 0.5rem;
     z-index: 3;
   }
   .reveal__hint span {
-    width: 0.25rem; height: 0.5rem; border-radius: 999px;
-    background: var(--celeste-400); box-shadow: 0 0 10px var(--celeste-400);
+    width: 0.25rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--celeste-400);
+    box-shadow: 0 0 10px var(--celeste-400);
     animation: scrollDot 1.8s var(--ease-out) infinite;
   }
   @keyframes scrollDot {
-    0% { opacity: 0; transform: translateY(0); }
-    30% { opacity: 1; }
-    100% { opacity: 0; transform: translateY(0.875rem); }
+    0% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(0.875rem);
+    }
   }
 
   @media (max-width: 760px) {
-    .reveal__cap, .reveal__cap.is-left, .reveal__cap.is-right {
-      left: 50%; width: min(100% - var(--gutter) * 2, 32.5rem); text-align: center;
+    .reveal__cap,
+    .reveal__cap.is-left,
+    .reveal__cap.is-right {
+      left: 50%;
+      width: min(100% - var(--gutter) * 2, 32.5rem);
+      text-align: center;
       /* En móvil se ignora el desfase de pose: cada texto va centrado en pantalla */
       transform: translate(-50%, -50%);
     }
