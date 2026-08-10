@@ -94,10 +94,14 @@ const vibes = [
             Honesta, amigable y <span class="accent-text">mágica</span>.
           </p>
           <div class="hero__actions">
-            <a href={DISCORD_URL} class="btn" target="_blank" rel="noopener">
+            <Button href={DISCORD_URL} variant="talisman">
               Unirse al Discord <span aria-hidden="true">→</span>
-            </a>
-            <a href="/quiz-de-casas" class="btn btn--ghost">Descubre tu casa</a>
+            </Button>
+            <Button
+              href="/quiz-de-casas"
+              variant="talisman-ghost"
+              openInNewTab={false}>Descubre tu casa</Button
+            >
           </div>
         </div>
       </div>

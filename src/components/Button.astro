@@ -4,9 +4,16 @@ interface Props {
   class?: string;
   variant?: "pill" | "talisman" | "talisman-ghost";
   style?: astroHTML.JSX.CSSProperties;
+  openInNewTab: boolean;
 }
 
-const { href, class: className, variant = "pill", style } = Astro.props;
+const {
+  href,
+  class: className,
+  variant = "pill",
+  style,
+  openInNewTab = true,
+} = Astro.props;
 const Tag = href ? "a" : "button";
 ---
 
@@ -15,7 +22,7 @@ const Tag = href ? "a" : "button";
   data-variant={variant}
   class:list={["btn", className]}
   style={style}
-  target="_blank"
+  target={openInNewTab ? "_blank" : "_self"}
 >
   <slot name="left-icon" />
 
