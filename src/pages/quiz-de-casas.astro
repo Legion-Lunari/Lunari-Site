@@ -5,7 +5,7 @@ import HouseReveal from "../components/HouseReveal.astro";
 import { houses, questions } from "../data/houses";
 import { ascentPoses } from "../data/ascent";
 import { revealPoses, peakPose } from "../data/reveal";
-import TalismanButton from "../components/TalismanButton.astro";
+import Button from "../components/Button.astro";
 
 const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 
@@ -50,9 +50,10 @@ const quizData = {
           la montaña revelará a cuál perteneces.
         </p>
         <p class="quiz-intro__meta">13 preguntas · unos 3 minutos</p>
-        <button class="btn quiz-start" type="button">
-          Comenzar el ascenso <span aria-hidden="true">✦</span>
-        </button>
+        <Button class="quiz-start">
+          Comenzar el ascenso <span aria-hidden="true" slot="right-icon">✦</span
+          >
+        </Button>
       </div>
 
       <!-- Preguntas -->
@@ -100,14 +101,14 @@ const quizData = {
         <div class="reveal__cap reveal__cap--final" data-rslot="final" data-cap>
           <ul class="reveal__rasgos"></ul>
           <div class="reveal__actions">
-            <TalismanButton href={DISCORD_URL}>
+            <Button href={DISCORD_URL} variant="talisman">
               Unirme a mi casa en Discord <span
                 aria-hidden="true"
                 slot="right-icon">→</span
               >
-            </TalismanButton>
-            <TalismanButton class="quiz-retry" variant="ghost"
-              >Repetir el ritual</TalismanButton
+            </Button>
+            <Button class="quiz-retry" variant="talisman-ghost"
+              >Repetir el ritual</Button
             >
           </div>
         </div>

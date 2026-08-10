@@ -2,17 +2,19 @@
 interface Props {
   href?: string;
   class?: string;
-  variant?: "solid" | "ghost";
+  variant?: "pill" | "talisman" | "talisman-ghost";
+  style?: astroHTML.JSX.CSSProperties;
 }
 
-const { href, class: className, variant = "solid" } = Astro.props;
+const { href, class: className, variant = "pill", style } = Astro.props;
 const Tag = href ? "a" : "button";
 ---
 
 <Tag
   href={href}
   data-variant={variant}
-  class:list={["talisman-btn", className]}
+  class:list={["btn", className]}
+  style={style}
   target="_blank"
 >
   <slot name="left-icon" />
@@ -23,7 +25,7 @@ const Tag = href ? "a" : "button";
 </Tag>
 
 <style>
-  .talisman-btn {
+  .btn {
     --btn-bg: var(--action);
     font-family: var(--font-body);
     font-weight: 600;
@@ -33,11 +35,34 @@ const Tag = href ? "a" : "button";
     align-items: center;
     gap: 0.6em;
     padding: 0.85em 1.6em;
+    border-radius: 999px;
+    border: 1px solid transparent;
     cursor: pointer;
     color: var(--moonlight);
+    background: linear-gradient(135deg, var(--lavender-400), var(--action) 70%);
+    box-shadow: var(--glow-accent);
+    transition:
+      transform 0.3s var(--ease-out),
+      box-shadow 0.3s var(--ease-out),
+      filter 0.3s var(--ease-out);
+    will-change: transform;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 55px -6px
+      color-mix(in srgb, var(--lavender-400) 70%, transparent);
+    filter: brightness(1.08);
+  }
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn[data-variant="talisman"],
+  .btn[data-variant="talisman-ghost"] {
     position: relative;
     border: none;
     border-radius: 0;
+    box-shadow: none;
     clip-path: polygon(
       0.95rem 0,
       calc(100% - 0.95rem) 0,
@@ -48,21 +73,13 @@ const Tag = href ? "a" : "button";
       0 calc(100% - 0.95rem),
       0 0.95rem
     );
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--lavender-200) 85%, transparent),
-      var(--lavender-400)
-    );
-    filter: drop-shadow(
-      0 0 16px color-mix(in srgb, var(--violet-600) 60%, transparent)
-    );
     transition:
       transform 0.3s var(--ease-out),
       filter 0.3s var(--ease-out);
-    will-change: transform;
   }
 
-  .talisman-btn::before {
+  .btn[data-variant="talisman"]::before,
+  .btn[data-variant="talisman-ghost"]::before {
     content: "";
     position: absolute;
     inset: 2px;
@@ -77,41 +94,54 @@ const Tag = href ? "a" : "button";
       0 calc(100% - 0.85rem),
       0 0.85rem
     );
+  }
+
+  .btn[data-variant="talisman"]:hover,
+  .btn[data-variant="talisman-ghost"]:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn[data-variant="talisman"]:active,
+  .btn[data-variant="talisman-ghost"]:active {
+    transform: translateY(0);
+  }
+
+  .btn[data-variant="talisman"] {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--lavender-200) 85%, transparent),
+      var(--lavender-400)
+    );
+    filter: drop-shadow(
+      0 0 16px color-mix(in srgb, var(--violet-600) 60%, transparent)
+    );
+  }
+  .btn[data-variant="talisman"]::before {
     background: linear-gradient(
       135deg,
       var(--lavender-400),
       var(--violet-600) 75%
     );
   }
-
-  .talisman-btn:hover {
-    transform: translateY(-2px);
+  .btn[data-variant="talisman"]:hover {
     filter: drop-shadow(
         0 0 26px color-mix(in srgb, var(--lavender-400) 75%, transparent)
       )
       brightness(1.06);
   }
 
-  .talisman-btn:active {
-    transform: translateY(0);
-  }
-
-  /* ghost variant — layered on top of the base above */
-  .talisman-btn[data-variant="ghost"] {
+  .btn[data-variant="talisman-ghost"] {
     color: var(--text);
     background: color-mix(in srgb, var(--lavender-400) 45%, transparent);
     filter: none;
   }
-
-  .talisman-btn[data-variant="ghost"]::before {
+  .btn[data-variant="talisman-ghost"]::before {
     background: color-mix(in srgb, var(--night-900) 90%, var(--lavender-400));
   }
-
-  .talisman-btn[data-variant="ghost"] span {
+  .btn[data-variant="talisman-ghost"] span {
     color: var(--lavender-200);
   }
-
-  .talisman-btn[data-variant="ghost"]:hover {
+  .btn[data-variant="talisman-ghost"]:hover {
     background: color-mix(in srgb, var(--lavender-400) 70%, transparent);
     filter: drop-shadow(
       0 0 18px color-mix(in srgb, var(--lavender-400) 45%, transparent)

@@ -1,4 +1,6 @@
 ---
+import Button from "./Button.astro";
+
 /** Navegación principal. Transparente sobre el hero, con blur al hacer scroll. */
 const { pathname } = Astro.url;
 const isActive = (href: string) =>
@@ -32,9 +34,12 @@ const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
       }
     </nav>
 
-    <a href={DISCORD_URL} class="btn nav__cta" target="_blank" rel="noopener">
-      Unirse
-    </a>
+    <Button
+      href={DISCORD_URL}
+      variant="pill"
+      style={{ padding: "0.6em 1.3em", fontSize: "var(--step--1)" }}
+      >Unirse</Button
+    >
 
     <button
       class="nav__toggle"
@@ -142,11 +147,6 @@ const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
   }
   .nav__link.is-active {
     color: var(--moonlight);
-  }
-
-  .nav__cta {
-    padding: 0.6em 1.3em;
-    font-size: var(--step--1);
   }
 
   .nav__toggle {
