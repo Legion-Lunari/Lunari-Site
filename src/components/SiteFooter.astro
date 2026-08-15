@@ -17,6 +17,13 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
+    <div class="footer__contact">
+      <span class="footer__contact-label">Contacto</span>
+      <a href="mailto:lunari.legion.serv@gmail.com">
+        <span aria-hidden="true">✉</span> lunari.legion.serv@gmail.com
+      </a>
+    </div>
+
     <nav class="footer__nav" aria-label="Pie">
       <a href="/">Inicio</a>
       <a href="/about">Nosotras</a>
@@ -80,6 +87,32 @@ const year = new Date().getFullYear();
   }
   .footer__nav a:hover {
     color: var(--celeste-400);
+  }
+
+  .footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+  }
+  .footer__contact-label {
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.72rem;
+  }
+  .footer__contact a {
+    color: var(--text-muted);
+    transition: color 0.25s var(--ease-out);
+    width: fit-content;
+  }
+  .footer__contact a:hover {
+    color: var(--celeste-400);
+  }
+  .footer__contact a span {
+    color: var(--lavender-200);
+    margin-right: 0.2em;
   }
 
   .footer__bottom {

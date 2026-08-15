@@ -242,6 +242,29 @@ const socials: Social[] = [
   <StarSummon />
 </BaseLayout>
 
+<script>
+  // Utilidad de consola para previsualizar la fila de staff con más cartas:
+  //   lunariStaffDemo(5) → clona las cartas existentes hasta tener 5
+  //   lunariStaffDemo(3) → restaura las originales
+  const grid = document.querySelector<HTMLElement>('.staff-grid');
+  (window as any).lunariStaffDemo = (n = 5) => {
+    if (!grid) return 'no hay grid';
+    grid.querySelectorAll('[data-demo]').forEach((el) => el.remove());
+    const bases = Array.from(grid.querySelectorAll<HTMLElement>('.summon-card'));
+    for (let i = 0; i < n - bases.length; i++) {
+      const clone = bases[i % bases.length].cloneNode(true) as HTMLElement;
+      clone.setAttribute('data-demo', '');
+      clone.removeAttribute('data-summon');
+      clone.classList.add('sm-lit'); // visible aunque la invocación esté armada
+      grid.appendChild(clone);
+    }
+    return `${grid.children.length} cartas en la fila`;
+  };
+  console.info(
+    '[Lunari] Vista previa del staff: lunariStaffDemo(5) · restaurar: lunariStaffDemo(3)'
+  );
+</script>
+
 <style>
   section {
     padding-left: 5%;
@@ -387,9 +410,11 @@ const socials: Social[] = [
 
   .staff-grid {
     display: grid;
+    /* Caben hasta 5 cartas por fila (4 gaps de 1.5rem); con menos, auto-fit
+       colapsa las columnas sobrantes y se ven igual que siempre */
     grid-template-columns: repeat(
       auto-fit,
-      minmax(max(240px, (100% - 3 * 1.5rem) / 4), 1fr)
+      minmax(max(220px, (100% - 4 * 1.5rem) / 5), 1fr)
     );
     justify-items: center;
     gap: 2rem 1.5rem;
