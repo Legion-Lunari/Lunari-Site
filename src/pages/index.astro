@@ -52,12 +52,32 @@ const vibes = [
           data-end="0.24"
         >
           <div class="hero__cap-fog" data-hero-fog aria-hidden="true"></div>
+
+          <div class="cta-final__emblem hero__cap-emblem">
+            <span
+              class="cta-final__emblem-star cta-final__emblem-star--t"
+              aria-hidden="true">✦</span
+            >
+            <span
+              class="cta-final__emblem-star cta-final__emblem-star--l"
+              aria-hidden="true">✦</span
+            >
+            <LunariLogo class="cta-final__logo" />
+            <span
+              class="cta-final__emblem-star cta-final__emblem-star--r"
+              aria-hidden="true">✦</span
+            >
+          </div>
+
           <h1 class="hero__title">
             Legion <span class="hero__title-accent">Lunari</span>
           </h1>
+
           <p class="hero__cap-sub">
-            Comunidad de Discord · League of Legends · LAN/LAS
+            La comunidad femenina de League of Legends más grande de LATAM
           </p>
+
+          <p class="hero__cap-sub">LAN · LAS · Wild Rift</p>
         </div>
 
         <div
@@ -557,6 +577,14 @@ const vibes = [
   }
   .hero__cap--title .hero__cap-sub {
     color: var(--text-muted);
+    text-shadow:
+      0 1px 4px rgba(0, 0, 0.65),
+      0 0 14px rgba(0, 0, 0, 0.4);
+  }
+
+  .hero__cap-emblem {
+    z-index: 1;
+    margin-bottom: 2rem !important;
   }
 
   .hero__cap-fog {
@@ -574,11 +602,11 @@ const vibes = [
     );
     /* Máscara sin meseta: se difumina desde el centro, sin borde superior visible */
     -webkit-mask-image: radial-gradient(
-      60% 58% at 50% 50%,
+      65% 68% at 50% 55%,
       #000 0%,
-      transparent 72%
+      transparent 78%
     );
-    mask-image: radial-gradient(60% 58% at 50% 50%, #000 0%, transparent 72%);
+    mask-image: radial-gradient(65% 68% at 50% 55%, #000 0%, transparent 78%);
   }
   .hero__cap-fog :global(canvas) {
     display: block;
@@ -614,7 +642,7 @@ const vibes = [
   .hero.is-journey .hero__cap {
     position: absolute;
     left: 50%;
-    top: 55%;
+    top: 45%;
     width: min(100% - var(--gutter) * 2, 47.5rem);
     opacity: 0;
     pointer-events: none;
