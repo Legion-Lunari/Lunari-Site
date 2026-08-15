@@ -419,14 +419,14 @@
           );
         });
       },
-      { threshold: 0.12 },
+      { threshold: 0, rootMargin: "0px 0px -20% 0px" },
     );
 
     // En pestañas ocultas rAF está pausado: arma y arranca solo al ser visible,
     // para que la función no se "queme" en segundo plano.
     const begin = () => {
       stage.classList.add("summon-ready");
-      io.observe(stage);
+      io.observe(targets[0] as Element);
     };
     if (document.visibilityState === "hidden") {
       const onVis = () => {
