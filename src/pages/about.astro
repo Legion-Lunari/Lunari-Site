@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import AdminCard from "../components/AdminCard.astro";
 import Button from "../components/Button.astro";
 import StarSummon from "../components/StarSummon.astro";
+import StaffCard from "../components/StaffCard.astro";
 
 const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 const INSTAGRAM_URL = "https://www.instagram.com/legionlunari/";
@@ -21,6 +22,12 @@ interface AdminData {
   confession?: string;
   /** Color de acento de su carta (marco, nombre, ornamentos) */
   accent: string;
+}
+
+interface StaffData {
+  name: string;
+  role: string;
+  accent?: string;
 }
 
 interface Social {
@@ -67,6 +74,159 @@ const admins: AdminData[] = [
     lastValue: "greciaxbooks",
     confession: "Amante de la lectura, el café y los videojuegos",
     accent: "#e0596b",
+  },
+];
+
+const staff: StaffData[] = [
+  {
+    name: "Power",
+    role: "Lider de Moderadoras de WhatsApp LAS",
+    accent: "#5FD38D",
+  },
+  {
+    name: "Adi",
+    role: "Moderadora de WhatsApp",
+    accent: "#5FD38D",
+  },
+  {
+    name: "Eris",
+    role: "Moderadora de WhatsApp",
+    accent: "#5FD38D",
+  },
+  {
+    name: "Lily",
+    role: "Desarrolladora Lunari",
+    accent: "#5AC8FA",
+  },
+  {
+    name: "Moon",
+    role: "Guionista",
+    accent: "#9C89E0",
+  },
+  {
+    name: "Vladyr",
+    role: "Guionista",
+    accent: "#9C89E0",
+  },
+  {
+    name: "Hooni",
+    role: "Locutora",
+    accent: "#F2879E",
+  },
+  {
+    name: "AlexARPK",
+    role: "Locutora",
+    accent: "#F2879E",
+  },
+  {
+    name: "Saranucon",
+    role: "Locutora",
+    accent: "#F2879E",
+  },
+  {
+    name: "Gugi",
+    role: "Editora de Videos",
+    accent: "#63C7D1",
+  },
+  {
+    name: "Panita",
+    role: "Editora de Videos",
+    accent: "#63C7D1",
+  },
+  {
+    name: "Fiore",
+    role: "Lider de Verificadora",
+    accent: "#6FA8DC",
+  },
+  {
+    name: "Mina",
+    role: "Verificadora",
+    accent: "#6FA8DC",
+  },
+  {
+    name: "Scar",
+    role: "Verificadora",
+    accent: "#6FA8DC",
+  },
+  {
+    name: "Daymi",
+    role: "Verificadora",
+    accent: "#6FA8DC",
+  },
+  {
+    name: "Munmun",
+    role: "Verificadora",
+    accent: "#6FA8DC",
+  },
+  {
+    name: "Sandra",
+    role: "Moderadora de Discord",
+    accent: "#8C9EFF",
+  },
+  {
+    name: "Kaas",
+    role: "Moderadora de Discord",
+    accent: "#8C9EFF",
+  },
+  {
+    name: "Layla",
+    role: "Moderadora de Discord",
+    accent: "#8C9EFF",
+  },
+  {
+    name: "Ana",
+    role: "Lider de Animadoras",
+    accent: "#F2A65A",
+  },
+  {
+    name: "Melia",
+    role: "Animadora",
+    accent: "#F2A65A",
+  },
+  {
+    name: "Missing",
+    role: "Animadora",
+    accent: "#F2A65A",
+  },
+  {
+    name: "Nana",
+    role: "Líder de Coordinadora de Tickets",
+    accent: "#D4A574",
+  },
+  {
+    name: "Pancito",
+    role: "Coordinadora de Tickets",
+    accent: "#D4A574",
+  },
+  {
+    name: "Mey",
+    role: "Coordinadora de Tickets",
+    accent: "#D4A574",
+  },
+  {
+    name: "Weiro",
+    role: "Mentor",
+    accent: "#B08BC4",
+  },
+  {
+    name: "Kame",
+    role: "Mentora",
+    accent: "#B08BC4",
+  },
+  {
+    name: "LadyLove",
+    role: "Mentora",
+    accent: "#B08BC4",
+  },
+  {
+    name: "Smiling",
+    role: "Mentora",
+    accent: "#B08BC4",
+  },
+  {
+    name: "Kae",
+    role: "Mentora",
+    accent: "#B08BC4",
   },
 ];
 
@@ -176,19 +336,28 @@ const socials: Social[] = [
               </mask>
             </defs>
             <!-- creciente fina que abre hacia la estrellita -->
-            <circle cx="11.5" cy="12" r="8" fill="#cbbcf2" mask="url(#ns-moon-cut)"></circle>
+            <circle
+              cx="11.5"
+              cy="12"
+              r="8"
+              fill="#cbbcf2"
+              mask="url(#ns-moon-cut)"></circle>
             <path
               d="M19.5 4 Q20 6.6 22.5 7 Q20 7.4 19.5 10 Q19 7.4 16.5 7 Q19 6.6 19.5 4Z"
-              fill="#e9e2f8"
-            ></path>
+              fill="#e9e2f8"></path>
           </svg>
           <em>✦</em>
           <i class="ns-moon__line ns-moon__line--end"></i>
         </span>
         <h3 class="ns-title">
-          <span class="ns-title__line" aria-hidden="true"><i>+</i><b>✦</b></span>
-          <span>¡Sigue nuestras redes <span class="ns-grad">sociales</span>!</span>
-          <span class="ns-title__line ns-title__line--end" aria-hidden="true"><b>✦</b><i>+</i></span>
+          <span class="ns-title__line" aria-hidden="true"><i>+</i><b>✦</b></span
+          >
+          <span
+            >¡Sigue nuestras redes <span class="ns-grad">sociales</span>!</span
+          >
+          <span class="ns-title__line ns-title__line--end" aria-hidden="true"
+            ><b>✦</b><i>+</i></span
+          >
         </h3>
       </div>
 
@@ -209,13 +378,16 @@ const socials: Social[] = [
     <section class="staff">
       <div class="ns-head" data-summon="5">
         <h3 class="ns-title">
-          <span class="ns-title__line" aria-hidden="true"><i>+</i><b>✦</b></span>
+          <span class="ns-title__line" aria-hidden="true"><i>+</i><b>✦</b></span
+          >
           <span>Nuestra adminis<span class="ns-grad">tración</span></span>
-          <span class="ns-title__line ns-title__line--end" aria-hidden="true"><b>✦</b><i>+</i></span>
+          <span class="ns-title__line ns-title__line--end" aria-hidden="true"
+            ><b>✦</b><i>+</i></span
+          >
         </h3>
       </div>
 
-      <div class="staff-grid">
+      <div class="admin-grid">
         {
           admins.map((admin, i) => (
             <div class="summon-card" data-summon={String(6 + i)}>
@@ -236,6 +408,38 @@ const socials: Social[] = [
           ))
         }
       </div>
+
+      <div
+        class="ns-head"
+        style="margin-top: 2rem"
+        data-summon={String(7 + admins.length)}
+      >
+        <h3 class="ns-title">
+          <span class="ns-title__line" aria-hidden="true"><i>+</i><b>✦</b></span
+          >
+          <span>Nuestro <span class="ns-grad">staff</span></span>
+          <span class="ns-title__line ns-title__line--end" aria-hidden="true"
+            ><b>✦</b><i>+</i></span
+          >
+        </h3>
+      </div>
+
+      <div
+        class="staff-grid summon-burst"
+        data-summon={String(8 + admins.length)}
+      >
+        {
+          staff.map((member) => (
+            <div class="summon-card">
+              <StaffCard
+                name={member.name}
+                role={member.role}
+                accent={member.accent}
+              />
+            </div>
+          ))
+        }
+      </div>
     </section>
   </div>
 
@@ -246,22 +450,24 @@ const socials: Social[] = [
   // Utilidad de consola para previsualizar la fila de staff con más cartas:
   //   lunariStaffDemo(5) → clona las cartas existentes hasta tener 5
   //   lunariStaffDemo(3) → restaura las originales
-  const grid = document.querySelector<HTMLElement>('.staff-grid');
+  const grid = document.querySelector<HTMLElement>(".admin-grid");
   (window as any).lunariStaffDemo = (n = 5) => {
-    if (!grid) return 'no hay grid';
-    grid.querySelectorAll('[data-demo]').forEach((el) => el.remove());
-    const bases = Array.from(grid.querySelectorAll<HTMLElement>('.summon-card'));
+    if (!grid) return "no hay grid";
+    grid.querySelectorAll("[data-demo]").forEach((el) => el.remove());
+    const bases = Array.from(
+      grid.querySelectorAll<HTMLElement>(".summon-card"),
+    );
     for (let i = 0; i < n - bases.length; i++) {
       const clone = bases[i % bases.length].cloneNode(true) as HTMLElement;
-      clone.setAttribute('data-demo', '');
-      clone.removeAttribute('data-summon');
-      clone.classList.add('sm-lit'); // visible aunque la invocación esté armada
+      clone.setAttribute("data-demo", "");
+      clone.removeAttribute("data-summon");
+      clone.classList.add("sm-lit"); // visible aunque la invocación esté armada
       grid.appendChild(clone);
     }
     return `${grid.children.length} cartas en la fila`;
   };
   console.info(
-    '[Lunari] Vista previa del staff: lunariStaffDemo(5) · restaurar: lunariStaffDemo(3)'
+    "[Lunari] Vista previa del staff: lunariStaffDemo(5) · restaurar: lunariStaffDemo(3)",
   );
 </script>
 
@@ -295,7 +501,8 @@ const socials: Social[] = [
     color: var(--lavender-200);
     font-size: 1rem;
     line-height: 1;
-    text-shadow: 0 0 10px color-mix(in srgb, var(--lavender-400) 60%, transparent);
+    text-shadow: 0 0 10px
+      color-mix(in srgb, var(--lavender-400) 60%, transparent);
   }
   .ns-moon em {
     font-style: normal;
@@ -311,12 +518,18 @@ const socials: Social[] = [
     position: relative;
     width: clamp(2.5rem, 8vw, 6.5rem);
     height: 1px;
-    background: linear-gradient(to right,
-      transparent, color-mix(in srgb, var(--lavender-200) 50%, transparent));
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--lavender-200) 50%, transparent)
+    );
   }
   .ns-moon__line--end {
-    background: linear-gradient(to left,
-      transparent, color-mix(in srgb, var(--lavender-200) 50%, transparent));
+    background: linear-gradient(
+      to left,
+      transparent,
+      color-mix(in srgb, var(--lavender-200) 50%, transparent)
+    );
   }
   /* Puntito de diamante sobre cada línea */
   .ns-moon__line::after {
@@ -329,7 +542,9 @@ const socials: Social[] = [
     transform: translate(-50%, -50%) rotate(45deg);
     background: color-mix(in srgb, var(--lavender-200) 75%, transparent);
   }
-  .ns-moon__line--end::after { left: 70%; }
+  .ns-moon__line--end::after {
+    left: 70%;
+  }
   .ns-title {
     display: flex;
     align-items: center;
@@ -341,7 +556,12 @@ const socials: Social[] = [
     text-align: center;
   }
   .ns-grad {
-    background: linear-gradient(120deg, var(--lavender-200), var(--lavender-400) 55%, var(--violet-600));
+    background: linear-gradient(
+      120deg,
+      var(--lavender-200),
+      var(--lavender-400) 55%,
+      var(--violet-600)
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -353,9 +573,12 @@ const socials: Social[] = [
     color: var(--lavender-200);
     font-size: 0.8rem;
     line-height: 1;
-    text-shadow: 0 0 8px color-mix(in srgb, var(--lavender-400) 55%, transparent);
+    text-shadow: 0 0 8px
+      color-mix(in srgb, var(--lavender-400) 55%, transparent);
   }
-  .ns-title__line b { font-weight: 400; }
+  .ns-title__line b {
+    font-weight: 400;
+  }
   /* Crucecita satélite, más tenue y elevada */
   .ns-title__line i {
     font-style: normal;
@@ -370,8 +593,11 @@ const socials: Social[] = [
   }
   .ns-title__line::before {
     width: clamp(1.5rem, 6vw, 5rem);
-    background: linear-gradient(to right,
-      transparent, color-mix(in srgb, var(--lavender-200) 55%, transparent));
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--lavender-200) 55%, transparent)
+    );
   }
   .ns-title__line::after {
     width: 1.3rem;
@@ -383,11 +609,16 @@ const socials: Social[] = [
   }
   .ns-title__line--end::after {
     width: clamp(1.5rem, 6vw, 5rem);
-    background: linear-gradient(to left,
-      transparent, color-mix(in srgb, var(--lavender-200) 55%, transparent));
+    background: linear-gradient(
+      to left,
+      transparent,
+      color-mix(in srgb, var(--lavender-200) 55%, transparent)
+    );
   }
   @media (max-width: 680px) {
-    .ns-title__line { display: none; }
+    .ns-title__line {
+      display: none;
+    }
   }
 
   .social-network-links {
@@ -408,7 +639,7 @@ const socials: Social[] = [
     padding-top: 3.5rem;
   }
 
-  .staff-grid {
+  .admin-grid {
     display: grid;
     /* Caben hasta 5 cartas por fila (4 gaps de 1.5rem); con menos, auto-fit
        colapsa las columnas sobrantes y se ven igual que siempre */
@@ -418,6 +649,17 @@ const socials: Social[] = [
     );
     justify-items: center;
     gap: 2rem 1.5rem;
+  }
+
+  .staff-grid {
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(220px, (100% - 7 * 1.5rem) / 5), 1fr)
+    );
+    justify-items: center;
+    gap: 2rem 1.5rem;
+    margin-top: 2rem;
   }
 
   /* Anclas de invocación: centran su carta */

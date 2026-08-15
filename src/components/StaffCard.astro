@@ -1,0 +1,117 @@
+﻿---
+// StaffCard - version mini de AdminCard, con solo el nombre y el rol, mismo
+// marco con acento, ticks de chaflán y tipografía.
+
+export interface Props {
+  name: string;
+  role: string;
+  accent?: string;
+}
+
+const { name, role, accent = "white" } = Astro.props;
+---
+
+<div class="staff-card" style={`--accent:${accent}`}>
+  <span class="card__tick card__tick--tl" aria-hidden="true"></span>
+  <span class="card__tick card__tick--tr" aria-hidden="true"></span>
+  <span class="card__tick card__tick--bl" aria-hidden="true"></span>
+  <span class="card__tick card__tick--br" aria-hidden="true"></span>
+
+  <h1 class="card__name">{name}</h1>
+
+  <p class="card__role">{role}</p>
+</div>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Baloo+2:wght@400;500;600;700&display=swap");
+
+  .staff-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35em;
+    width: 100%;
+    max-width: 280px;
+    padding: 1.4rem 1rem;
+    box-sizing: border-box;
+    container-type: inline-size;
+    container-name: staffcard;
+    font-family: "Baloo 2", system-ui, sans-serif;
+    text-align: center;
+    background: #0d0d24;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.35),
+      0 0 24px -10px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .card__tick {
+    position: absolute;
+    z-index: 1;
+    width: 0.9rem;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--accent) 75%, transparent) 50%,
+      transparent
+    );
+  }
+  .card__tick::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3px;
+    height: 3px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background: var(--accent);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 80%, transparent);
+  }
+  .card__tick--tl {
+    top: 0.7rem;
+    left: 0.5rem;
+    transform: rotate(-45deg);
+  }
+  .card__tick--tr {
+    top: 0.7rem;
+    right: 0.5rem;
+    transform: rotate(45deg);
+  }
+  .card__tick--bl {
+    bottom: 0.7rem;
+    left: 0.5rem;
+    transform: rotate(45deg);
+  }
+  .card__tick--br {
+    bottom: 0.7rem;
+    right: 0.5rem;
+    transform: rotate(-45deg);
+  }
+
+  .card__name {
+    margin: 0;
+    font-family: "Cinzel Decorative", serif;
+    font-weight: 700;
+    font-size: clamp(1.2rem, 8cqw, 1.8rem);
+    line-height: 1.1;
+    letter-spacing: 0.03em;
+    background: linear-gradient(180deg, #fdfaf4 25%, var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .card__role {
+    margin: 0;
+    font-size: clamp(0.6rem, 3cqw, 0.75rem);
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--accent) 55%, #f3ecec);
+  }
+</style>
