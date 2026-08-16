@@ -680,20 +680,73 @@ const vibes = [
     transform: translateX(-50%);
     width: 1.625rem;
     height: 2.625rem;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid color-mix(in srgb, var(--celeste-400) 65%, transparent);
     border-radius: 999px;
     display: grid;
     justify-items: center;
     padding-top: 0.5rem;
     z-index: 3;
+    opacity: 0;
+    animation: scrollAppear 1s var(--ease-out) 1.6s forwards;
+  }
+  .hero__scroll::before {
+    content: "";
+    position: absolute;
+    inset: -0.85rem;
+    border-radius: 999px;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--celeste-400) 35%, transparent),
+      transparent 70%
+    );
+    animation: scrollHalo 2.4s var(--ease-out) infinite;
+  }
+  .hero__scroll::after {
+    content: "Desliza";
+    position: absolute;
+    top: -1.35rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--celeste-400) 75%, white);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--celeste-400) 60%, transparent);
+    opacity: 0.9;
+    animation: scrollLabel 2.4s ease-in-out infinite;
   }
   .hero__scroll span {
-    width: 0.25rem;
-    height: 0.5rem;
+    width: 0.3rem;
+    height: 0.55rem;
     border-radius: 999px;
     background: var(--celeste-400);
-    box-shadow: 0 0 10px var(--celeste-400);
-    animation: scrollDot 1.8s var(--ease-out) infinite;
+    box-shadow: 0 0 12px var(--celeste-400);
+    animation: scrollDot 1.6s var(--ease-out) infinite;
+  }
+  @keyframes scrollAppear {
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes scrollHalo {
+    0%,
+    100% {
+      opacity: 0.25;
+      transform: scale(0.9);
+    }
+    50% {
+      opacity: 0.65;
+      transform: scale(1.2);
+    }
+  }
+  @keyframes scrollLabel {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
   }
   @keyframes scrollDot {
     0% {
@@ -705,10 +758,16 @@ const vibes = [
     }
     100% {
       opacity: 0;
-      transform: translateY(0.875rem);
+      transform: translateY(1.05rem);
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .hero__scroll {
+      opacity: 1;
+      animation: none;
+    }
+    .hero__scroll::before,
+    .hero__scroll::after,
     .hero__scroll span {
       animation: none;
     }
