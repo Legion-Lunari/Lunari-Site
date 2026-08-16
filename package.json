@@ -8,7 +8,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "wrangler:dev": "astro build && wrangler dev",
+    "wrangler:deploy": "astro build && wrangler deploy"
   },
   "dependencies": {
     "astro": "^5.6.1",
@@ -20,6 +22,7 @@
     "eslint-plugin-astro": "^3.1.0",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
-    "typescript-eslint": "^8.66.0"
+    "typescript-eslint": "^8.66.0",
+    "wrangler": "^4.123.0"
   }
 }
