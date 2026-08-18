@@ -8,6 +8,13 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Kudryashev Display";
+  src: url("/fonts/KudryashevDisplay.ttf") format("truetype");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 /* Tokens */
 :root {
   /* Escala noche */

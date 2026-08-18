@@ -7,6 +7,6 @@ export default defineConfig({
   server: {
     port: 4321,
     host: true,
-    allowedHosts: ["mesa-priorities-chester-shots.trycloudflare.com"],
+    allowedHosts: ["involve-shorter-mandate-min.trycloudflare.com"],
   },
 });

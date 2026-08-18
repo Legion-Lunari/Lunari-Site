@@ -79,6 +79,11 @@ const admins: AdminData[] = [
 
 const staff: StaffData[] = [
   {
+    name: "Lily",
+    role: "Desarrolladora Lunari",
+    accent: "#5AC8FA",
+  },
+  {
     name: "Power",
     role: "Lider de Moderadoras de WhatsApp LAS",
     accent: "#5FD38D",
@@ -92,11 +97,6 @@ const staff: StaffData[] = [
     name: "Eris",
     role: "Moderadora de WhatsApp",
     accent: "#5FD38D",
-  },
-  {
-    name: "Lily",
-    role: "Desarrolladora Lunari",
-    accent: "#5AC8FA",
   },
   {
     name: "Moon",
@@ -447,28 +447,7 @@ const socials: Social[] = [
 </BaseLayout>
 
 <script>
-  // Utilidad de consola para previsualizar la fila de staff con más cartas:
-  //   lunariStaffDemo(5) → clona las cartas existentes hasta tener 5
-  //   lunariStaffDemo(3) → restaura las originales
-  const grid = document.querySelector<HTMLElement>(".admin-grid");
-  (window as any).lunariStaffDemo = (n = 5) => {
-    if (!grid) return "no hay grid";
-    grid.querySelectorAll("[data-demo]").forEach((el) => el.remove());
-    const bases = Array.from(
-      grid.querySelectorAll<HTMLElement>(".summon-card"),
-    );
-    for (let i = 0; i < n - bases.length; i++) {
-      const clone = bases[i % bases.length].cloneNode(true) as HTMLElement;
-      clone.setAttribute("data-demo", "");
-      clone.removeAttribute("data-summon");
-      clone.classList.add("sm-lit"); // visible aunque la invocación esté armada
-      grid.appendChild(clone);
-    }
-    return `${grid.children.length} cartas en la fila`;
-  };
-  console.info(
-    "[Lunari] Vista previa del staff: lunariStaffDemo(5) · restaurar: lunariStaffDemo(3)",
-  );
+  document.body.scrollTop = document.documentElement.scrollTop = 0;
 </script>
 
 <style>
