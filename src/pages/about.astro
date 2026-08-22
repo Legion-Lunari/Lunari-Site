@@ -1,9 +1,13 @@
 ---
+import type { ImageMetadata } from "astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AdminCard from "../components/AdminCard.astro";
 import Button from "../components/Button.astro";
 import StarSummon from "../components/StarSummon.astro";
 import StaffCard from "../components/StaffCard.astro";
+import BlueImage from "../images/blue-staff-card.jpg";
+import VaeshImage from "../images/vaesh-staff-card.jpg";
+import GreciaImage from "../images/grecia-staff-card.jpg";
 
 const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 const INSTAGRAM_URL = "https://www.instagram.com/legionlunari/";
@@ -12,7 +16,7 @@ const KOFI_URL = "https://ko-fi.com/legionlunari";
 interface AdminData {
   name: string;
   role: string;
-  image: string;
+  image: ImageMetadata;
   imagePosition?: string;
   playstyle: string;
   region: string;
@@ -41,7 +45,7 @@ const admins: AdminData[] = [
   {
     name: "Vaesh",
     role: "Administradora",
-    image: "images/vaesh-staff-card.jpg",
+    image: VaeshImage,
     playstyle: "Agresivo",
     region: "LAN - LAS",
     lanes: "SUPP - JG",
@@ -53,7 +57,8 @@ const admins: AdminData[] = [
   {
     name: "Blueberry",
     role: "Administradora",
-    image: "images/blue-staff-card.jpg",
+    image: BlueImage,
+    imagePosition: "55% 15%",
     playstyle: "Safe - Full Farmeo",
     region: "LAN",
     lanes: "ADC",
@@ -65,7 +70,7 @@ const admins: AdminData[] = [
   {
     name: "Grecia",
     role: "Administradora",
-    image: "images/grecia-staff-card.jpg",
+    image: GreciaImage,
     imagePosition: "65% 50%",
     playstyle: "Agresivo",
     region: "LAN",

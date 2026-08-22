@@ -10,3 +10,6 @@ dist/
 .vercel/
 .netlify/
 .impeccable/
+
+# Wrangler dir
+.wrangler/
