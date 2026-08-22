@@ -1,6 +1,8 @@
 ---
 // AdminCard.astro — carta astral del staff: marco con acento propio, medallón
 // superior, gema inferior, retrato que se funde en la noche y filas talismán.
+import type { ImageMetadata } from "astro";
+import Image from "astro/components/Image.astro";
 
 export interface Props {
   /** Character/display name shown as the big title */
@@ -8,7 +10,7 @@ export interface Props {
   /** Role label under the name (default: "ADMINISTRADORA") */
   role?: string;
   /** Path or URL to the background artwork */
-  image: string;
+  image: ImageMetadata;
   /** CSS object-position for the background image, e.g. "center 15%" */
   imagePosition?: string;
   /** LoL playstyle, e.g. "Agresivo" */
@@ -69,7 +71,7 @@ const pills = [
   <span class="card__spark card__spark--r" aria-hidden="true">+</span>
 
   <div class="card__inner">
-    <img
+    <Image
       class="card__bg"
       src={image}
       alt={name}
@@ -204,10 +206,12 @@ const pills = [
     z-index: 4;
     width: 1.05rem;
     height: 1px;
-    background: linear-gradient(to right,
+    background: linear-gradient(
+      to right,
       transparent,
       color-mix(in srgb, var(--accent) 75%, transparent) 50%,
-      transparent);
+      transparent
+    );
   }
   .card__tick::after {
     content: "";
@@ -220,10 +224,26 @@ const pills = [
     background: var(--accent);
     box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 80%, transparent);
   }
-  .card__tick--tl { top: 0.95rem; left: 0.55rem; transform: rotate(-45deg); }
-  .card__tick--tr { top: 0.95rem; right: 0.55rem; transform: rotate(45deg); }
-  .card__tick--bl { bottom: 0.95rem; left: 0.55rem; transform: rotate(45deg); }
-  .card__tick--br { bottom: 0.95rem; right: 0.55rem; transform: rotate(-45deg); }
+  .card__tick--tl {
+    top: 0.95rem;
+    left: 0.55rem;
+    transform: rotate(-45deg);
+  }
+  .card__tick--tr {
+    top: 0.95rem;
+    right: 0.55rem;
+    transform: rotate(45deg);
+  }
+  .card__tick--bl {
+    bottom: 0.95rem;
+    left: 0.55rem;
+    transform: rotate(45deg);
+  }
+  .card__tick--br {
+    bottom: 0.95rem;
+    right: 0.55rem;
+    transform: rotate(-45deg);
+  }
 
   /* Destellos flotando junto al marco */
   .card__spark {
@@ -246,11 +266,20 @@ const pills = [
     animation-delay: 1.5s;
   }
   @keyframes cardSparkTwinkle {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.45; transform: scale(0.82); }
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.45;
+      transform: scale(0.82);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .card__spark { animation: none; }
+    .card__spark {
+      animation: none;
+    }
   }
 
   /* Retrato: ocupa la mitad superior y se funde hacia el cuerpo oscuro */
@@ -272,14 +301,18 @@ const pills = [
     inset: 0;
     z-index: 1;
     background:
-      radial-gradient(90% 45% at 50% 0%,
+      radial-gradient(
+        90% 45% at 50% 0%,
         color-mix(in srgb, var(--overlay-color) 28%, transparent) 0%,
-        transparent 70%),
-      linear-gradient(to bottom,
+        transparent 70%
+      ),
+      linear-gradient(
+        to bottom,
         transparent 34%,
         rgba(13, 13, 36, 0.5) 50%,
         #10102b 62%,
-        #0d0d24 100%);
+        #0d0d24 100%
+      );
     transition: background 0.6s ease;
   }
 
@@ -358,7 +391,9 @@ const pills = [
     width: clamp(0.7rem, 3cqw, 1.1rem);
     height: clamp(0.7rem, 3cqw, 1.1rem);
     color: var(--accent);
-    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 70%, transparent));
+    filter: drop-shadow(
+      0 0 4px color-mix(in srgb, var(--accent) 70%, transparent)
+    );
   }
 
   .pill__value {
@@ -389,12 +424,18 @@ const pills = [
     content: "";
     height: 1px;
     width: 2.2em;
-    background: linear-gradient(to right,
-      transparent, color-mix(in srgb, var(--accent) 55%, transparent));
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--accent) 55%, transparent)
+    );
   }
   .card__confession h2::after {
-    background: linear-gradient(to left,
-      transparent, color-mix(in srgb, var(--accent) 55%, transparent));
+    background: linear-gradient(
+      to left,
+      transparent,
+      color-mix(in srgb, var(--accent) 55%, transparent)
+    );
   }
 
   .card__confession p {
