@@ -13,3 +13,4 @@ dist/
 
 # Wrangler dir
 .wrangler/
+.dev.vars
