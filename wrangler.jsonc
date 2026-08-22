@@ -3,5 +3,21 @@
   "compatibility_date": "2026-08-16",
   "assets": {
     "directory": "./dist"
+  },
+  "d1_databases": [
+    {
+      "binding": "legion_lunari_houses",
+      "database_name": "legion-lunari-houses",
+      "database_id": "4ecc84e1-7b74-4cc8-a9c0-0267b91300d4"
+    }
+  ],
+  "vars": {
+    "DISCORD_CLIENT_ID": "1540614329932587109",
+    "DISCORD_REDIRECT_URI": "https://legionlunari.org/api/auth/discord/callback",
+    "DISCORD_GUILD_ID": "1535019112734920704",
+    "ROLE_ID_REA": "1540791884694159410",
+    "ROLE_ID_JANO": "1540791912980545536",
+    "ROLE_ID_FEBE": "1540791926134153237",
+    "ROLE_ID_DIONE": "1540791951417278506"
   }
 }
