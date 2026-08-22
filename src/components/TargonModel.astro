@@ -176,12 +176,14 @@ const { src = "/models/mount-targon.glb", class: cls = "" } = Astro.props;
           loader.classList.add("is-hidden");
           resize();
           animate();
+          document.dispatchEvent(new Event("targon:ready"));
         },
         undefined,
         (err) => {
           console.error("[Targon] error cargando modelo", err);
           loader.querySelector(".targon__loader-text")!.textContent =
             "No se pudo invocar el monte";
+          document.dispatchEvent(new Event("targon:ready"));
         },
       );
 
