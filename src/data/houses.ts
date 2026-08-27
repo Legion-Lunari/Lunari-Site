@@ -22,7 +22,7 @@ export const houses: House[] = [
     epiteto: "Las Valientes",
     lema: "El coraje de quienes hacen historia.",
     rasgos: ["Valentía", "Tenacidad", "Iniciativa"],
-    color: "var(--violet-600)",
+    color: "#ff6a2e",
     simbolo: "🌕",
     descripcion: [
       "Hija de Febe, en tu espíritu arde una llama indomable. Eres valiente, competitiva y desafiante, alguien que no conoce el significado de rendirse. Mientras otros se detienen ante el miedo, tú lo enfrentas. Esa fuerza interior te vuelve adaptable: no importa qué tan grande sea el reto, encuentras la manera de seguir adelante.",
@@ -36,7 +36,7 @@ export const houses: House[] = [
     epiteto: "Las Amables",
     lema: "Incluso en la noche más oscura, enciende la esperanza.",
     rasgos: ["Empatía", "Altruismo", "Lealtad"],
-    color: "var(--celeste-400)",
+    color: "#f5b942",
     simbolo: "🌙",
     descripcion: [
       "Hija de Rea, tu corazón es tu fuerza y tu brújula. Eres empática, altruista y protectora; sientes profundamente el dolor de los demás y tu instinto natural es dar refugio, apoyo y calma. Prefieres trabajar en equipo antes que en solitario, y casi siempre pones las necesidades de otros por encima de las tuyas.",
@@ -50,7 +50,7 @@ export const houses: House[] = [
     epiteto: "Las Inteligentes",
     lema: "Nunca camina a ciegas: ya pensó todos los caminos.",
     rasgos: ["Análisis", "Estrategia", "Lógica"],
-    color: "var(--royal-700)",
+    color: "#4fc8f0",
     simbolo: "🌑",
     descripcion: [
       "Hija de Dione, tu esencia es la de quien nunca deja de cuestionar. Eres observadora, analítica y calculadora; rara vez te dejas llevar solo por las emociones, prefieres entender los hechos, los patrones y la lógica detrás de todo. Te caracteriza una ambición tranquila: no buscas brillar por vanidad, sino por la necesidad de comprender y crecer.",
@@ -64,7 +64,7 @@ export const houses: House[] = [
     epiteto: "Las Creativas",
     lema: "Sueña futuros donde nadie más los ve.",
     rasgos: ["Imaginación", "Originalidad", "Ingenio"],
-    color: "var(--lavender-400)",
+    color: "#9b7cf0",
     simbolo: "🌗",
     descripcion: [
       "Hija de Jano, tu don es la imaginación. Eres soñadora, idealista y apasionada, capaz de ver posibilidades donde otros solo ven límites. No te basta con lo que existe: necesitas inventar, transformar y dar vida a nuevas ideas. Vives con un pie en la realidad y otro en el mundo de los sueños, y de esa dualidad nace tu magia.",

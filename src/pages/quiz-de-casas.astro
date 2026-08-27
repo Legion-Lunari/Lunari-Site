@@ -178,6 +178,7 @@ const quizData = {
           <p class="reveal__desc"></p>
         </div>
         <div class="reveal__cap reveal__cap--final" data-rslot="final" data-cap>
+          <h2 class="reveal__name display"></h2>
           <ul class="reveal__rasgos"></ul>
           <div class="reveal__actions">
             {
@@ -534,8 +535,9 @@ const quizData = {
 
   function fillReveal(h: House) {
     revealSection.style.setProperty("--house-color", h.color);
-    revealSection.querySelector<HTMLElement>(".reveal__name")!.textContent =
-      h.nombre;
+    revealSection
+      .querySelectorAll<HTMLElement>(".reveal__name")
+      .forEach((el) => (el.textContent = h.nombre));
     revealSection.querySelector<HTMLElement>(".reveal__epiteto")!.textContent =
       h.epiteto;
     revealSection.querySelector<HTMLElement>(".reveal__lema")!.textContent =
@@ -1632,6 +1634,10 @@ const quizData = {
   }
   .reveal__cap--final .reveal__actions {
     justify-content: center;
+  }
+  .reveal__cap--final .reveal__name {
+    font-size: var(--step-2);
+    margin-bottom: 1rem;
   }
   .reveal__actions {
     display: flex;

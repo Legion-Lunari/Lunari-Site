@@ -19,7 +19,9 @@ const {
   aria-hidden="true"
 >
   <canvas class="reveal3d__canvas"></canvas>
-  <div class="reveal3d__logo" data-reveal-logo></div>
+  <div class="reveal3d__logo" data-reveal-logo>
+    <div class="reveal3d__logo-mark"></div>
+  </div>
   <div class="reveal3d__scrim"></div>
   <div class="reveal3d__loader" data-reveal-loader>
     <span class="reveal3d__ring"></span>
@@ -73,12 +75,28 @@ const {
   .reveal3d__logo.is-shown {
     opacity: 1;
   }
-  .reveal3d__logo :global(img) {
+  .reveal3d__logo-mark {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    filter: invert(1)
-      drop-shadow(0 0 26px var(--house-color, var(--celeste-400)));
+    background: radial-gradient(
+      circle at 35% 30%,
+      color-mix(in srgb, var(--house-color, var(--celeste-400)) 70%, white) 0%,
+      var(--house-color, var(--celeste-400)) 55%,
+      var(--house-color, var(--celeste-400)) 55%
+    );
+    -webkit-mask-image: var(--logo-src);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-image: var(--logo-src);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    filter: drop-shadow(
+        0 0 12px
+          color-mix(in srgb, var(--house-color, var(--celeste-400)) 85%, white)
+      )
+      drop-shadow(0 0 34px var(--house-color, var(--celeste-400)));
     animation: revealLogoFloat 6s ease-in-out infinite;
   }
   @keyframes revealLogoFloat {
@@ -147,7 +165,7 @@ const {
     .reveal3d__ring {
       animation: none;
     }
-    .reveal3d__logo :global(img) {
+    .reveal3d__logo-mark {
       animation: none;
     }
   }
@@ -161,6 +179,9 @@ const {
     const canvas = root.querySelector<HTMLCanvasElement>(".reveal3d__canvas")!;
     const loaderEl = root.querySelector<HTMLElement>("[data-reveal-loader]")!;
     const logoEl = root.querySelector<HTMLElement>("[data-reveal-logo]")!;
+    const logoMarkEl = logoEl.querySelector<HTMLElement>(
+      ".reveal3d__logo-mark",
+    )!;
     const inclinedSrc = root.dataset.incl!;
     const peakSrc = root.dataset.peak!;
 
@@ -203,8 +224,11 @@ const {
     });
     window.addEventListener("reveal:house", (ev: Event) => {
       const d = (ev as CustomEvent).detail || {};
-      if (d.color) houseColor = d.color;
-      if (d.logo) logoEl.innerHTML = `<img src="${d.logo}" alt="" />`;
+      if (d.color) {
+        houseColor = d.color;
+        root!.style.setProperty("--house-color", d.color);
+      }
+      if (d.logo) logoMarkEl.style.setProperty("--logo-src", `url(${d.logo})`);
       ref.applyHouse();
     });
     window.addEventListener("reveal:progress", (ev: Event) => {
