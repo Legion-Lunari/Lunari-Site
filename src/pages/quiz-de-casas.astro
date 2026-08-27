@@ -1,4 +1,6 @@
 ---
+import { env } from "cloudflare:workers";
+import { readHouseSession } from "../lib/discord/session";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import TargonClimb from "../components/TargonClimb.astro";
 import HouseReveal from "../components/HouseReveal.astro";
@@ -6,6 +8,8 @@ import { houses, questions } from "../data/houses";
 import { ascentPoses } from "../data/ascent";
 import { revealPoses, peakPose } from "../data/reveal";
 import Button from "../components/Button.astro";
+
+export const prerender = false;
 
 const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 
@@ -17,6 +21,23 @@ const logos: Record<string, string> = {
   jano: "/logos/Jano.svg",
 };
 
+const session = await readHouseSession(Astro.cookies, env.SESSION_SECRET);
+let claimedHouse: (typeof houses)[number] | null = null;
+if (session) {
+  const row = await env.legionLunariHouses
+    .prepare("SELECT house FROM house_claims WHERE discord_id = ?")
+    .bind(session.discordId)
+    .first<{ house: string }>();
+
+  if (row) claimedHouse = houses.find((h) => h.id === row.house) ?? null;
+}
+
+const joinRequired = Astro.url.searchParams.get("join_required") === "1";
+const pendingHouse =
+  houses.find((h) => h.id === Astro.url.searchParams.get("house")) ?? null;
+const authError = Astro.url.searchParams.get("auth_error") === "1";
+const noClaim = Astro.url.searchParams.get("no_claim") === "1";
+
 // Datos que el script del cliente necesita
 const quizData = {
   houses,
@@ -25,6 +46,7 @@ const quizData = {
   revealPoses,
   peakPose,
   logos,
+  claimedHouseId: claimedHouse?.id ?? null,
 };
 ---
 
@@ -38,22 +60,68 @@ const quizData = {
   <!-- Bruma en movimiento (Vanta FOG) sólo para el intro -->
   <div class="quiz-fog" id="quiz-fog" aria-hidden="true"></div>
 
-  <section class="quiz section" aria-live="polite">
+  {
+    !claimedHouse && joinRequired && pendingHouse && (
+      <div class="quiz-banner">
+        <p>
+          La luna reconoció tu camino hacia <b>{pendingHouse.nombre}</b>, pero
+          aún no te encuentra en nuestro Discord.
+        </p>
+
+        <Button href={DISCORD_URL} variant="talisman">
+          Unirme al Discord
+        </Button>
+
+        <Button
+          href={`/api/auth/discord/start?house=${pendingHouse.id}`}
+          variant="talisman-ghost"
+        >
+          Ya me uní, continuar
+        </Button>
+      </div>
+    )
+  }
+
+  {
+    !claimedHouse && authError && (
+      <div class="quiz-banner">
+        <p>Algo salió mal validando tu cuenta de Discord. Intenta de nuevo.</p>
+      </div>
+    )
+  }
+
+  {
+    !claimedHouse && noClaim && (
+      <div class="quiz-banner">
+        <p>Aun no has reclamado ninguna casa, completa el ritual primero.</p>
+      </div>
+    )
+  }
+
+  <section class="quiz section" aria-live="polite" hidden={!!claimedHouse}>
     <div class="wrap quiz__wrap">
       <!-- Intro -->
       <div class="quiz-panel quiz-intro is-active" data-panel="intro">
         <p class="eyebrow">El ascenso a Targon</p>
+
         <h1 class="display quiz-intro__title">Descubre tu casa</h1>
+
         <p class="lede quiz-intro__lede">
           Cuatro casas nacieron en las laderas del Monte Targon: las Valientes,
           las Amables, las Inteligentes y las Creativas. Asciende paso a paso y
           la montaña revelará a cuál perteneces.
         </p>
+
         <p class="quiz-intro__meta">13 preguntas · 3 minutos</p>
+
         <Button class="quiz-start">
           Comenzar el ascenso <span aria-hidden="true" slot="right-icon">✦</span
           >
         </Button>
+
+        <a href="/api/auth/discord/start" class="quiz-recover">
+          ¿Ya reclamaste tu casa? Inicia sesión con Discord
+        </a>
       </div>
 
       <!-- Preguntas -->
@@ -78,11 +146,22 @@ const quizData = {
   </section>
 
   <!-- Revelado de la casa (scroll) -->
-  <section class="reveal" id="reveal" hidden aria-live="polite">
+  <section
+    class={`reveal${claimedHouse ? " is-tuning" : ""}`}
+    id="reveal"
+    hidden={!claimedHouse}
+    aria-live="polite"
+  >
     <div class="reveal__pin">
       <div class="reveal__stages">
         <div class="reveal__cap" data-rslot="name" data-cap>
-          <p class="reveal__kicker">La luna te ha revelado tu casa…</p>
+          <p class="reveal__kicker">
+            {
+              claimedHouse
+                ? "Ya perteneces a"
+                : "La luna te ha revelado tu casa…"
+            }
+          </p>
           <h2 class="reveal__name display">&nbsp;</h2>
           <p class="reveal__epiteto"></p>
         </div>
@@ -101,15 +180,30 @@ const quizData = {
         <div class="reveal__cap reveal__cap--final" data-rslot="final" data-cap>
           <ul class="reveal__rasgos"></ul>
           <div class="reveal__actions">
-            <Button href={DISCORD_URL} variant="talisman">
-              Unirme a mi casa en Discord <span
-                aria-hidden="true"
-                slot="right-icon">→</span
-              >
-            </Button>
-            <Button class="quiz-retry" variant="talisman-ghost"
-              >Repetir el ritual</Button
-            >
+            {
+              claimedHouse ? (
+                <Button href={DISCORD_URL} variant="talisman">
+                  Abrir Discord{" "}
+                  <span aria-hidden="true" slot="right-icon">
+                    →
+                  </span>
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    href="/api/auth/discord/start"
+                    variant="talisman"
+                    openInNewTab={false}
+                    class="quiz-claim"
+                  >
+                    Obtener rol de casa en Discord{" "}
+                    <span aria-hidden="true" slot="right-icon">
+                      →
+                    </span>
+                  </Button>
+                </>
+              )
+            }
           </div>
         </div>
       </div>
@@ -270,8 +364,9 @@ const quizData = {
     ascentPoses: Pose[];
     revealPoses: RPose[];
     logos: Record<string, string>;
+    claimedHouseId: string | null;
   };
-  const { houses, questions, logos } = data;
+  const { houses, questions, logos, claimedHouseId } = data;
   const poses: Pose[] = data.ascentPoses || [];
   const revealPoses: RPose[] = data.revealPoses || [];
   const tuneParam = new URLSearchParams(location.search).get("tune");
@@ -549,7 +644,7 @@ const quizData = {
   // Bruma en movimiento (Vanta FOG) para el intro, con opacidad reducida (CSS).
   const fogEl = document.getElementById("quiz-fog");
   let vantaFog: any = null;
-  if (fogEl && !tuneMode) {
+  if (fogEl && !tuneMode && !claimedHouseId) {
     try {
       vantaFog = (FOG as any)({
         el: fogEl,
@@ -569,6 +664,36 @@ const quizData = {
     }
   } else if (fogEl) {
     fogEl.classList.add("is-hidden");
+  }
+
+  if (claimedHouseId) {
+    const h = houses.find((x) => x.id === claimedHouseId);
+    if (h) {
+      fillReveal(h);
+      revealCaps.forEach((cap) => {
+        cap.style.opacity = "0";
+        cap.style.pointerEvents = "none";
+      });
+
+      const finalCap = revealSection.querySelector<HTMLElement>(
+        '[data-rslot="final"]',
+      )!;
+      finalCap.style.opacity = "1";
+      finalCap.style.pointerEvents = "auto";
+      climbEl?.classList.add("is-off");
+      window.dispatchEvent(new CustomEvent("reveal:init"));
+      window.dispatchEvent(
+        new CustomEvent("reveal:active", { detail: { on: true } }),
+      );
+      window.dispatchEvent(
+        new CustomEvent("reveal:house", {
+          detail: { color: resolveColor(h.color), logo: logos[h.id] },
+        }),
+      );
+      window.dispatchEvent(
+        new CustomEvent("reveal:progress", { detail: { p: 1 } }),
+      );
+    }
   }
 
   document.querySelector(".quiz-start")?.addEventListener("click", () => {
@@ -1383,6 +1508,7 @@ const quizData = {
   }
   .reveal.is-tuning .reveal__pin {
     position: relative;
+    overflow-y: auto;
   }
 
   .reveal__stages {
@@ -1580,5 +1706,18 @@ const quizData = {
   :global(.climb.is-off) {
     opacity: 0 !important;
     visibility: hidden;
+  }
+
+  .reveal.is-tuning .reveal__hint {
+    display: none; /* no scroll hint on a screen with nothing to scroll */
+  }
+
+  .quiz-recover {
+    display: block;
+    margin-top: 1rem;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 </style>

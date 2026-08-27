@@ -13,6 +13,6 @@ export default defineConfig({
     allowedHosts: ["involve-shorter-mandate-min.trycloudflare.com"],
   },
 
-  output: "server",
+  output: "static",
   adapter: cloudflare(),
 });

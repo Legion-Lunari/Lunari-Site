@@ -58,8 +58,10 @@ const {
 
   .reveal3d__logo {
     position: absolute;
-    left: 50%; top: 30%;
-    --lx: 0px; --ly: 0px;
+    left: 50%;
+    top: 30%;
+    --lx: 0px;
+    --ly: 0px;
     transform: translate(calc(-50% + var(--lx)), calc(-50% + var(--ly)));
     width: clamp(150px, 19vw, 260px);
     aspect-ratio: 1;
@@ -181,14 +183,18 @@ const {
 
     // El offset del logo se afinó a 1600px; se escala por el ancho del viewport
     // para que acompañe al modelo en cualquier resolución.
-    let logoOffX = 0, logoOffY = 0;
+    let logoOffX = 0,
+      logoOffY = 0;
     function setLogoOffset(x: number, y: number) {
-      logoOffX = x || 0; logoOffY = y || 0;
+      logoOffX = x || 0;
+      logoOffY = y || 0;
       const k = window.innerWidth / 1600;
-      logoEl.style.setProperty('--lx', logoOffX * k + 'px');
-      logoEl.style.setProperty('--ly', logoOffY * k + 'px');
+      logoEl.style.setProperty("--lx", logoOffX * k + "px");
+      logoEl.style.setProperty("--ly", logoOffY * k + "px");
     }
-    window.addEventListener('resize', () => setLogoOffset(logoOffX, logoOffY), { passive: true });
+    window.addEventListener("resize", () => setLogoOffset(logoOffX, logoOffY), {
+      passive: true,
+    });
 
     window.addEventListener("reveal:active", (ev: Event) => {
       active = (ev as CustomEvent).detail?.on !== false;
@@ -317,6 +323,8 @@ const {
         .then((g) => {
           fit(g.scene, 4.6);
           peakGroup.add(g.scene);
+          updateFinal();
+          wake();
         })
         .catch((e) => console.error("[Reveal] peak", e));
 
