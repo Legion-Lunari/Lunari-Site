@@ -13,7 +13,6 @@
   ],
   "vars": {
     "DISCORD_CLIENT_ID": "1540614329932587109",
-    "DISCORD_REDIRECT_URI": "https://legionlunari.org/api/auth/discord/callback",
     "DISCORD_GUILD_ID": "1535019112734920704",
     "ROLE_ID_REA": "1540791884694159410",
     "ROLE_ID_JANO": "1540791912980545536",

@@ -23,12 +23,16 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const state = await readOAuthState(cookies, env.SESSION_SECRET, stateParam);
   if (!state || !code) return redirect("/quiz-de-casas?auth-error=1");
 
+  const redirectUri = new URL(
+    "/api/auth/discord/callback",
+    url.origin,
+  ).toString();
   try {
     const { access_token: accessToken } = await exchangeCode({
       code,
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
-      redirectUri: env.DISCORD_REDIRECT_URI,
+      redirectUri: redirectUri,
     });
 
     const discordUser = await fetchDiscordUser(accessToken);
