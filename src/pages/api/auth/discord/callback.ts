@@ -13,6 +13,16 @@ import {
 
 export const prerender = false;
 
+const VALID_HOUSES = new Set(["febe", "jano", "dione", "rea"]);
+
+const getRoleId = (house: string) =>
+  ({
+    febe: env.ROLE_ID_FEBE,
+    jano: env.ROLE_ID_JANO,
+    dione: env.ROLE_ID_DIONE,
+    rea: env.ROLE_ID_REA,
+  })[house];
+
 export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const code = url.searchParams.get("code");
   const stateParam = url.searchParams.get("state");
@@ -37,57 +47,80 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 
     const discordUser = await fetchDiscordUser(accessToken);
 
-    // we ask what's already on the DB and reuse that if it's populated for the specific user
     const existing = await env.legionLunariHouses
       .prepare("SELECT house from house_claims WHERE discord_id = ? LIMIT 1")
       .bind(discordUser.id)
       .first<{ house: string }>();
-    const house = existing?.house ?? state.house;
 
-    if (!existing) {
-      if (!house) {
-        return redirect("/quiz-de-casas?no_claim=1");
-      }
+    // A stored claim is authoritative. Never let OAuth state or a quiz result
+    // replace it; role assignment is a PUT, so ensuring the existing role is
+    // safely idempotent.
+    if (existing) {
+      const roleId = getRoleId(existing.house);
+      if (!roleId)
+        throw new Error(`invalid stored house claim: ${existing.house}`);
 
       const member = await getGuildMember(
         env.DISCORD_GUILD_ID,
         discordUser.id,
         env.DISCORD_BOT_TOKEN,
       );
-
       if (!member) {
-        return redirect(`/quiz-de-casas?join_required=1&house=${house}`);
+        await setHouseSession(cookies, env.SESSION_SECRET, discordUser.id);
+        return redirect(
+          `/quiz-de-casas?join_required=1&house=${encodeURIComponent(existing.house)}`,
+        );
       }
 
-      await env.legionLunariHouses
-        .prepare(
-          "INSERT INTO house_claims (discord_id, house, discord_username, claimed_at) values (?, ?, ?, ?)",
-        )
-        .bind(discordUser.id, house, discordUser.username, Date.now())
-        .run();
-
-      const roleId = {
-        febe: env.ROLE_ID_FEBE,
-        jano: env.ROLE_ID_JANO,
-        dione: env.ROLE_ID_DIONE,
-        rea: env.ROLE_ID_REA,
-      }[house];
-
-      if (roleId) {
-        try {
-          await assignRole(
-            env.DISCORD_GUILD_ID,
-            discordUser.id,
-            roleId,
-            env.DISCORD_BOT_TOKEN,
-          );
-        } catch (e) {
-          console.error("[discord role assign]", e);
-        }
-      }
+      await assignRole(
+        env.DISCORD_GUILD_ID,
+        discordUser.id,
+        roleId,
+        env.DISCORD_BOT_TOKEN,
+      );
+      await setHouseSession(cookies, env.SESSION_SECRET, discordUser.id);
+      return redirect("/quiz-de-casas?claimed=1&existing_claim=1");
     }
 
-    await setHouseSession(cookies, env.SESSION_SECRET, discordUser.id, house!);
+    const requestedHouse = state.house;
+    if (!requestedHouse || !VALID_HOUSES.has(requestedHouse)) {
+      // This is the house-less recovery flow. A session can still be useful to
+      // identify the Discord account, but it does not create a claim.
+      await setHouseSession(cookies, env.SESSION_SECRET, discordUser.id);
+      return redirect("/quiz-de-casas?no_claim=1");
+    }
+
+    const member = await getGuildMember(
+      env.DISCORD_GUILD_ID,
+      discordUser.id,
+      env.DISCORD_BOT_TOKEN,
+    );
+    if (!member) {
+      return redirect(
+        `/quiz-de-casas?join_required=1&house=${encodeURIComponent(requestedHouse)}`,
+      );
+    }
+
+    const roleId = getRoleId(requestedHouse);
+    if (!roleId)
+      throw new Error(`missing role configuration for ${requestedHouse}`);
+
+    // First-time claim: assign the verified house role, then persist it. The
+    // primary key on discord_id prevents duplicate rows on a later same-house claim.
+    await assignRole(
+      env.DISCORD_GUILD_ID,
+      discordUser.id,
+      roleId,
+      env.DISCORD_BOT_TOKEN,
+    );
+    await env.legionLunariHouses
+      .prepare(
+        "INSERT INTO house_claims (discord_id, house, discord_username, claimed_at) values (?, ?, ?, ?)",
+      )
+      .bind(discordUser.id, requestedHouse, discordUser.username, Date.now())
+      .run();
+
+    await setHouseSession(cookies, env.SESSION_SECRET, discordUser.id);
     return redirect(`/quiz-de-casas?claimed=1`);
   } catch (e) {
     console.error("[discord oauth callback]", e);

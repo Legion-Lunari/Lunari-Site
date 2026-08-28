@@ -37,6 +37,7 @@ const pendingHouse =
   houses.find((h) => h.id === Astro.url.searchParams.get("house")) ?? null;
 const authError = Astro.url.searchParams.get("auth_error") === "1";
 const noClaim = Astro.url.searchParams.get("no_claim") === "1";
+const existingClaim = Astro.url.searchParams.get("existing_claim") === "1";
 
 // Datos que el script del cliente necesita
 const quizData = {
@@ -92,8 +93,35 @@ const quizData = {
 
   {
     !claimedHouse && noClaim && (
-      <div class="quiz-banner">
+      <div class="quiz-banner" role="status" aria-live="polite">
+        <div class="quiz-banner-icon" aria-hidden="true">
+          ☾
+        </div>
+
         <p>Aun no has reclamado ninguna casa, completa el ritual primero.</p>
+
+        <div class="quiz-banner-progress" aria-hidden="true">
+          <span />
+        </div>
+      </div>
+    )
+  }
+
+  {
+    claimedHouse && existingClaim && (
+      <div class="quiz-banner" role="status" aria-live="polite">
+        <div class="quiz-banner-icon" aria-hidden="true">
+          ☾
+        </div>
+
+        <p>
+          Ya perteneces a <b>{claimedHouse.nombre}</b>. Tu casa reclamada no
+          cambia al repetir el ritual.
+        </p>
+
+        <div class="quiz-banner-progress" aria-hidden="true">
+          <span />
+        </div>
       </div>
     )
   }
@@ -423,6 +451,8 @@ const quizData = {
     );
   }
 
+  const claimButton = document.querySelector<HTMLAnchorElement>(".quiz-claim");
+
   const panels = {
     intro: document.querySelector<HTMLElement>('[data-panel="intro"]')!,
     questions: document.querySelector<HTMLElement>('[data-panel="questions"]')!,
@@ -511,6 +541,15 @@ const quizData = {
         winner = h;
       }
     }
+
+    claimButton?.setAttribute(
+      "href",
+      `/api/auth/discord/start?house=${encodeURIComponent(winner.id)}`,
+    );
+
+    console.log("[quiz] winner:", winner.id);
+    console.log("[quiz] claim URL:", claimButton?.getAttribute("href"));
+
     showReveal(winner);
   }
 
@@ -1787,5 +1826,181 @@ const quizData = {
     color: var(--text-muted);
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .quiz-banner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 50;
+
+    width: min(calc(100vw - 2rem), 34rem);
+    padding: 1.75rem 2rem 1.5rem;
+
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    text-align: center;
+
+    background:
+      radial-gradient(
+        circle at 50% 0%,
+        rgba(139, 92, 246, 0.16),
+        transparent 55%
+      ),
+      rgba(10, 11, 35, 0.9);
+
+    border: 1px solid rgba(183, 169, 255, 0.32);
+    border-radius: 1.25rem;
+
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.025) inset,
+      0 25px 80px rgba(0, 0, 0, 0.55),
+      0 0 45px rgba(139, 92, 246, 0.12);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    animation:
+      quizBannerIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both,
+      quizBannerOut 0.5s ease 4.5s forwards;
+
+    pointer-events: none;
+  }
+
+  .quiz-banner::before {
+    content: "";
+
+    position: absolute;
+    top: -1px;
+    left: 15%;
+    right: 15%;
+
+    height: 1px;
+
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(183, 169, 255, 0.7),
+      transparent
+    );
+
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.45);
+  }
+
+  /* ───── Lunar icon ───── */
+
+  .quiz-banner-icon {
+    display: grid;
+    place-items: center;
+
+    width: 3.25rem;
+    height: 3.25rem;
+
+    color: var(--moonlight);
+    font-size: 1.8rem;
+    line-height: 1;
+
+    border: 1px solid rgba(183, 169, 255, 0.4);
+    border-radius: 50%;
+
+    background: rgba(139, 92, 246, 0.1);
+
+    box-shadow:
+      0 0 25px rgba(139, 92, 246, 0.18),
+      inset 0 0 20px rgba(139, 92, 246, 0.08);
+  }
+
+  /* ───── Message ───── */
+
+  .quiz-banner p {
+    margin: 0;
+
+    color: var(--moonlight);
+
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 0.9rem + 0.35vw, 1.2rem);
+    line-height: 1.55;
+
+    text-shadow: 0 2px 18px rgba(6, 7, 26, 0.7);
+  }
+
+  /* ───── Countdown bar ───── */
+
+  .quiz-banner-progress {
+    width: min(100%, 18rem);
+    height: 3px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: rgba(183, 169, 255, 0.12);
+  }
+
+  .quiz-banner-progress span {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    transform-origin: left;
+
+    background: linear-gradient(
+      90deg,
+      var(--lavender-400),
+      var(--lavender-200)
+    );
+
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+
+    animation: quizBannerProgress 5s linear forwards;
+  }
+
+  /* ───── Animations ───── */
+
+  @keyframes quizBannerIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 18px)) scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  @keyframes quizBannerOut {
+    from {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% - 10px)) scale(0.98);
+    }
+  }
+
+  @keyframes quizBannerProgress {
+    from {
+      transform: scaleX(1);
+    }
+
+    to {
+      transform: scaleX(0);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .quiz-banner {
+      width: calc(100vw - 2rem);
+      padding: 1.5rem 1.25rem 1.25rem;
+    }
   }
 </style>

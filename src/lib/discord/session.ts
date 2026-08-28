@@ -40,7 +40,7 @@ export const readOAuthState = async (
   if (!token || !incomingState || token !== incomingState) return null;
 
   const payload = await verifyPayload<{
-    house: string;
+    house: string | null;
     nonce: string;
     exp: number;
   }>(token, secret);
@@ -54,9 +54,10 @@ export const setHouseSession = async (
   cookies: AstroCookies,
   secret: string,
   discordId: string,
-  house: string,
 ) => {
-  const token = await signPayload({ discordId, house }, secret);
+  // The database is the claim source of truth; this cookie only identifies the
+  // Discord user whose stored claim may be restored.
+  const token = await signPayload({ discordId }, secret);
   cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: secureCookies,
@@ -73,5 +74,5 @@ export const readHouseSession = async (
   const token = cookies.get(SESSION_COOKIE)?.value;
   if (!token) return null;
 
-  return verifyPayload<{ discordId: string; house: string }>(token, secret);
+  return verifyPayload<{ discordId: string }>(token, secret);
 };
