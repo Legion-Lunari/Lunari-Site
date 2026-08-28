@@ -854,6 +854,47 @@ const quizData = {
       }),
     );
 
+    const previewHouse = (h: House) => {
+      fillReveal(h);
+      revealSection.style.setProperty("--house-color", h.color);
+      window.dispatchEvent(
+        new CustomEvent("reveal:house", {
+          detail: { color: resolveColor(h.color), logo: logos[h.id] },
+        }),
+      );
+    };
+
+    const houseSwitcher = document.createElement("div");
+    houseSwitcher.className = "tune__row tune__row--houses";
+    houseSwitcher.innerHTML = houses
+      .map(
+        (h) =>
+          `<button type="button" class="tune__house-btn" data-house="${h.id}">${h.nombre.replace("Casa ", "")}</button>`,
+      )
+      .join("");
+
+    panel
+      .querySelector(".tune__head")!
+      .insertAdjacentElement("afterend", houseSwitcher);
+
+    houseSwitcher
+      .querySelector(`[data-house="${houses[0].id}"]`)
+      ?.classList.add("is-active");
+    houseSwitcher.addEventListener("click", (ev) => {
+      const btn = (ev.target as HTMLElement).closest<HTMLElement>(
+        "[data-house]",
+      );
+
+      if (!btn) return;
+
+      const h = houses.find((x) => x.id === btn.dataset.house);
+      if (h) previewHouse(h);
+
+      houseSwitcher
+        .querySelectorAll(".tune__house-btn")
+        .forEach((b) => b.classList.toggle("is-active", b === btn));
+    });
+
     // Pasos = revelado + 1 paso extra para el modelo FINAL (Peak Targon + logo).
     const peakPose = data.peakPose as RPose;
     const steps: RPose[] = [...revealPoses, peakPose];
@@ -1488,6 +1529,27 @@ const quizData = {
   }
   .tune__hint code {
     color: var(--lavender-200);
+  }
+  .tune__row--houses {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    flex-wrap: wrap;
+  }
+  .tune__house-btn {
+    font: inherit;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .tune__house-btn.is-active {
+    background: var(--lavender-400);
+    color: #14101f;
+    border-color: transparent;
   }
 
   /* Revelado de la casa (scroll) */
