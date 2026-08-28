@@ -7,6 +7,10 @@ interface ExchangeCodeOpts {
   redirectUri: string;
 }
 
+export interface DiscordGuildMember {
+  roles: string[];
+}
+
 export const exchangeCode = async (opts: ExchangeCodeOpts) => {
   const body = new URLSearchParams({
     client_id: opts.clientId,
@@ -49,7 +53,7 @@ export const getGuildMember = async (
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`fetch guild member failed: ${res.status}`);
 
-  return res.json();
+  return res.json() as Promise<DiscordGuildMember>;
 };
 
 export const assignRole = async (

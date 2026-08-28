@@ -23,6 +23,12 @@ const getRoleId = (house: string) =>
     rea: env.ROLE_ID_REA,
   })[house];
 
+const getHouseFromMemberRoles = (roleIds: string[]) =>
+  (["febe", "jano", "dione", "rea"] as const).find((house) => {
+    const roleId = getRoleId(house);
+    return roleId ? roleIds.includes(roleId) : false;
+  }) ?? null;
+
 export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const code = url.searchParams.get("code");
   const stateParam = url.searchParams.get("state");
@@ -84,8 +90,28 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 
     const requestedHouse = state.house;
     if (!requestedHouse || !VALID_HOUSES.has(requestedHouse)) {
-      // This is the house-less recovery flow. A session can still be useful to
-      // identify the Discord account, but it does not create a claim.
+      // House-less recovery can import a legacy Discord role once, but only
+      // when no D1 claim exists (the existing-claim branch returned above).
+      const member = await getGuildMember(
+        env.DISCORD_GUILD_ID,
+        discordUser.id,
+        env.DISCORD_BOT_TOKEN,
+      );
+      const roleHouse = member ? getHouseFromMemberRoles(member.roles) : null;
+
+      if (roleHouse) {
+        await env.legionLunariHouses
+          .prepare(
+            "INSERT INTO house_claims (discord_id, house, discord_username, claimed_at) values (?, ?, ?, ?)",
+          )
+          .bind(discordUser.id, roleHouse, discordUser.username, Date.now())
+          .run();
+        await setHouseSession(cookies, env.SESSION_SECRET, discordUser.id);
+        return redirect("/quiz-de-casas?claimed=1&recovered_role=1");
+      }
+
+      // No stored claim and no matching Discord role: authenticate without
+      // assigning a role or creating a claim.
       await setHouseSession(cookies, env.SESSION_SECRET, discordUser.id);
       return redirect("/quiz-de-casas?no_claim=1");
     }
