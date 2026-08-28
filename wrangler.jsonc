@@ -18,5 +18,20 @@
     "ROLE_ID_JANO": "1540791912980545536",
     "ROLE_ID_FEBE": "1540791926134153237",
     "ROLE_ID_DIONE": "1540791951417278506"
+  },
+  "observability": {
+    "enabled": false,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": false,
+      "persist": true,
+      "head_sampling_rate": 1
+    }
   }
 }
