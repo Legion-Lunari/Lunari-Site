@@ -211,8 +211,12 @@ const quizData = {
           <div class="reveal__actions">
             {
               claimedHouse ? (
-                <Button href={DISCORD_URL} variant="talisman">
-                  Abrir Discord{" "}
+                <Button
+                  href={`/casas/${claimedHouse.id}`}
+                  variant="talisman"
+                  openInNewTab={false}
+                >
+                  Aprende más de tu casa{" "}
                   <span aria-hidden="true" slot="right-icon">
                     →
                   </span>
