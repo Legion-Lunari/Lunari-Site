@@ -1,0 +1,267 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { houses } from "../../data/houses";
+
+const houseLogos: Record<string, string> = {
+  febe: "/logos/Febe.svg",
+  rea: "/logos/Rea.svg",
+  dione: "/logos/Dione.svg",
+  jano: "/logos/Jano.svg",
+};
+---
+
+<BaseLayout
+  title="Casas - Legión Lunari"
+  description="Conoce las cuatro casas de Legión Lunari y encuentra la tuya."
+>
+  <section class="houses section">
+    <div class="wrap">
+      <header class="houses__heading">
+        <h1 class="display">Las casas de la luna</h1>
+        <p class="lede">
+          Cada casa guarda una luz distinta. Entra a sus crónicas y conoce a las
+          invocadoras que comparten tu esencia.
+        </p>
+        <a
+          href="#house-grid"
+          class="houses__scroll"
+          aria-label="Ver las casas"
+        ><span></span></a>
+      </header>
+
+      <div class="houses__grid" id="house-grid">
+        {
+          houses.map((house) => (
+            <a
+              href={`/casas/${house.id}`}
+              class="house-link"
+              style={`--house-color: ${house.color}`}
+              aria-label={`Conocer ${house.nombre}`}
+            >
+              <img
+                class="house-link__crest"
+                src={houseLogos[house.id]}
+                alt=""
+              />
+              <span class="house-link__epithet">{house.epiteto}</span>
+              <h2>{house.nombre}</h2>
+              <span class="house-link__motto">{house.lema}</span>
+              <ul
+                class="house-link__traits"
+                aria-label={`Rasgos de ${house.nombre}`}
+              >
+                {house.rasgos.map((trait) => (
+                  <li>{trait}</li>
+                ))}
+              </ul>
+              <span class="house-link__cta">
+                Conocer la casa <span aria-hidden="true">→</span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .houses {
+    padding-top: calc(var(--nav-h) + var(--space-section));
+  }
+  .houses__heading {
+    max-width: 44rem;
+    margin-bottom: clamp(2.5rem, 6vw, 5rem);
+  }
+  .houses__heading .lede {
+    margin-top: 1.2rem;
+  }
+  .houses__scroll {
+    position: relative;
+    display: grid;
+    width: 1.625rem;
+    height: 2.625rem;
+    justify-items: center;
+    margin-top: 2.8rem;
+    padding-top: 0.5rem;
+    border: 1.5px solid
+      color-mix(in srgb, var(--celeste-400) 65%, transparent);
+    border-radius: 999px;
+  }
+  .houses__scroll::before {
+    position: absolute;
+    inset: -0.85rem;
+    border-radius: 999px;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--celeste-400) 35%, transparent),
+      transparent 70%
+    );
+    content: "";
+    animation: scrollHalo 2.4s var(--ease-out) infinite;
+  }
+  .houses__scroll::after {
+    position: absolute;
+    top: -1.35rem;
+    left: 50%;
+    color: color-mix(in srgb, var(--celeste-400) 75%, white);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-shadow: 0 0 8px color-mix(in srgb, var(--celeste-400) 60%, transparent);
+    text-transform: uppercase;
+    transform: translateX(-50%);
+    content: "Desliza";
+    animation: scrollLabel 2.4s ease-in-out infinite;
+  }
+  .houses__scroll span {
+    width: 0.3rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--celeste-400);
+    box-shadow: 0 0 12px var(--celeste-400);
+    animation: scrollDot 1.6s var(--ease-out) infinite;
+  }
+  .houses__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+  .house-link {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto auto;
+    justify-items: start;
+    min-height: 24rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--house-color) 42%, var(--border));
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(
+        circle at 100% 0%,
+        color-mix(in srgb, var(--house-color) 22%, transparent),
+        transparent 48%
+      ),
+      linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--surface) 96%, transparent),
+        color-mix(in srgb, var(--house-color) 8%, var(--surface))
+      );
+    box-shadow: var(--shadow-card);
+    transition:
+      transform 0.3s var(--ease-out),
+      border-color 0.3s var(--ease-out),
+      box-shadow 0.3s var(--ease-out);
+  }
+  .house-link:hover {
+    transform: translateY(-0.35rem);
+    border-color: var(--house-color);
+    box-shadow: 0 25px 65px -35px
+      color-mix(in srgb, var(--house-color) 68%, transparent);
+  }
+  .house-link__crest {
+    width: clamp(4.5rem, 9vw, 6.5rem);
+    margin-bottom: 1.1rem;
+    filter: drop-shadow(
+      0 0 20px color-mix(in srgb, var(--house-color) 55%, transparent)
+    );
+  }
+  .house-link__epithet,
+  .house-link__cta {
+    color: var(--house-color);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .house-link h2 {
+    margin-top: 0.2rem;
+    font-size: var(--step-2);
+  }
+  .house-link__motto {
+    margin-top: 0.65rem;
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-style: italic;
+    line-height: 1.25;
+  }
+  .house-link__traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 0;
+    margin: 1.5rem 0;
+    list-style: none;
+  }
+  .house-link__traits li {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid color-mix(in srgb, var(--house-color) 55%, transparent);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: var(--step--1);
+  }
+  .house-link__cta {
+    display: inline-flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin-top: auto;
+  }
+  .house-link__cta span {
+    font-size: 1.25em;
+    transition: transform 0.3s var(--ease-out);
+  }
+  .house-link:hover .house-link__cta span {
+    transform: translateX(0.25rem);
+  }
+
+  @keyframes scrollHalo {
+    0%,
+    100% {
+      opacity: 0.25;
+      transform: scale(0.9);
+    }
+    50% {
+      opacity: 0.65;
+      transform: scale(1.2);
+    }
+  }
+  @keyframes scrollLabel {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes scrollDot {
+    0% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(1.05rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .houses__scroll::before,
+    .houses__scroll::after,
+    .houses__scroll span {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .houses__grid {
+      grid-template-columns: 1fr;
+    }
+    .house-link {
+      min-height: 0;
+    }
+  }
+</style>
