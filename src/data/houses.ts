@@ -13,6 +13,13 @@ export interface House {
   rasgos: string[];
   color: string; // variable de la paleta
   simbolo: string; // fase lunar / emoji
+  campeonas: HouseChampion[];
+}
+
+export interface HouseChampion {
+  nombre: string;
+  titulo: string;
+  imagen: string;
 }
 
 export const houses: House[] = [
@@ -24,6 +31,26 @@ export const houses: House[] = [
     rasgos: ["Valentía", "Tenacidad", "Iniciativa"],
     color: "#ff6a2e",
     simbolo: "🌕",
+    campeonas: [
+      {
+        nombre: "Leona",
+        titulo: "La Radiante Aurora",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Leona_0.jpg",
+      },
+      {
+        nombre: "Riven",
+        titulo: "La Desterrada",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Riven_0.jpg",
+      },
+      {
+        nombre: "Shyvana",
+        titulo: "La Hija del Dragón",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Shyvana_0.jpg",
+      },
+    ],
     descripcion: [
       "Hija de Febe, en tu espíritu arde una llama indomable. Eres valiente, competitiva y desafiante, alguien que no conoce el significado de rendirse. Mientras otros se detienen ante el miedo, tú lo enfrentas. Esa fuerza interior te vuelve adaptable: no importa qué tan grande sea el reto, encuentras la manera de seguir adelante.",
       "Las hijas de Febe se caracterizan por su energía, su impulso hacia lo desconocido y su necesidad constante de probarse a sí mismas. Te entusiasma superar obstáculos, incluso aquellos que parecen imposibles, y tu tenacidad inspira a otros a salir de su zona de confort. Sin embargo, tu arrojo puede volverte impaciente o impulsiva, lanzándote de cabeza antes de analizar todas las consecuencias.",
@@ -38,6 +65,26 @@ export const houses: House[] = [
     rasgos: ["Empatía", "Altruismo", "Lealtad"],
     color: "#f5b942",
     simbolo: "🌙",
+    campeonas: [
+      {
+        nombre: "Soraka",
+        titulo: "La Hija de las Estrellas",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Soraka_0.jpg",
+      },
+      {
+        nombre: "Lux",
+        titulo: "La Dama Luminosa",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lux_0.jpg",
+      },
+      {
+        nombre: "Taliyah",
+        titulo: "La Tejedora de Piedra",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Taliyah_0.jpg",
+      },
+    ],
     descripcion: [
       "Hija de Rea, tu corazón es tu fuerza y tu brújula. Eres empática, altruista y protectora; sientes profundamente el dolor de los demás y tu instinto natural es dar refugio, apoyo y calma. Prefieres trabajar en equipo antes que en solitario, y casi siempre pones las necesidades de otros por encima de las tuyas.",
       "Las hijas de Rea son pacíficas, confiables y compasivas, capaces de sostener vínculos que otros habrían dejado atrás. Eres perseverante, cuidadosa y atenta a los pequeños detalles que hacen sentir a los demás queridos y acompañados. Tu bondad no significa debilidad: tu entrega es tan fuerte que, cuando se trata de proteger a quienes amas, puedes resistir tormentas enteras.",
@@ -52,6 +99,26 @@ export const houses: House[] = [
     rasgos: ["Análisis", "Estrategia", "Lógica"],
     color: "#4fc8f0",
     simbolo: "🌑",
+    campeonas: [
+      {
+        nombre: "Caitlyn",
+        titulo: "La Sheriff de Piltover",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Caitlyn_0.jpg",
+      },
+      {
+        nombre: "Camille",
+        titulo: "La Sombra de Acero",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg",
+      },
+      {
+        nombre: "LeBlanc",
+        titulo: "La Maquiavélica",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Leblanc_0.jpg",
+      },
+    ],
     descripcion: [
       "Hija de Dione, tu esencia es la de quien nunca deja de cuestionar. Eres observadora, analítica y calculadora; rara vez te dejas llevar solo por las emociones, prefieres entender los hechos, los patrones y la lógica detrás de todo. Te caracteriza una ambición tranquila: no buscas brillar por vanidad, sino por la necesidad de comprender y crecer.",
       "Tu fortaleza está en tu mente aguda y en tu capacidad de ver soluciones donde otros solo ven problemas. Eres detallista, paciente y racional, pero también exigente contigo misma y con quienes te rodean. Puedes parecer distante, pues tu sabiduría es fría como la luz lunar, pero en realidad tu forma de cuidar es guiar y advertir, evitando que los demás tropiecen donde tú ya has visto el peligro.",
@@ -66,6 +133,26 @@ export const houses: House[] = [
     rasgos: ["Imaginación", "Originalidad", "Ingenio"],
     color: "#9b7cf0",
     simbolo: "🌗",
+    campeonas: [
+      {
+        nombre: "Seraphine",
+        titulo: "La Cantante Soñadora",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Seraphine_0.jpg",
+      },
+      {
+        nombre: "Neeko",
+        titulo: "La Camaleón Curiosa",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Neeko_0.jpg",
+      },
+      {
+        nombre: "Gwen",
+        titulo: "La Costurera Sagrada",
+        imagen:
+          "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Gwen_0.jpg",
+      },
+    ],
     descripcion: [
       "Hija de Jano, tu don es la imaginación. Eres soñadora, idealista y apasionada, capaz de ver posibilidades donde otros solo ven límites. No te basta con lo que existe: necesitas inventar, transformar y dar vida a nuevas ideas. Vives con un pie en la realidad y otro en el mundo de los sueños, y de esa dualidad nace tu magia.",
       "Las hijas de Jano son compañeras alegres y carismáticas, siempre buscando aportar belleza, ingenio y originalidad. Te entusiasma crear, ya sea en palabras, gestos o proyectos, y tu creatividad inspira a los demás a atreverse a imaginar más allá de lo cotidiano. Tu energía suele ser contagiosa: donde tú estás, el ambiente se siente más ligero, divertido y lleno de posibilidades.",

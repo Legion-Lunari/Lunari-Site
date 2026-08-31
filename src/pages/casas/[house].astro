@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { houses, type House } from "../../data/houses";
 
@@ -46,8 +47,8 @@ const logo = houseLogos[house.id];
     <a
       href="#house-details"
       class="house-hero__scroll"
-      aria-label={`Leer sobre ${house.nombre}`}
-    ><span></span></a>
+      aria-label={`Leer sobre ${house.nombre}`}><span></span></a
+    >
   </section>
 
   <section
@@ -58,15 +59,32 @@ const logo = houseLogos[house.id];
     <div class="wrap house-details__story">
       {
         house.descripcion.map((paragraph, index) => (
-          <article
+          <div
             class:list={[
-              "house-detail",
-              { "house-detail--right": index % 2 === 1 },
+              "house-detail-row",
+              { "house-detail-row--right": index % 2 === 1 },
             ]}
             data-reveal
           >
-            <p>{paragraph}</p>
-          </article>
+            <article class="house-detail">
+              <p>{paragraph}</p>
+            </article>
+            <figure class="house-champion-card">
+              <Image
+                src={house.campeonas[index].imagen}
+                alt={`${house.campeonas[index].nombre}, ${house.campeonas[index].titulo}`}
+                width={1215}
+                height={717}
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+              <figcaption>
+                <span>Campeona de la casa</span>
+                <strong>{house.campeonas[index].nombre}</strong>
+                <em>{house.campeonas[index].titulo}</em>
+              </figcaption>
+            </figure>
+          </div>
         ))
       }
     </div>
@@ -191,9 +209,25 @@ const logo = houseLogos[house.id];
     display: grid;
     gap: clamp(1.25rem, 3vw, 2.5rem);
   }
+  .house-detail-row {
+    display: grid;
+    grid-template-columns: minmax(0, 42rem) minmax(0, 1fr);
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(1.25rem, 3vw, 4rem);
+  }
+  .house-detail-row--right {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 42rem);
+  }
+  .house-detail-row--right .house-detail {
+    grid-column: 2;
+  }
+  .house-detail-row--right .house-champion-card {
+    grid-row: 1;
+    grid-column: 1;
+  }
   .house-detail {
     position: relative;
-    width: min(100%, 42rem);
     padding: clamp(1.5rem, 3.5vw, 2.75rem);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -204,13 +238,85 @@ const logo = houseLogos[house.id];
     );
     box-shadow: var(--shadow-card);
   }
-  .house-detail--right {
-    justify-self: end;
-  }
   .house-detail p {
     color: var(--text-muted);
     font-size: var(--step-1);
     line-height: 1.7;
+  }
+  .house-champion-card {
+    position: relative;
+    width: 90%;
+    min-height: 13rem;
+    justify-self: center;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--house-color) 65%, transparent);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--house-color) 18%, transparent),
+      var(--shadow-card);
+  }
+  .house-champion-card::after {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        180deg,
+        transparent 25%,
+        color-mix(in srgb, var(--ink) 25%, transparent) 48%,
+        var(--ink) 100%
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--house-color) 22%, transparent),
+        transparent 58%
+      );
+    content: "";
+    pointer-events: none;
+  }
+  .house-champion-card img {
+    width: 100%;
+    height: 100%;
+    min-height: 13rem;
+    object-fit: cover;
+    object-position: center;
+    filter: saturate(0.9) contrast(1.05);
+    transition:
+      transform 0.7s var(--ease-out),
+      filter 0.7s var(--ease-out);
+  }
+  .house-champion-card:hover img {
+    filter: saturate(1.08) contrast(1.06);
+    transform: scale(1.05);
+  }
+  .house-champion-card figcaption {
+    position: absolute;
+    right: 1.15rem;
+    bottom: 1rem;
+    left: 1.15rem;
+    z-index: 1;
+    display: grid;
+    line-height: 1.15;
+    text-shadow: 0 2px 12px var(--ink);
+  }
+  .house-champion-card figcaption span {
+    margin-bottom: 0.3rem;
+    color: color-mix(in srgb, var(--house-color) 68%, white);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+  .house-champion-card figcaption strong {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+  }
+  .house-champion-card figcaption em {
+    margin-top: 0.18rem;
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: var(--step--1);
   }
 
   @keyframes scrollAppear {
@@ -265,10 +371,36 @@ const logo = houseLogos[house.id];
   }
 
   @media (max-width: 760px) {
-    .house-detail,
-    .house-detail--right {
-      width: 100%;
-      justify-self: stretch;
+    .house-detail-row,
+    .house-detail-row--right {
+      grid-template-columns: 1fr;
+      gap: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      box-shadow: var(--shadow-card);
+    }
+    .house-detail-row .house-champion-card,
+    .house-detail-row--right .house-champion-card {
+      grid-row: 1;
+      grid-column: 1;
+      min-height: 11rem;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .house-detail-row .house-champion-card img {
+      min-height: 11rem;
+    }
+    .house-detail-row .house-detail,
+    .house-detail-row--right .house-detail {
+      grid-row: 2;
+      grid-column: 1;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
     }
   }
   @media (prefers-reduced-motion: reduce) {
