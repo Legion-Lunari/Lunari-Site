@@ -1,37 +1,59 @@
-﻿{
-  "name": "lunari-site",
-  "compatibility_date": "2026-08-16",
-  "assets": {
-    "directory": "./dist"
-  },
-  "d1_databases": [
-    {
-      "binding": "legionLunariHouses",
-      "database_name": "legion-lunari-houses",
-      "database_id": "4ecc84e1-7b74-4cc8-a9c0-0267b91300d4"
-    }
-  ],
-  "vars": {
-    "DISCORD_CLIENT_ID": "1540614329932587109",
-    "DISCORD_GUILD_ID": "1265737550753169448",
-    "ROLE_ID_REA": "1411180927471849605",
-    "ROLE_ID_JANO": "1411181105633169468",
-    "ROLE_ID_FEBE": "1411180700253552691",
-    "ROLE_ID_DIONE": "1411179839205146734"
-  },
-  "observability": {
-    "enabled": false,
-    "head_sampling_rate": 1,
-    "logs": {
-      "enabled": true,
-      "head_sampling_rate": 1,
-      "persist": true,
-      "invocation_logs": true
-    },
-    "traces": {
-      "enabled": true,
-      "persist": true,
-      "head_sampling_rate": 1
-    }
-  }
+{
+	"name": "lunari-site",
+	"compatibility_date": "2026-08-16",
+	"assets": {
+		"directory": "./dist"
+	},
+	"d1_databases": [
+		{
+			"binding": "legionLunariHouses",
+			"database_name": "legion-lunari-houses",
+			"database_id": "4ecc84e1-7b74-4cc8-a9c0-0267b91300d4",
+			"migrations_dir": "../../migrations"
+		}
+	],
+	"vars": {
+		"DISCORD_CLIENT_ID": "1540614329932587109",
+		"DISCORD_GUILD_ID": "1265737550753169448",
+		"ROLE_ID_REA": "1411180927471849605",
+		"ROLE_ID_JANO": "1411181105633169468",
+		"ROLE_ID_FEBE": "1411180700253552691",
+		"ROLE_ID_DIONE": "1411179839205146734"
+	},
+	"observability": {
+		"enabled": false,
+		"head_sampling_rate": 1,
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"persist": true,
+			"invocation_logs": true
+		},
+		"traces": {
+			"enabled": true,
+			"persist": true,
+			"head_sampling_rate": 1
+		}
+	},
+	"env": {
+		"staging": {
+			"name": "lunari-site-staging",
+			"workers_dev": true,
+			"d1_databases": [
+				{
+					"binding": "legionLunariHouses",
+					"database_name": "legion-lunari-houses",
+					"database_id": "4ecc84e1-7b74-4cc8-a9c0-0267b91300d4"
+				}
+			],
+			"vars": {
+				"DISCORD_CLIENT_ID": "1540614329932587109",
+				"DISCORD_GUILD_ID": "1265737550753169448",
+				"ROLE_ID_REA": "1411180927471849605",
+				"ROLE_ID_JANO": "1411181105633169468",
+				"ROLE_ID_FEBE": "1411180700253552691",
+				"ROLE_ID_DIONE": "1411179839205146734"
+			}
+		}
+	}
 }

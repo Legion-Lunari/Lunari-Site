@@ -11,6 +11,7 @@
     "astro": "astro",
     "wrangler:dev": "astro build && wrangler dev",
     "wrangler:deploy": "astro build && wrangler deploy",
+    "wrangler:deploy:staging": "cross-env CLOUDFLARE_ENV=staging astro build && wrangler deploy",
     "generate-types": "wrangler types"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/node": "^26.2.0",
     "@types/three": "^0.171.0",
+    "cross-env": "^10.1.0",
     "eslint-plugin-astro": "^3.1.0",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
