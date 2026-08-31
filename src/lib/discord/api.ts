@@ -62,14 +62,40 @@ export const assignRole = async (
   roleId: string,
   botToken: string,
 ) => {
-  const res = await fetch(
-    `${BASE_URL}/guilds/${guildId}/members/${userId}/roles/${roleId}`,
-    {
-      method: "PUT",
-      headers: { Authorization: `Bot ${botToken}` },
-    },
-  );
+  let res: Response;
+  try {
+    res = await fetch(
+      `${BASE_URL}/guilds/${guildId}/members/${userId}/roles/${roleId}`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bot ${botToken}` },
+      },
+    );
+  } catch (error) {
+    console.error("[discord assign role] request failed", {
+      guildId,
+      userId,
+      roleId,
+      error,
+    });
+    throw error;
+  }
 
-  if (!res.ok && res.status !== 204)
+  if (!res.ok && res.status !== 204) {
+    const body = (await res.text()).slice(0, 2_000);
+    console.error("[discord assign role] request rejected", {
+      guildId,
+      userId,
+      roleId,
+      status: res.status,
+      statusText: res.statusText,
+      body,
+      retryAfter: res.headers.get("retry-after"),
+      rateLimitBucket: res.headers.get("x-ratelimit-bucket"),
+      rateLimitRemaining: res.headers.get("x-ratelimit-remaining"),
+      rateLimitResetAfter: res.headers.get("x-ratelimit-reset-after"),
+      discordRequestId: res.headers.get("x-discord-request-id"),
+    });
     throw new Error(`assign role failed: ${res.status}`);
+  }
 };
