@@ -19,7 +19,9 @@ const {
   aria-hidden="true"
 >
   <canvas class="reveal3d__canvas"></canvas>
-  <div class="reveal3d__logo" data-reveal-logo></div>
+  <div class="reveal3d__logo" data-reveal-logo>
+    <div class="reveal3d__logo-mark"></div>
+  </div>
   <div class="reveal3d__scrim"></div>
   <div class="reveal3d__loader" data-reveal-loader>
     <span class="reveal3d__ring"></span>
@@ -58,8 +60,10 @@ const {
 
   .reveal3d__logo {
     position: absolute;
-    left: 50%; top: 30%;
-    --lx: 0px; --ly: 0px;
+    left: 50%;
+    top: 30%;
+    --lx: 0px;
+    --ly: 0px;
     transform: translate(calc(-50% + var(--lx)), calc(-50% + var(--ly)));
     width: clamp(150px, 19vw, 260px);
     aspect-ratio: 1;
@@ -71,12 +75,28 @@ const {
   .reveal3d__logo.is-shown {
     opacity: 1;
   }
-  .reveal3d__logo :global(img) {
+  .reveal3d__logo-mark {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    filter: invert(1)
-      drop-shadow(0 0 26px var(--house-color, var(--celeste-400)));
+    background: radial-gradient(
+      circle at 35% 30%,
+      color-mix(in srgb, var(--house-color, var(--celeste-400)) 70%, white) 0%,
+      var(--house-color, var(--celeste-400)) 55%,
+      var(--house-color, var(--celeste-400)) 55%
+    );
+    -webkit-mask-image: var(--logo-src);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-image: var(--logo-src);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    filter: drop-shadow(
+        0 0 12px
+          color-mix(in srgb, var(--house-color, var(--celeste-400)) 85%, white)
+      )
+      drop-shadow(0 0 34px var(--house-color, var(--celeste-400)));
     animation: revealLogoFloat 6s ease-in-out infinite;
   }
   @keyframes revealLogoFloat {
@@ -145,7 +165,7 @@ const {
     .reveal3d__ring {
       animation: none;
     }
-    .reveal3d__logo :global(img) {
+    .reveal3d__logo-mark {
       animation: none;
     }
   }
@@ -159,6 +179,9 @@ const {
     const canvas = root.querySelector<HTMLCanvasElement>(".reveal3d__canvas")!;
     const loaderEl = root.querySelector<HTMLElement>("[data-reveal-loader]")!;
     const logoEl = root.querySelector<HTMLElement>("[data-reveal-logo]")!;
+    const logoMarkEl = logoEl.querySelector<HTMLElement>(
+      ".reveal3d__logo-mark",
+    )!;
     const inclinedSrc = root.dataset.incl!;
     const peakSrc = root.dataset.peak!;
 
@@ -181,14 +204,18 @@ const {
 
     // El offset del logo se afinó a 1600px; se escala por el ancho del viewport
     // para que acompañe al modelo en cualquier resolución.
-    let logoOffX = 0, logoOffY = 0;
+    let logoOffX = 0,
+      logoOffY = 0;
     function setLogoOffset(x: number, y: number) {
-      logoOffX = x || 0; logoOffY = y || 0;
+      logoOffX = x || 0;
+      logoOffY = y || 0;
       const k = window.innerWidth / 1600;
-      logoEl.style.setProperty('--lx', logoOffX * k + 'px');
-      logoEl.style.setProperty('--ly', logoOffY * k + 'px');
+      logoEl.style.setProperty("--lx", logoOffX * k + "px");
+      logoEl.style.setProperty("--ly", logoOffY * k + "px");
     }
-    window.addEventListener('resize', () => setLogoOffset(logoOffX, logoOffY), { passive: true });
+    window.addEventListener("resize", () => setLogoOffset(logoOffX, logoOffY), {
+      passive: true,
+    });
 
     window.addEventListener("reveal:active", (ev: Event) => {
       active = (ev as CustomEvent).detail?.on !== false;
@@ -197,8 +224,11 @@ const {
     });
     window.addEventListener("reveal:house", (ev: Event) => {
       const d = (ev as CustomEvent).detail || {};
-      if (d.color) houseColor = d.color;
-      if (d.logo) logoEl.innerHTML = `<img src="${d.logo}" alt="" />`;
+      if (d.color) {
+        houseColor = d.color;
+        root!.style.setProperty("--house-color", d.color);
+      }
+      if (d.logo) logoMarkEl.style.setProperty("--logo-src", `url(${d.logo})`);
       ref.applyHouse();
     });
     window.addEventListener("reveal:progress", (ev: Event) => {
@@ -317,6 +347,8 @@ const {
         .then((g) => {
           fit(g.scene, 4.6);
           peakGroup.add(g.scene);
+          updateFinal();
+          wake();
         })
         .catch((e) => console.error("[Reveal] peak", e));
 
