@@ -9,7 +9,7 @@
 			"binding": "legionLunariHouses",
 			"database_name": "legion-lunari-houses",
 			"database_id": "4ecc84e1-7b74-4cc8-a9c0-0267b91300d4",
-			"migrations_dir": "../../migrations"
+			"migrations_dir": "./migrations"
 		}
 	],
 	"vars": {
