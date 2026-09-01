@@ -15,7 +15,7 @@ const restoredCount = fragments.filter((fragment) => fragment.unlocked).length;
 ---
 
 <BaseLayout
-  title="Canal 2409 — Legion Lunari"
+  title="Canal — Legion Lunari"
   description="Una transmisión Lunari recuperada de un canal olvidado."
 >
   <section class:list={["channel", { "is-complete": restoredCount === 3 }]}>
@@ -161,7 +161,7 @@ const restoredCount = fragments.filter((fragment) => fragment.unlocked).length;
       if (status) status.textContent = "Validando señal…";
 
       try {
-        const response = await fetch("/api/2409/restore", {
+        const response = await fetch("/api/200325/restore", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
