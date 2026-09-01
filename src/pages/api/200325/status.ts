@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
-import { getPublicRestorationState } from "../../../lib/2409/restoration";
+import { getPublicRestorationState } from "../../../lib/200325/restoration";
 
 export const prerender = false;
 

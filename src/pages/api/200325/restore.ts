@@ -1,9 +1,6 @@
 import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
-import {
-  isFragmentId,
-  restoreFragment,
-} from "../../../lib/2409/restoration";
+import { isFragmentId, restoreFragment } from "../../../lib/200325/restoration";
 
 export const prerender = false;
 
