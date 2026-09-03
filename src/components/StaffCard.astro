@@ -6,12 +6,18 @@ export interface Props {
   name: string;
   role: string;
   accent?: string;
+  /** La variante de artículo conserva el marco de staff, con espacio para descripción y precio. */
+  variant?: "staff" | "item";
+  price?: string;
 }
 
-const { name, role, accent = "white" } = Astro.props;
+const { name, role, accent = "white", variant = "staff", price } = Astro.props;
 ---
 
-<div class="staff-card" style={`--accent:${accent}`}>
+<div
+  class:list={["staff-card", { "staff-card--item": variant === "item" }]}
+  style={`--accent:${accent}`}
+>
   <span class="card__tick card__tick--tl" aria-hidden="true"></span>
   <span class="card__tick card__tick--tr" aria-hidden="true"></span>
   <span class="card__tick card__tick--bl" aria-hidden="true"></span>
@@ -19,7 +25,11 @@ const { name, role, accent = "white" } = Astro.props;
 
   <h1 class="card__name">{name}</h1>
 
-  <p class="card__role">{role}</p>
+  <p class:list={["card__role", { "card__description": variant === "item" }]}>
+    {role}
+  </p>
+
+  {variant === "item" && price && <p class="card__price">{price}</p>}
 </div>
 
 <style>
@@ -46,6 +56,15 @@ const { name, role, accent = "white" } = Astro.props;
     box-shadow:
       0 8px 22px rgba(0, 0, 0, 0.35),
       0 0 24px -10px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .staff-card--item {
+    align-items: stretch;
+    justify-content: flex-start;
+    min-height: 15rem;
+    max-width: 28rem;
+    padding: 1.75rem 1.5rem;
+    text-align: left;
   }
 
   .card__tick {
@@ -113,5 +132,27 @@ const { name, role, accent = "white" } = Astro.props;
     text-indent: 0.3em;
     text-transform: uppercase;
     color: color-mix(in srgb, var(--accent) 55%, #f3ecec);
+  }
+
+  .card__description {
+    flex: 1;
+    font-size: clamp(0.85rem, 4cqw, 1rem);
+    line-height: 1.55;
+    letter-spacing: 0.02em;
+    text-align: left;
+    text-indent: 0;
+    text-transform: none;
+    color: color-mix(in srgb, #f3ecec 82%, var(--accent));
+  }
+
+  .card__price {
+    margin: 0.9rem 0 0;
+    font-family: "Cinzel Decorative", serif;
+    font-size: clamp(0.9rem, 5cqw, 1.15rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    text-align: right;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 50%, transparent);
   }
 </style>

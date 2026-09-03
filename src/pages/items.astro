@@ -1,0 +1,274 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StaffCard from "../components/StaffCard.astro";
+
+interface ItemData {
+  name: string;
+  description: string;
+  price: string;
+  accent: string;
+}
+
+// El orden y acento de las categorías. Un item aparece en la categoría cuyo
+// accent coincida con el suyo.
+const itemCategories = [
+  { name: "Ataque/Sabotaje", accent: "#b9a3f0" },
+  { name: "Defensa", accent: "#5ac8fa" },
+  { name: "Beneficios", accent: "#f2879e" },
+  { name: "Información", accent: "#ffffff" },
+] as const;
+
+// Agrega, elimina o edita artículos aquí. El accent define su categoría.
+const items: ItemData[] = [
+  {
+    name: "Silencio de Casa",
+    description: "Cierra el chat de texto de otra Casa 3 horas.",
+    price: "200 de Oro",
+    accent: "#b9a3f0",
+  },
+  {
+    name: "Espía (pista)",
+    description: "Pista sobre puntuación o próximo desafío.",
+    price: "170 de Oro",
+    accent: "#b9a3f0",
+  },
+  {
+    name: "Intercambio forzoso",
+    description:
+      "Obliga a otra Casa a intercambiar una integrante para una dinámica.",
+    price: "500 de Oro",
+    accent: "#b9a3f0",
+  },
+  {
+    name: "Rol Vergonzoso",
+    description:
+      "Añade un rol chistoso a todas las integrantes de otra casa por un día.",
+    price: "50 de Oro",
+    accent: "#b9a3f0",
+  },
+  {
+    name: "Foto Obligatoria",
+    description:
+      "Haz que una casa rival tenga que subir una foto de alguna temática. Si no lo hacen, tu casa ganará 20 de oro.",
+    price: "50 de Oro",
+    accent: "#b9a3f0",
+  },
+  {
+    name: "Serenata",
+    description:
+      "Una integrante de cualquier casa tendrá que subir un audio cantando.",
+    price: "30 de Oro",
+    accent: "#b9a3f0",
+  },
+  {
+    name: "Modo Gatito",
+    description:
+      'Toda una casa rival tendrá que terminar TODOS sus mensajes por la próxima hora con "miau".',
+    price: "30 de Oro",
+    accent: "#b9a3f0",
+  },
+  {
+    name: "Escudo Lunar",
+    description:
+      "Protege tu Casa de sólo un ataque. Este Escudo desaparecerá si se utiliza para bloquear un ataque o pasa una semana desde que fue comprado.",
+    price: "200 de Oro",
+    accent: "#5ac8fa",
+  },
+  {
+    name: "Reversa",
+    description:
+      "Devuelve un ataque lanzado contra tu Casa a la Casa atacante.",
+    price: "200 de Oro",
+    accent: "#5ac8fa",
+  },
+  {
+    name: "Alerta",
+    description:
+      "Recibe un aviso cuando una Casa compra un objecto en tu contra.",
+    price: "60 de Oro",
+    accent: "#5ac8fa",
+  },
+  {
+    name: "Pregunta a una Admin",
+    description:
+      "Haz una pregunta a las admins que normalmente no contestarían. Ojo: No preguntas muy personales.",
+    price: "60 de Oro",
+    accent: "#f2879e",
+  },
+  {
+    name: "Clase personalizada de LoL",
+    description:
+      "Compra una clase privada de 30 a 60 minutos con un mentor o mentora.",
+    price: "30 de Oro",
+    accent: "#f2879e",
+  },
+  {
+    name: "Partida privada",
+    description:
+      "Juega una partida privada con una de las 5 admins. La admin específica variará dependiendo del horario y disponibilidad.",
+    price: "40 de Oro",
+    accent: "#f2879e",
+  },
+  {
+    name: "Mensaje destacado",
+    description:
+      "Tu Casa podrá elegir un mensaje para que aparezca en anuncios. Si el mensaje no se aprueba por contenido inapropiado, se les regresará el dinero.",
+    price: "30 de Oro",
+    accent: "#f2879e",
+  },
+  {
+    name: "Título temporal",
+    description:
+      "Tu casa recibe un rol especial por 24 horas. El rol lo elegirán ustedes, pero no puede ser uno de staff y tampoco puede ser inapropiado.",
+    price: "50 de Oro",
+    accent: "#f2879e",
+  },
+  {
+    name: "Paquete de Boletos para Rifa de Cofres",
+    description:
+      "Tu Casa recibirá 10 boletos para la rifa de un cofre a repartirse como mejor decidan.",
+    price: "100 de Oro",
+    accent: "#f2879e",
+  },
+  {
+    name: "Análisis op.gg",
+    description:
+      "Un mentor o mentora revisará la cuenta de una miembro de tu Casa en op.gg y dará su análisis.",
+    price: "40 de Oro",
+    accent: "#f2879e",
+  },
+  {
+    name: "1v1 vs Administración",
+    description:
+      "Una miembro de tu Casa retará aleatoriamente a una miembro de Administración a un combate 1v1.",
+    price: "30 de Oro",
+    accent: "#f2879e",
+  },
+  {
+    name: "Espía de puntuación",
+    description: "Conoce la puntuación exacta de otra Casa.",
+    price: "50 de Oro",
+    accent: "#ffffff",
+  },
+  {
+    name: "Oráculo",
+    description: "Recibe una visión sobre el acertijo de Xylaria.",
+    price: "80 de Oro",
+    accent: "#ffffff",
+  },
+  {
+    name: "Actividad",
+    description: "Revela el horario más activo de otra Casa.",
+    price: "50 de Oro",
+    accent: "#ffffff",
+  },
+];
+---
+
+<BaseLayout
+  title="Items - Legion Lunari"
+  description="Explora los artículos disponibles en Legión Lunari."
+>
+  <section class="items section wrap">
+    <header class="items__header" data-reveal>
+      <p class="eyebrow" data-phase="✦">Tienda Lunari</p>
+      <h2>Items para brillar <span>entre las estrellas</span></h2>
+    </header>
+
+    <div class="items__categories">
+      {
+        itemCategories.map((category) => (
+          <section
+            class="items__category"
+            style={`--category-accent:${category.accent}`}
+          >
+            <h3 class="items__category-title">{category.name}</h3>
+            <div class="items__grid">
+              {items
+                .filter((item) => item.accent === category.accent)
+                .map((item) => (
+                  <div data-reveal>
+                    <StaffCard
+                      name={item.name}
+                      role={item.description}
+                      price={item.price}
+                      accent={item.accent}
+                      variant="item"
+                    />
+                  </div>
+                ))}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .items {
+    padding-top: calc(var(--nav-h) + var(--space-section));
+    padding-bottom: var(--space-section);
+  }
+
+  .items__header {
+    max-width: 44rem;
+    margin: 0 auto clamp(2.5rem, 5vw, 4.5rem);
+    text-align: center;
+  }
+
+  .items__header h2 {
+    margin-top: 0.6rem;
+    font-size: var(--step-3);
+  }
+
+  .items__header h2 span {
+    color: var(--lavender-400);
+    font-style: italic;
+  }
+
+  .items__header > p:last-child {
+    max-width: 36rem;
+    margin: 1rem auto 0;
+    color: var(--text-muted);
+  }
+
+  .items__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 2rem;
+    align-items: stretch;
+  }
+
+  .items__grid > div {
+    display: flex;
+    justify-content: center;
+  }
+
+  .items__categories {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .items__category-title {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 1.25rem 0 0.65rem;
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--category-accent);
+  }
+
+  .items__category-title::after {
+    content: "";
+    width: 3rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--category-accent) 60%, transparent);
+    box-shadow: 0 0 8px
+      color-mix(in srgb, var(--category-accent) 55%, transparent);
+  }
+</style>
