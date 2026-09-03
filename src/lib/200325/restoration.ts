@@ -31,13 +31,15 @@ export async function getPublicRestorationState(
     )
     .all<{ fragment: number; unlocked: number }>();
   const unlocked = new Set(
-    result.results.filter((row) => row.unlocked === 1).map((row) => row.fragment),
+    result.results
+      .filter((row) => row.unlocked === 1)
+      .map((row) => row.fragment),
   );
 
   return fragmentIds.map((id) => ({
     id,
     unlocked: unlocked.has(id),
-    code: unlocked.has(id) ? codeFor(env, id) ?? null : null,
+    code: unlocked.has(id) ? (codeFor(env, id) ?? null) : null,
   }));
 }
 
@@ -53,7 +55,10 @@ export async function restoreFragment(
   if (current.find((item) => item.id === fragment)?.unlocked) return current;
 
   const configuredCode = codeFor(env, fragment);
-  if (configuredCode === undefined || submittedCode !== configuredCode)
+  if (
+    configuredCode === undefined ||
+    submittedCode.toLowerCase() !== configuredCode.toLowerCase()
+  )
     return null;
 
   await env.legionLunariHouses
