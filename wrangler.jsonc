@@ -1,6 +1,7 @@
 {
 	"name": "lunari-site",
 	"compatibility_date": "2026-08-16",
+	"keep_vars": true,
 	"assets": {
 		"directory": "./dist"
 	},
@@ -39,6 +40,7 @@
 		"staging": {
 			"name": "lunari-site-staging",
 			"workers_dev": true,
+			"keep_vars": true,
 			"d1_databases": [
 				{
 					"binding": "legionLunariHouses",
