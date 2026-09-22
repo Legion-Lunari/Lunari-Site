@@ -1,0 +1,709 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const abilities = [
+  {
+    key: "P",
+    kind: "Pasiva",
+    name: "Sombra Lunar",
+    description:
+      "Xylaria se vuelve invisible en la maleza o en la sombra durante unos segundos si está quieta.",
+  },
+  {
+    key: "Q",
+    kind: "Habilidad Q",
+    name: "Golpe de eclipse",
+    description:
+      "Un ataque en dos fases: el primero es un corte rápido que ralentiza; el segundo, un golpe pesado si el enemigo está debilitado.",
+  },
+  {
+    key: "W",
+    kind: "Habilidad W",
+    name: "Abrazo de la penumbra",
+    description:
+      "Xylaria invoca un velo de sombra en un área pequeña, reduciendo la visión enemiga y volviéndose parcialmente invisible dentro de ella. Sus ataques desde la penumbra infligen daño adicional.",
+  },
+  {
+    key: "E",
+    kind: "Habilidad E",
+    name: "Salto Lunar",
+    description:
+      "Aprovechando su agilidad vastaya, Xylaria realiza un salto en arco hacia un objetivo o dirección. Si aterriza sobre un enemigo debilitado, lo inmoviliza brevemente.",
+  },
+  {
+    key: "R",
+    kind: "Definitiva",
+    name: "Danza de la noche",
+    description:
+      "Xylaria se convierte en una sombra pura durante unos segundos, ganando velocidad y haciendo daño adicional en ataques rápidos.",
+  },
+];
+
+const encounters = [
+  {
+    champion: "Leona",
+    quote: "Tu luz no me ciega, Leona. Solo proyecta sombras más grandes.",
+  },
+  {
+    champion: "Diana",
+    quote: "Luchamos por la misma luna… ¿pero luchamos juntas?",
+  },
+  {
+    champion: "Pantheon",
+    quote: "Sigues llamando a Targon tu hogar… yo lo llamo prisión.",
+  },
+  {
+    champion: "Taric",
+    quote:
+      "La gema en tu frente brilla... pero tus ojos están cerrados a la verdad.",
+  },
+  { champion: "Zoe", quote: "Pequeña estrella fugaz..." },
+  { champion: "Aphelios", quote: "Hermano de la luna… nunca caminas solo." },
+];
+---
+
+<BaseLayout
+  title="Xylaria, la Sombra Lunar - Legión Lunari"
+  description="Conoce a Xylaria, la Sombra Lunar: una vastaya de Targon y protectora de la Legión Lunari."
+>
+  <section class="hero" aria-labelledby="xylaria-title">
+    <div class="hero__aura" aria-hidden="true"></div>
+    <div class="hero__art" aria-hidden="true">
+      <img src="/xylaria/xylaria.webp" alt="" />
+    </div>
+
+    <div class="hero__copy wrap">
+      <p class="eyebrow" data-phase="☾">La Sombra Lunar</p>
+      <h1 id="xylaria-title">
+        <span class="hero__name">XYLARIA</span>
+      </h1>
+      <p class="hero__quote">“La luna canta... y yo respondo.”</p>
+      <a class="hero__scroll" href="#historia"
+        >Descubre su historia <span aria-hidden="true">↓</span></a
+      >
+    </div>
+  </section>
+
+  <section class="identity wrap" aria-label="Perfil de Xylaria" data-reveal>
+    <div class="identity__item">
+      <span class="identity__mark" aria-hidden="true">✦</span>
+      <span class="identity__label">Rol</span>
+      <strong>Asesina / Luchadora</strong>
+    </div>
+    <div class="identity__item">
+      <span class="identity__mark" aria-hidden="true">☾</span>
+      <span class="identity__label">Dificultad</span>
+      <strong>Alta</strong>
+    </div>
+    <div class="identity__item">
+      <span class="identity__mark" aria-hidden="true">✧</span>
+      <span class="identity__label">Afiliación</span>
+      <strong>Legión Lunari</strong>
+    </div>
+  </section>
+
+  <section class="story section" id="historia">
+    <div class="story__layout wrap">
+      <div class="story__portrait" data-reveal>
+        <img
+          src="/xylaria/xylaria-headshot.jpg"
+          alt="Retrato ilustrado de Xylaria"
+        />
+        <span class="story__halo" aria-hidden="true"></span>
+      </div>
+      <div class="story__copy stack" data-reveal style="--reveal-delay: 120ms">
+        <p class="eyebrow" data-phase="☾">Historia</p>
+        <h2>Una sombra que <em>protege.</em></h2>
+        <p class="lede">
+          En los valles escondidos del Monte Targon, Xylaria aprendió que la
+          luna no solo ilumina el camino: también guarda aquello que el mundo
+          quiere borrar.
+        </p>
+        <p>
+          Nacida entre un pueblo vastaya ligado a la magia celestial, sobrevivió
+          a la caída de su aldea y a los años de silencio que siguieron. Los
+          bosques fríos de Targon fueron su refugio; allí afinó su instinto, su
+          velocidad y la paciencia de quien conoce cada sombra antes de pisarla.
+        </p>
+        <p>
+          Cuando encontró el rastro de la Legión Lunari, dejó de luchar solo por
+          sobrevivir. Ahora se mueve como su guardiana silenciosa: una presencia
+          que defiende a las suyas, desafía a quienes las persiguen y recuerda
+          que la oscuridad también puede ser un hogar.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="abilities section" aria-labelledby="abilities-title">
+    <div class="wrap">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow" data-phase="✦">Estilo de combate</p>
+        <h2 id="abilities-title">Habilidades</h2>
+        <p>Velocidad, sigilo y precisión bajo la luz de la luna.</p>
+      </header>
+
+      <div class="ability-view card" data-reveal>
+        <div class="ability-view__content">
+          <p class="ability-view__kind" id="ability-kind">
+            {abilities[0].kind}
+          </p>
+          <h3 id="ability-name">{abilities[0].name}</h3>
+          <p id="ability-description">{abilities[0].description}</p>
+        </div>
+      </div>
+
+      <div
+        class="ability-tabs"
+        role="tablist"
+        aria-label="Habilidades de Xylaria"
+        data-reveal
+      >
+        {
+          abilities.map((ability, index) => (
+            <button
+              class:list={["ability-tab", { "is-active": index === 0 }]}
+              type="button"
+              role="tab"
+              aria-selected={index === 0 ? "true" : "false"}
+              aria-controls="ability-panel"
+              data-kind={ability.kind}
+              data-name={ability.name}
+              data-description={ability.description}
+            >
+              <span class="ability-tab__glyph" aria-hidden="true">
+                {ability.key}
+              </span>
+              <span>{ability.name}</span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="encounters section wrap" aria-labelledby="encounters-title">
+    <header class="section-head" data-reveal>
+      <p class="eyebrow" data-phase="✧">Ecos de Targon</p>
+      <h2 id="encounters-title">Interacciones</h2>
+    </header>
+    <div class="encounters__grid">
+      {
+        encounters.map((encounter, index) => (
+          <article
+            class="encounter card"
+            data-reveal
+            style={`--reveal-delay: ${index * 75}ms`}
+          >
+            <span class="encounter__moon" aria-hidden="true">
+              ☾
+            </span>
+            <h3>{encounter.champion}</h3>
+            <p>“{encounter.quote}”</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="closing section" aria-label="Legión Lunari">
+    <div class="closing__sky" aria-hidden="true"></div>
+    <div class="closing__inner wrap" data-reveal>
+      <p class="eyebrow" data-phase="☾">Legión Lunari</p>
+      <h2>Siempre hay un lugar bajo la luna.</h2>
+      <p>
+        Un refugio nocturno para invocadoras: honestas, unidas y brillantes.
+      </p>
+      <a
+        class="closing__cta"
+        href="https://discord.com/invite/j2mEbRg9jc"
+        target="_blank"
+        rel="noopener">Únete a la Legión <span aria-hidden="true">↗</span></a
+      >
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const tabs = Array.from(
+    document.querySelectorAll<HTMLButtonElement>(".ability-tab"),
+  );
+  const kind = document.querySelector<HTMLElement>("#ability-kind");
+  const name = document.querySelector<HTMLElement>("#ability-name");
+  const description = document.querySelector<HTMLElement>(
+    "#ability-description",
+  );
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((item) => {
+        item.classList.toggle("is-active", item === tab);
+        item.setAttribute("aria-selected", String(item === tab));
+      });
+      if (kind) kind.textContent = tab.dataset.kind ?? "";
+      if (name) name.textContent = tab.dataset.name ?? "";
+      if (description) description.textContent = tab.dataset.description ?? "";
+    });
+  });
+</script>
+
+<style>
+  .hero {
+    min-height: max(44rem, 100svh);
+    position: relative;
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    isolation: isolate;
+    background: #0d1435;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(8, 10, 31, 0.95) 0%,
+        rgba(9, 12, 36, 0.7) 42%,
+        rgba(9, 12, 36, 0.08) 100%
+      ),
+      linear-gradient(0deg, var(--night-900) 0%, transparent 31%);
+  }
+  .hero__aura {
+    position: absolute;
+    inset: -20%;
+    z-index: -2;
+    background:
+      radial-gradient(
+        circle at 68% 38%,
+        rgba(91, 164, 228, 0.3),
+        transparent 16%
+      ),
+      radial-gradient(
+        circle at 60% 34%,
+        rgba(140, 123, 232, 0.22),
+        transparent 34%
+      );
+    filter: blur(30px);
+  }
+  .hero__art {
+    position: absolute;
+    inset: 0 0 0 34%;
+    z-index: -3;
+    overflow: hidden;
+  }
+  .hero__art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, var(--night-900), transparent 44%),
+      linear-gradient(0deg, var(--night-900), transparent 30%);
+  }
+  .hero__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 30% 26%;
+    opacity: 0.92;
+    mix-blend-mode: screen;
+  }
+  .hero__copy {
+    padding-top: calc(var(--nav-h) + 5rem);
+    padding-bottom: clamp(5rem, 11vh, 9rem);
+  }
+  .hero h1 {
+    display: grid;
+    margin-top: 0.7rem;
+    max-width: 38rem;
+  }
+  .hero__intro {
+    font-size: clamp(2.6rem, 5vw, 5.6rem);
+    font-style: italic;
+    color: var(--moonlight);
+  }
+  .hero__name {
+    font-size: clamp(5.5rem, 14.8vw, 13rem);
+    line-height: 0.73;
+    letter-spacing: -0.055em;
+    color: #d6e9ff;
+    text-shadow: 0 0 32px rgba(91, 164, 228, 0.36);
+  }
+  .hero__quote {
+    max-width: 22rem;
+    margin-top: 2.6rem;
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-style: italic;
+  }
+  .hero__scroll {
+    display: inline-flex;
+    gap: 0.7rem;
+    margin-top: 2rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--celeste-400) 55%, transparent);
+    color: var(--moonlight);
+    font-size: var(--step--1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hero__scroll span {
+    color: var(--celeste-400);
+  }
+  .identity {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: -3rem;
+    position: relative;
+    z-index: 2;
+    background: color-mix(in srgb, var(--night-800) 82%, transparent);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(13px);
+  }
+  .identity__item {
+    min-height: 9rem;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.15rem;
+    padding: 1.5rem;
+    text-align: center;
+    border-right: 1px solid var(--border-soft);
+  }
+  .identity__item:last-child {
+    border: 0;
+  }
+  .identity__mark {
+    color: var(--celeste-400);
+    font-size: 1.3rem;
+    text-shadow: 0 0 14px var(--celeste-400);
+  }
+  .identity__label,
+  .ability-view__kind {
+    color: var(--lavender-200);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .identity strong {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 500;
+  }
+  .story {
+    padding-top: clamp(6rem, 11vw, 11rem);
+  }
+  .story__layout {
+    display: grid;
+    grid-template-columns: minmax(16rem, 0.78fr) minmax(0, 1fr);
+    gap: clamp(3rem, 9vw, 10rem);
+    align-items: center;
+  }
+  .story__portrait {
+    position: relative;
+    max-width: 25rem;
+    margin-inline: auto;
+  }
+  .story__portrait::before {
+    content: "";
+    position: absolute;
+    inset: 9% -11%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(91, 164, 228, 0.42),
+      transparent 66%
+    );
+    filter: blur(18px);
+  }
+  .story__portrait img {
+    aspect-ratio: 0.73;
+    object-fit: cover;
+    object-position: center 19%;
+    border: 1px solid var(--border);
+    filter: saturate(0.9) contrast(1.04);
+  }
+  .story__halo {
+    position: absolute;
+    inset: 1rem;
+    pointer-events: none;
+    border: 1px solid color-mix(in srgb, var(--moonlight) 22%, transparent);
+  }
+  .story h2 em {
+    display: block;
+    color: var(--celeste-400);
+    font-style: italic;
+  }
+  .story__copy > p:not(.lede) {
+    color: var(--text-muted);
+  }
+  .section-head {
+    max-width: 38rem;
+    margin: 0 auto clamp(2.6rem, 5vw, 4.5rem);
+    text-align: center;
+  }
+  .section-head h2 {
+    margin-top: 0.4rem;
+    font-size: var(--step-4);
+  }
+  .section-head > p:last-child {
+    margin-top: 0.8rem;
+    color: var(--text-muted);
+  }
+  .abilities {
+    overflow: hidden;
+    background: linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--grape-800) 42%, transparent),
+      transparent 68%
+    );
+  }
+  .ability-view {
+    min-height: 15rem;
+    display: grid;
+    grid-template-columns: 1fr 15rem;
+    overflow: hidden;
+  }
+  .ability-view__content {
+    padding: clamp(2rem, 4vw, 4rem);
+    max-width: 42rem;
+  }
+  .ability-view h3 {
+    margin-top: 0.35rem;
+    font-size: var(--step-3);
+    color: var(--celeste-400);
+  }
+  .ability-view p:last-child {
+    margin-top: 1rem;
+    color: var(--text-muted);
+  }
+  .ability-view__moon {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 50% 50%,
+        rgba(91, 164, 228, 0.38),
+        transparent 14%
+      ),
+      radial-gradient(
+        circle at 38% 44%,
+        rgba(140, 123, 232, 0.25),
+        transparent 49%
+      );
+  }
+  .ability-view__moon::before {
+    content: "";
+    position: absolute;
+    width: 11rem;
+    height: 11rem;
+    top: 50%;
+    left: 50%;
+    border: 1px solid color-mix(in srgb, var(--celeste-400) 55%, transparent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow:
+      0 0 35px rgba(91, 164, 228, 0.2),
+      inset 0 0 35px rgba(91, 164, 228, 0.15);
+  }
+  .ability-view__moon span {
+    position: absolute;
+    inset: 38% 46%;
+    background: var(--moonlight);
+    transform: rotate(45deg);
+    box-shadow: 0 0 18px var(--moonlight);
+  }
+  .ability-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.55rem;
+    margin-top: 1rem;
+  }
+  .ability-tab {
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
+    padding: 1rem 0.35rem;
+    color: var(--text-muted);
+    font: 600 var(--step--1) var(--font-body);
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: 0.25s var(--ease-out);
+  }
+  .ability-tab:hover,
+  .ability-tab.is-active {
+    color: var(--moonlight);
+    border-color: var(--border);
+    background: color-mix(in srgb, var(--night-800) 55%, transparent);
+  }
+  .ability-tab__glyph {
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--lavender-200);
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    transition: inherit;
+  }
+  .ability-tab.is-active .ability-tab__glyph {
+    color: var(--night-900);
+    background: var(--celeste-400);
+    border-color: var(--celeste-400);
+    box-shadow: 0 0 18px rgba(91, 164, 228, 0.45);
+  }
+  .encounters__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .encounter {
+    min-height: 12rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .encounter__moon {
+    position: absolute;
+    right: 0.8rem;
+    top: 0.15rem;
+    color: color-mix(in srgb, var(--celeste-400) 19%, transparent);
+    font-size: 5rem;
+    line-height: 1;
+  }
+  .encounter h3 {
+    position: relative;
+    font-size: var(--step-2);
+    color: var(--moonlight);
+  }
+  .encounter p {
+    position: relative;
+    margin-top: 0.8rem;
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: var(--step-0);
+    font-style: italic;
+    line-height: 1.4;
+  }
+  .closing {
+    min-height: 29rem;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    text-align: center;
+    background: linear-gradient(
+      0deg,
+      rgba(6, 7, 25, 0.82),
+      rgba(12, 15, 48, 0.72)
+    );
+  }
+  .closing__sky {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        ellipse at 50% 100%,
+        rgba(91, 164, 228, 0.25),
+        transparent 52%
+      ),
+      radial-gradient(circle at 18% 35%, #fff 0 1px, transparent 1.5px),
+      radial-gradient(circle at 74% 20%, #fff 0 1px, transparent 1.5px),
+      radial-gradient(circle at 87% 67%, #fff 0 1px, transparent 1.5px);
+    opacity: 0.8;
+  }
+  .closing__inner {
+    max-width: 45rem;
+  }
+  .closing h2 {
+    margin-top: 0.4rem;
+    font-size: var(--step-4);
+  }
+  .closing p {
+    margin-top: 1rem;
+    color: var(--text-muted);
+  }
+  .closing__cta {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding: 0.8rem 1.3rem;
+    color: var(--night-900);
+    background: var(--moonlight);
+    border-radius: 999px;
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition:
+      transform 0.25s var(--ease-out),
+      box-shadow 0.25s var(--ease-out);
+  }
+  .closing__cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(238, 240, 255, 0.38);
+  }
+  @media (max-width: 760px) {
+    .hero {
+      min-height: 44rem;
+    }
+    .hero__art {
+      inset: 0 -40% 0 15%;
+      opacity: 0.6;
+    }
+    .hero__art img {
+      clip-path: none;
+    }
+    .hero::after {
+      background:
+        linear-gradient(90deg, rgba(8, 10, 31, 0.96), rgba(9, 12, 36, 0.55)),
+        linear-gradient(0deg, var(--night-900), transparent 38%);
+    }
+    .hero__copy {
+      padding-bottom: 5rem;
+    }
+    .identity {
+      grid-template-columns: 1fr;
+      margin-top: 0;
+      width: 100%;
+    }
+    .identity__item {
+      min-height: auto;
+      padding: 1.1rem;
+      border-right: 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .identity__item:last-child {
+      border-bottom: 0;
+    }
+    .story__layout {
+      grid-template-columns: 1fr;
+    }
+    .story__portrait {
+      width: min(100%, 21rem);
+    }
+    .ability-view {
+      grid-template-columns: 1fr;
+    }
+    .ability-view__moon {
+      min-height: 7rem;
+    }
+    .ability-tabs {
+      overflow-x: auto;
+      grid-template-columns: repeat(5, minmax(7rem, 1fr));
+      padding-bottom: 0.25rem;
+    }
+    .encounters__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
