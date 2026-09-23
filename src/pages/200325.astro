@@ -137,6 +137,22 @@ const restoredCount = fragments.filter((fragment) => fragment.unlocked).length;
           </p>
         </aside>
       </div>
+
+      <section
+        class="next-stage"
+        data-next-stage
+        hidden={restoredCount !== 3}
+        aria-labelledby="next-stage-title"
+      >
+        <span class="next-stage__mark" aria-hidden="true">✦</span>
+        <div>
+          <p class="eyebrow">La señal está completa</p>
+          <h2 id="next-stage-title">Cuatro cadenas aguardan al otro lado.</h2>
+        </div>
+        <a href="/cadenas"
+          >Desbloquea las cadenas <span aria-hidden="true">→</span></a
+        >
+      </section>
     </div>
   </section>
 </BaseLayout>
@@ -170,12 +186,28 @@ const restoredCount = fragments.filter((fragment) => fragment.unlocked).length;
           }),
         });
         if (!response.ok) throw new Error("incompatible");
-        if (status)
-          status.textContent = "Fragmento restaurado. Reconstruyendo canal…";
-        form
-          .closest<HTMLElement>(".channel")
-          ?.classList.add("is-reconstructing");
-        window.setTimeout(() => window.location.reload(), 420);
+        const result = (await response.json()) as {
+          fragments: { unlocked: boolean }[];
+        };
+        const channel = form.closest<HTMLElement>(".channel");
+        const isComplete = result.fragments.every(
+          (fragment) => fragment.unlocked,
+        );
+        channel?.classList.add("is-reconstructing");
+
+        if (isComplete) {
+          channel?.classList.add("is-complete");
+          document
+            .querySelector<HTMLElement>("[data-next-stage]")
+            ?.removeAttribute("hidden");
+          if (status)
+            status.textContent = "La señal está completa. Abriendo el vínculo…";
+          window.setTimeout(() => window.location.assign("/cadenas"), 1500);
+        } else {
+          if (status)
+            status.textContent = "Fragmento restaurado. Reconstruyendo canal…";
+          window.setTimeout(() => window.location.reload(), 420);
+        }
       } catch {
         if (status) status.textContent = "Código incompatible";
         form.classList.remove("is-error");
@@ -523,6 +555,82 @@ const restoredCount = fragments.filter((fragment) => fragment.unlocked).length;
       var(--shadow-card),
       0 0 70px -25px color-mix(in srgb, var(--celeste-400) 42%, transparent);
   }
+  .next-stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 2rem);
+    margin-top: clamp(1.4rem, 3vw, 2.5rem);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--celeste-400) 35%, transparent);
+    background:
+      linear-gradient(
+        105deg,
+        color-mix(in srgb, var(--celeste-400) 10%, transparent),
+        transparent 45%
+      ),
+      color-mix(in srgb, var(--ink) 78%, var(--night-800));
+    box-shadow: 0 0 70px -32px
+      color-mix(in srgb, var(--celeste-400) 60%, transparent);
+    animation: next-stage-in 0.8s var(--ease-out) both;
+  }
+  .next-stage::after {
+    content: "";
+    position: absolute;
+    width: 14rem;
+    aspect-ratio: 1;
+    right: -7rem;
+    border: 1px solid color-mix(in srgb, var(--lavender-400) 20%, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .next-stage__mark {
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    aspect-ratio: 1;
+    color: var(--celeste-400);
+    border: 1px solid color-mix(in srgb, var(--celeste-400) 42%, transparent);
+    transform: rotate(45deg);
+    text-shadow: 0 0 14px var(--celeste-400);
+  }
+  .next-stage .eyebrow {
+    font-size: 0.58rem;
+  }
+  .next-stage h2 {
+    margin-top: 0.35rem;
+    font-size: var(--step-1);
+    color: var(--moonlight);
+  }
+  .next-stage a {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.82rem 1.1rem;
+    border: 1px solid color-mix(in srgb, var(--celeste-400) 50%, transparent);
+    background: color-mix(in srgb, var(--celeste-400) 13%, transparent);
+    color: var(--moonlight);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    transition: 0.25s var(--ease-out);
+  }
+  .next-stage a:hover {
+    transform: translateX(3px);
+    background: color-mix(in srgb, var(--celeste-400) 23%, transparent);
+    box-shadow: 0 0 26px color-mix(in srgb, var(--celeste-400) 25%, transparent);
+  }
+  @keyframes next-stage-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+      filter: blur(5px);
+    }
+  }
   @keyframes signal {
     50% {
       opacity: 0.22;
@@ -561,6 +669,13 @@ const restoredCount = fragments.filter((fragment) => fragment.unlocked).length;
     .channel__orbits span:nth-child(1) {
       right: -32rem;
     }
+    .next-stage {
+      grid-template-columns: auto 1fr;
+    }
+    .next-stage a {
+      grid-column: 1 / -1;
+      justify-content: center;
+    }
   }
   @media (max-width: 430px) {
     .slot {
@@ -584,7 +699,8 @@ const restoredCount = fragments.filter((fragment) => fragment.unlocked).length;
   @media (prefers-reduced-motion: reduce) {
     .channel__signal i,
     .slot.is-error input,
-    .channel.is-reconstructing .fragment {
+    .channel.is-reconstructing .fragment,
+    .next-stage {
       animation: none;
     }
   }
