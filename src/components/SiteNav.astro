@@ -10,6 +10,7 @@ const links = [
   { href: "/", label: "Inicio" },
   { href: "/about", label: "Nosotras" },
   { href: "/xylaria", label: "Xylaria" },
+  { href: "https://album.legionlunari.org", label: "Album Worlds 2026", external: true },
 ];
 const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
 ---
@@ -29,6 +30,7 @@ const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
             class:list={["nav__link", { "is-active": isActive(l.href) }]}
           >
             {l.label}
+            {l.external && <span class="nav__external" aria-hidden="true">↗</span>}
           </a>
         ))
       }
@@ -59,6 +61,7 @@ const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
           class:list={["nav__mobile-link", { "is-active": isActive(l.href) }]}
         >
           {l.label}
+          {l.external && <span class="nav__external" aria-hidden="true">↗</span>}
         </a>
       ))
     }
@@ -114,6 +117,9 @@ const DISCORD_URL = "https://discord.com/invite/j2mEbRg9jc";
   .nav__links {
     display: flex;
     gap: 0.4rem;
+  }
+  .nav__external {
+    margin-left: 0.25em;
   }
   .nav__link {
     position: relative;
